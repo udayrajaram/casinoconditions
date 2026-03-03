@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CasinoConditions — Know Before You Go</title>
+<title id="pageTitle">CasinoConditions — Know Before You Go</title>
+<meta name="description" id="pageDesc" content="Real-time casino floor reports from players like you. Know before you go.">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
@@ -172,7 +173,36 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .si-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .si-dot.green{background:#27ae60}.si-dot.amber{background:#f39c12}.si-dot.gray{background:#ccc}
 
-footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+/* CASINO DIRECTORY */
+.directory-wrap{max-width:1100px;margin:0 auto;padding:36px 24px}
+.state-group{margin-bottom:32px}
+.state-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.dir-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dir-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:all .2s;text-decoration:none;display:block}
+.dir-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(26,107,60,.08);transform:translateY(-1px)}
+.dir-card-name{font-size:14px;font-weight:600;letter-spacing:-.2px;color:var(--text);margin-bottom:3px}
+.dir-card-loc{font-size:12px;color:var(--muted);margin-bottom:8px}
+.dir-card-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.dir-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.dir-card-dist{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.dir-card-posts{font-size:11px;color:var(--accent);font-weight:500}
+
+/* CASINO PAGE */
+.casino-hero{background:#fff;border-bottom:1px solid var(--border);padding:40px 40px 32px}
+.casino-hero-inner{max-width:1100px;margin:0 auto}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:16px}
+.breadcrumb a{color:var(--muted);text-decoration:none;cursor:pointer}
+.breadcrumb a:hover{color:var(--accent)}
+.breadcrumb-sep{color:var(--border)}
+.casino-hero-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.casino-name-big{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:4px}
+.casino-loc-big{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.casino-desc{font-size:14px;color:var(--muted);line-height:1.6;max-width:600px;margin-bottom:20px}
+.casino-meta-row{display:flex;gap:20px;flex-wrap:wrap}
+.casino-meta-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.casino-meta-item strong{color:var(--text)}
+@media(max-width:768px){.dir-grid{grid-template-columns:1fr}.casino-hero{padding:24px 20px}}
+padding:28px 40px;display:flex;align-items:center;justify-content:space-between;margin-top:20px}
 .footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
 .footer-links{display:flex;gap:20px}
 .footer-link{font-size:12px;color:var(--muted);text-decoration:none;transition:color .15s}
@@ -199,9 +229,10 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
     <div class="logo-text">Casino<span>Conditions</span></div>
   </a>
   <div class="nav-links">
-    <span class="nav-link">Browse Casinos</span>
-    <span class="nav-link">Poker Rooms</span>
-    <span class="nav-link">Table Games</span>
+    <span class="nav-link" onclick="showPage('home')">Home</span>
+    <span class="nav-link" onclick="showPage('directory')">Browse Casinos</span>
+    <span class="nav-link" onclick="filterByCategory('🃏 Poker Room');showPage('home')">Poker Rooms</span>
+    <span class="nav-link" onclick="filterByCategory('🎲 Table Games');showPage('home')">Table Games</span>
   </div>
   <div style="display:flex;gap:10px">
     <button class="btn-outline" style="display:none" id="signInBtn">Sign in</button>
@@ -218,12 +249,12 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
     <input class="search-box" id="searchBox" type="text" placeholder="Search a casino... e.g. Mohegan Sun, Bellagio">
     <span class="search-icon">🔍</span>
     <div class="search-suggestions">
-      <span class="suggestion" onclick="filterByCasino('Mohegan Sun')">Mohegan Sun</span>
-      <span class="suggestion" onclick="filterByCasino('Foxwoods')">Foxwoods</span>
-      <span class="suggestion" onclick="filterByCasino('Bellagio')">Bellagio</span>
-      <span class="suggestion" onclick="filterByCasino('MGM Grand')">MGM Grand</span>
-      <span class="suggestion" onclick="filterByCasino('Borgata')">Borgata</span>
-      <span class="suggestion" onclick="filterByCasino('Wynn')">Wynn</span>
+      <span class="suggestion" onclick="showPage('casino','mohegan-sun')">Mohegan Sun</span>
+      <span class="suggestion" onclick="showPage('casino','foxwoods')">Foxwoods</span>
+      <span class="suggestion" onclick="showPage('casino','encore-boston-harbor')">Encore Boston Harbor</span>
+      <span class="suggestion" onclick="showPage('casino','borgata')">Borgata</span>
+      <span class="suggestion" onclick="showPage('casino','mgm-springfield')">MGM Springfield</span>
+      <span class="suggestion" onclick="showPage('directory')">Browse All →</span>
     </div>
   </div>
   <div class="stats-bar">
@@ -272,16 +303,40 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
         <div class="compose-options">
           <select class="compose-select" id="postCasino">
             <option value="">Select casino...</option>
-            <option>Mohegan Sun</option>
-            <option>Foxwoods</option>
-            <option>Bellagio</option>
-            <option>MGM Grand</option>
-            <option>Wynn</option>
-            <option>Borgata</option>
-            <option>Caesars Palace</option>
-            <option>Hard Rock AC</option>
-            <option>Rivers Casino</option>
-            <option>Other</option>
+            <optgroup label="Connecticut">
+              <option>Mohegan Sun</option>
+              <option>Foxwoods Resort Casino</option>
+            </optgroup>
+            <optgroup label="New York">
+              <option>Jake's 58 Casino</option>
+              <option>Empire City Casino</option>
+              <option>Resorts World NYC</option>
+              <option>Resorts World Catskills</option>
+            </optgroup>
+            <optgroup label="Rhode Island">
+              <option>Bally's Twin River</option>
+              <option>Bally's Tiverton</option>
+            </optgroup>
+            <optgroup label="Massachusetts">
+              <option>Plainridge Park Casino</option>
+              <option>MGM Springfield</option>
+              <option>Encore Boston Harbor</option>
+            </optgroup>
+            <optgroup label="New Jersey">
+              <option>Borgata</option>
+              <option>Hard Rock Atlantic City</option>
+              <option>Caesars Atlantic City</option>
+              <option>Harrah's Atlantic City</option>
+              <option>Bally's Atlantic City</option>
+              <option>Resorts Casino Atlantic City</option>
+              <option>Golden Nugget Atlantic City</option>
+            </optgroup>
+            <optgroup label="Pennsylvania">
+              <option>Wind Creek Bethlehem</option>
+              <option>Parx Casino</option>
+              <option>Live! Casino Philadelphia</option>
+              <option>Mount Airy Casino</option>
+            </optgroup>
           </select>
           <select class="compose-select" id="postCategory">
             <option value="">Category...</option>
@@ -345,7 +400,91 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
   </div>
 </div>
 
-<footer>
+<!-- CASINO DIRECTORY PAGE -->
+<div id="directoryPage" style="display:none">
+  <div style="background:#fff;border-bottom:1px solid var(--border);padding:40px 40px 32px">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">All Casinos</div>
+      <h1 style="font-size:28px;font-weight:700;letter-spacing:-1px;margin-bottom:8px">Browse Casinos Near You</h1>
+      <p style="font-size:14px;color:var(--muted)">22 casinos within 300 miles of Madison, CT — click any casino to see live floor reports.</p>
+    </div>
+  </div>
+  <div class="directory-wrap" id="directoryContent"></div>
+</div>
+
+<!-- INDIVIDUAL CASINO PAGE -->
+<div id="casinoPage" style="display:none">
+  <div class="casino-hero">
+    <div class="casino-hero-inner">
+      <div class="breadcrumb">
+        <a onclick="showPage('home')">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a onclick="showPage('directory')">Casinos</a>
+        <span class="breadcrumb-sep">›</span>
+        <span id="casinoBreadcrumb"></span>
+      </div>
+      <div class="casino-hero-top">
+        <div>
+          <div class="casino-name-big" id="casinoPageName"></div>
+          <div class="casino-loc-big">📍 <span id="casinoPageLoc"></span></div>
+        </div>
+        <div class="live-badge" style="flex-shrink:0"><div class="live-dot"></div> LIVE</div>
+      </div>
+      <div class="casino-desc" id="casinoPageDesc"></div>
+      <div class="casino-meta-row">
+        <div class="casino-meta-item">🗓 <strong id="casinoPagePosts">—</strong> total posts</div>
+        <div class="casino-meta-item">📅 <strong id="casinoPageToday">—</strong> posts today</div>
+        <div class="casino-meta-item">🕒 Last update: <strong id="casinoPageLast">—</strong></div>
+        <div class="casino-meta-item">📍 <strong id="casinoPageMiles">—</strong> from Madison, CT</div>
+      </div>
+    </div>
+  </div>
+  <div class="main-wrap">
+    <div>
+      <div class="compose-card">
+        <div class="compose-label" id="casinoComposeLabel">Share an update</div>
+        <textarea class="compose-input" id="casinoPostBody" rows="3" placeholder="What's happening on the floor right now?"></textarea>
+        <div class="compose-bottom">
+          <div class="compose-options">
+            <input type="hidden" id="casinoPostCasinoName">
+            <select class="compose-select" id="casinoPostCategory">
+              <option value="">Category...</option>
+              <option>🃏 Poker Room</option>
+              <option>🎲 Table Games</option>
+              <option>🎰 Slots</option>
+              <option>📢 General</option>
+            </select>
+            <input class="compose-name" id="casinoPostName" type="text" placeholder="Your name..." style="display:none">
+            <label class="anon-toggle">
+              <div class="toggle on" id="casinoAnonToggle"></div>
+              Post anonymously
+            </label>
+          </div>
+          <button class="btn" onclick="submitCasinoPost()">Post Update</button>
+        </div>
+      </div>
+      <div class="filter-tabs" id="casinoFilterTabs">
+        <div class="tab active" onclick="filterCasinoPage('')">All</div>
+        <div class="tab" onclick="filterCasinoPage('🃏 Poker Room')">🃏 Poker Room</div>
+        <div class="tab" onclick="filterCasinoPage('🎲 Table Games')">🎲 Table Games</div>
+        <div class="tab" onclick="filterCasinoPage('🎰 Slots')">🎰 Slots</div>
+        <div class="tab" onclick="filterCasinoPage('📢 General')">📢 General</div>
+      </div>
+      <div id="casinoFeed"></div>
+    </div>
+    <div class="sidebar">
+      <div class="cta-card">
+        <div class="cta-title">Know something?</div>
+        <div class="cta-sub">Post a quick update and help other players decide whether to make the trip.</div>
+        <button class="btn-white" onclick="document.getElementById('casinoPostBody').focus();document.getElementById('casinoPostBody').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">🏨 Nearby Casinos</div>
+        <div id="nearbyCasinos"></div>
+      </div>
+    </div>
+  </div>
+</div>
   <div class="footer-logo"><div class="logo-dot" style="animation:none;opacity:.7"></div>Casino<span style="color:var(--accent)">Conditions</span></div>
   <div class="footer-links">
     <a class="footer-link" href="#">About</a>
@@ -367,17 +506,31 @@ let activeCategory = '';
 let activeCasino = '';
 let isAnon = true;
 
-const CASINO_LOCATIONS = {
-  'Mohegan Sun': 'Uncasville, CT',
-  'Foxwoods': 'Mashantucket, CT',
-  'Bellagio': 'Las Vegas, NV',
-  'MGM Grand': 'Las Vegas, NV',
-  'Wynn': 'Las Vegas, NV',
-  'Borgata': 'Atlantic City, NJ',
-  'Caesars Palace': 'Las Vegas, NV',
-  'Hard Rock AC': 'Atlantic City, NJ',
-  'Rivers Casino': 'Pittsburgh, PA',
-};
+const CASINOS = [
+  { name: 'Mohegan Sun', location: 'Uncasville, CT', state: 'CT', miles: 30, slug: 'mohegan-sun', desc: 'One of the largest casinos in the US with 300,000+ sq ft of gaming, 4,000 slots, 300 table games, and 30 poker tables.' },
+  { name: 'Foxwoods Resort Casino', location: 'Mashantucket, CT', state: 'CT', miles: 41, slug: 'foxwoods', desc: 'The second-largest casino in the US featuring 340,000 sq ft of gaming, 3,500 slots, 250 table games, and a 54-table poker room.' },
+  { name: "Jake's 58 Casino", location: 'Islandia, NY', state: 'NY', miles: 73, slug: 'jakes-58', desc: "Jake's 58 offers 1,000 slot machines and electronic table games including blackjack, craps, roulette, and baccarat." },
+  { name: 'Empire City Casino', location: 'Yonkers, NY', state: 'NY', miles: 90, slug: 'empire-city', desc: 'Empire City Casino at Yonkers Raceway features 4,600+ slot machines and electronic table games.' },
+  { name: 'Resorts World NYC', location: 'Queens, NY', state: 'NY', miles: 95, slug: 'resorts-world-nyc', desc: 'Located near JFK Airport, Resorts World NYC offers 6,500+ gaming machines including slots and electronic table games.' },
+  { name: "Bally's Twin River", location: 'Lincoln, RI', state: 'RI', miles: 100, slug: 'ballys-twin-river', desc: "Bally's Twin River Lincoln Casino Resort is Rhode Island's largest casino with live table games, slots, and poker." },
+  { name: "Bally's Tiverton", location: 'Tiverton, RI', state: 'RI', miles: 110, slug: 'ballys-tiverton', desc: "Bally's Tiverton offers 24-hour gaming with blackjack, roulette, craps, baccarat, and slots." },
+  { name: 'Plainridge Park Casino', location: 'Plainville, MA', state: 'MA', miles: 115, slug: 'plainridge-park', desc: 'Plainridge Park Casino features 1,200 slot machines near Providence and Boston.' },
+  { name: 'Resorts World Catskills', location: 'Monticello, NY', state: 'NY', miles: 150, slug: 'resorts-world-catskills', desc: 'Resorts World Catskills is a full resort casino in the Catskill Mountains with 100,000 sq ft of gaming.' },
+  { name: 'MGM Springfield', location: 'Springfield, MA', state: 'MA', miles: 155, slug: 'mgm-springfield', desc: "MGM Springfield is Western Massachusetts's premier casino resort with slots, table games, poker, and a sportsbook." },
+  { name: 'Encore Boston Harbor', location: 'Everett, MA', state: 'MA', miles: 160, slug: 'encore-boston-harbor', desc: 'Encore Boston Harbor is a luxury resort casino on the Mystic River with 210,000 sq ft of gaming and an 88-table poker room.' },
+  { name: 'Borgata', location: 'Atlantic City, NJ', state: 'NJ', miles: 175, slug: 'borgata', desc: "Borgata Hotel Casino & Spa is one of Atlantic City's most popular casinos with a massive poker room and full table game floor." },
+  { name: 'Hard Rock Atlantic City', location: 'Atlantic City, NJ', state: 'NJ', miles: 175, slug: 'hard-rock-ac', desc: 'Hard Rock Hotel & Casino Atlantic City offers full gaming with slots, table games, and a poker room on the boardwalk.' },
+  { name: 'Caesars Atlantic City', location: 'Atlantic City, NJ', state: 'NJ', miles: 175, slug: 'caesars-ac', desc: 'Caesars Atlantic City features a Roman-inspired luxury casino with 2,000+ slots and 130+ table games.' },
+  { name: "Harrah's Atlantic City", location: 'Atlantic City, NJ', state: 'NJ', miles: 175, slug: 'harrahs-ac', desc: "Harrah's Atlantic City is a waterfront casino resort with extensive gaming, a poker room, and top dining." },
+  { name: "Bally's Atlantic City", location: 'Atlantic City, NJ', state: 'NJ', miles: 175, slug: 'ballys-ac', desc: "Bally's Atlantic City is a classic boardwalk casino with 800+ slot machines and a wide range of table games." },
+  { name: 'Resorts Casino Atlantic City', location: 'Atlantic City, NJ', state: 'NJ', miles: 175, slug: 'resorts-casino-ac', desc: "Atlantic City's original casino featuring 800+ slots, 100 gaming tables, and a vibrant art deco style." },
+  { name: 'Golden Nugget Atlantic City', location: 'Atlantic City, NJ', state: 'NJ', miles: 175, slug: 'golden-nugget-ac', desc: 'Golden Nugget Atlantic City sits on the marina with 2,000+ slots, 60+ table games, and a dedicated poker room.' },
+  { name: 'Wind Creek Bethlehem', location: 'Bethlehem, PA', state: 'PA', miles: 210, slug: 'wind-creek-bethlehem', desc: 'Wind Creek Bethlehem is open 24/7 with 3,000+ gaming machines, 176 table games, and a poker room.' },
+  { name: 'Parx Casino', location: 'Bensalem, PA', state: 'PA', miles: 240, slug: 'parx-casino', desc: "Pennsylvania's most popular casino with a massive slot floor, live table games, poker room, and horse racing." },
+  { name: 'Live! Casino Philadelphia', location: 'Philadelphia, PA', state: 'PA', miles: 250, slug: 'live-casino-philly', desc: 'Live! Casino & Hotel Philadelphia is a 510,000 sq ft entertainment complex with slots, tables, poker, and sports betting.' },
+  { name: 'Mount Airy Casino', location: 'Mount Pocono, PA', state: 'PA', miles: 175, slug: 'mount-airy-casino', desc: 'Mount Airy Casino Resort in the Pocono Mountains offers table games, slots, poker, a hotel, spa, and golf course.' },
+];
+const CASINO_LOCATIONS = Object.fromEntries(CASINOS.map(c => [c.name, c.location]));
 
 function timeAgo(dateStr) {
   const diff = (Date.now() - new Date(dateStr)) / 1000;
@@ -573,7 +726,8 @@ function updateCasinoGrid(posts) {
     const pct = Math.round((count/max)*100);
     const status = pct > 65 ? ['Busy','pill-busy','green'] : pct > 30 ? ['Moderate','pill-moderate','amber'] : ['Quiet','pill-quiet','gray'];
     const loc = CASINO_LOCATIONS[casino] || '';
-    return `<div class="casino-card" onclick="filterByCasino('${casino}')">
+    const c = CASINOS.find(x => x.name === casino);
+    return `<div class="casino-card" onclick="showPage('casino','${c?.slug || casino.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}')">
       <div class="casino-card-top">
         <div><div class="casino-card-name">${casino}</div><div class="casino-card-state">${loc}</div></div>
         <div class="status-pill ${status[1]}"><div class="dot-sm dot-${status[2]}"></div>${status[0]}</div>
@@ -604,6 +758,149 @@ function updateTicker(posts) {
   ).join('');
   document.getElementById('tickerInner').innerHTML = items + items;
 }
+
+// ROUTING
+let currentPage = 'home';
+let currentCasino = null;
+let casinoPageCategory = '';
+let casinoIsAnon = true;
+
+function showPage(page, casinoSlug) {
+  document.getElementById('directoryPage').style.display = 'none';
+  document.getElementById('casinoPage').style.display = 'none';
+  const homeEls = document.querySelectorAll('.hero, .ticker-wrap, .main-wrap');
+
+  if (page === 'home') {
+    homeEls.forEach(el => el.style.display = '');
+    document.getElementById('pageTitle').textContent = 'CasinoConditions — Know Before You Go';
+    window.scrollTo(0,0);
+  } else if (page === 'directory') {
+    homeEls.forEach(el => el.style.display = 'none');
+    document.getElementById('directoryPage').style.display = 'block';
+    document.getElementById('pageTitle').textContent = 'Browse Casinos — CasinoConditions';
+    renderDirectory();
+    window.scrollTo(0,0);
+  } else if (page === 'casino' && casinoSlug) {
+    homeEls.forEach(el => el.style.display = 'none');
+    document.getElementById('casinoPage').style.display = 'block';
+    currentCasino = CASINOS.find(c => c.slug === casinoSlug);
+    if (currentCasino) renderCasinoPage(currentCasino);
+    window.scrollTo(0,0);
+  }
+  currentPage = page;
+  window.location.hash = page === 'home' ? '' : page === 'directory' ? 'casinos' : 'casino/' + casinoSlug;
+}
+
+// Handle hash routing on load
+function handleHash() {
+  const hash = window.location.hash.replace('#','');
+  if (hash.startsWith('casino/')) {
+    const slug = hash.replace('casino/','');
+    showPage('casino', slug);
+  } else if (hash === 'casinos') {
+    showPage('directory');
+  }
+}
+
+function renderDirectory() {
+  const states = ['CT','NY','RI','MA','NJ','PA'];
+  const stateNames = {CT:'Connecticut',NY:'New York',RI:'Rhode Island',MA:'Massachusetts',NJ:'New Jersey',PA:'Pennsylvania'};
+  const counts = {};
+  allPosts.forEach(p => counts[p.casino] = (counts[p.casino]||0)+1);
+
+  document.getElementById('directoryContent').innerHTML = states.map(state => {
+    const casinos = CASINOS.filter(c => c.state === state);
+    return `<div class="state-group">
+      <div class="state-label">${stateNames[state]}</div>
+      <div class="dir-grid">
+        ${casinos.map(c => `
+          <div class="dir-card" onclick="showPage('casino','${c.slug}')">
+            <div class="dir-card-name">${c.name}</div>
+            <div class="dir-card-loc">📍 ${c.location}</div>
+            <div class="dir-card-desc">${c.desc.slice(0,90)}...</div>
+            <div class="dir-card-footer">
+              <span class="dir-card-dist">${c.miles} mi away</span>
+              <span class="dir-card-posts">${counts[c.name] || 0} posts</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCasinoPage(casino) {
+  document.getElementById('pageTitle').textContent = `${casino.name} Live Floor Reports — CasinoConditions`;
+  document.getElementById('casinoBreadcrumb').textContent = casino.name;
+  document.getElementById('casinoPageName').textContent = casino.name;
+  document.getElementById('casinoPageLoc').textContent = casino.location;
+  document.getElementById('casinoPageDesc').textContent = casino.desc;
+  document.getElementById('casinoPageMiles').textContent = casino.miles + ' miles';
+  document.getElementById('casinoPostCasinoName').value = casino.name;
+  document.getElementById('casinoComposeLabel').textContent = `Share an update for ${casino.name}`;
+
+  const posts = allPosts.filter(p => p.casino === casino.name);
+  const today = posts.filter(p => new Date(p.created_at).toDateString() === new Date().toDateString());
+  document.getElementById('casinoPagePosts').textContent = posts.length;
+  document.getElementById('casinoPageToday').textContent = today.length;
+  document.getElementById('casinoPageLast').textContent = posts.length ? timeAgo(posts[0].created_at) : 'No posts yet';
+
+  filterCasinoPage('');
+
+  // Nearby casinos (same state or close)
+  const nearby = CASINOS.filter(c => c.slug !== casino.slug && (c.state === casino.state || Math.abs(c.miles - casino.miles) < 60)).slice(0,4);
+  document.getElementById('nearbyCasinos').innerHTML = nearby.map(c => `
+    <div class="sidebar-row" onclick="showPage('casino','${c.slug}')">
+      <div><div class="sr-name">${c.name}</div><div class="sr-sub">${c.location}</div></div>
+      <div class="sr-count">${c.miles}mi</div>
+    </div>`).join('');
+}
+
+function filterCasinoPage(cat) {
+  casinoPageCategory = cat;
+  document.querySelectorAll('#casinoFilterTabs .tab').forEach(t => t.classList.remove('active'));
+  event && event.target && event.target.classList.add('active');
+  const posts = allPosts.filter(p => p.casino === currentCasino?.name && (!cat || p.category === cat));
+  const feed = document.getElementById('casinoFeed');
+  if (!posts.length) {
+    feed.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No updates yet for ${currentCasino?.name}</div><div class="empty-sub">Be the first to post a floor update!</div></div>`;
+  } else {
+    feed.innerHTML = posts.map(renderPost).join('');
+  }
+}
+
+// Casino anon toggle
+document.getElementById('casinoAnonToggle').addEventListener('click', function() {
+  casinoIsAnon = !casinoIsAnon;
+  this.classList.toggle('on', casinoIsAnon);
+  document.getElementById('casinoPostName').style.display = casinoIsAnon ? 'none' : 'block';
+});
+
+async function submitCasinoPost() {
+  const body = document.getElementById('casinoPostBody').value.trim();
+  const casino = document.getElementById('casinoPostCasinoName').value;
+  const category = document.getElementById('casinoPostCategory').value;
+  const name = document.getElementById('casinoPostName').value.trim() || 'Anonymous';
+
+  if (!body) { showToast('Please write something first!'); return; }
+  if (!category) { showToast('Please select a category'); return; }
+
+  const { data, error } = await db.from('posts').insert([{
+    body, casino, category,
+    author: casinoIsAnon ? 'Anonymous' : name,
+    is_anonymous: casinoIsAnon,
+    helpful_count: 0
+  }]).select();
+
+  if (error) { showToast('Something went wrong. Try again.'); return; }
+  document.getElementById('casinoPostBody').value = '';
+  showToast('✅ Update posted! Thanks for sharing.');
+  await loadPosts();
+  if (currentCasino) renderCasinoPage(currentCasino);
+}
+
+// Handle hash on load
+window.addEventListener('hashchange', handleHash);
+handleHash();
 
 // Init
 loadPosts();
