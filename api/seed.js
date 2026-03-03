@@ -171,7 +171,7 @@ function buildPool(casino, weatherMain, temp) {
 
 function randomRecentTime() {
   const now = new Date();
-  const daysAgo = Math.floor(Math.random() * 3);
+  const daysAgo = Math.floor(Math.random() * 7); // spread over a week
   const date = new Date(now);
   date.setDate(date.getDate() - daysAgo);
   const hour = 16 + Math.floor(Math.random() * 10);
@@ -208,26 +208,23 @@ async function getWeather(lat, lon) {
 }
 
 async function seedCasino(casino, weatherMain, temp) {
-  // Check real post count — don't seed if users are active
+  // Check real post count — don't seed if users are very active
   const realPosts = await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.false&select=id`, { returnData: true });
-  if ((realPosts?.length || 0) >= 5) return 0;
+  if ((realPosts?.length || 0) >= 20) return 0; // back off if tons of real users
 
-  // Delete seeded posts older than 3 days to keep feed fresh
-  const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString();
-  await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&created_at=lt.${threeDaysAgo}`, { method: 'DELETE' });
+  // Delete seeded posts older than 7 days to avoid infinite growth
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+  await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&created_at=lt.${sevenDaysAgo}`, { method: 'DELETE' });
 
-  // Check remaining seeded posts
-  const seededPosts = await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`, { returnData: true });
-  const seededCount = seededPosts?.length || 0;
-  const target = Math.floor(Math.random() * 4) + 5; // 5–8 posts per casino
-  if (seededCount >= target) return 0;
-
-  const existingBodies = new Set((seededPosts || []).map(p => p.body));
+  // Always add 2-4 fresh posts per run to build up engagement
+  const existingPosts = await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`, { returnData: true });
+  const existingBodies = new Set((existingPosts || []).map(p => p.body));
   const pool = buildPool(casino, weatherMain, temp);
+  const toAdd = Math.floor(Math.random() * 3) + 2; // 2-4 per run
   const toInsert = [];
   let attempts = 0;
 
-  while (toInsert.length < (target - seededCount) && attempts < 80) {
+  while (toInsert.length < toAdd && attempts < 80) {
     attempts++;
     const item = pick(pool);
     if (!existingBodies.has(item.b)) {
@@ -236,7 +233,7 @@ async function seedCasino(casino, weatherMain, temp) {
       toInsert.push({
         body: item.b, casino: casino.name, category: item.c,
         author: name, is_anonymous: isAnon,
-        helpful_count: Math.floor(Math.random() * 7),
+        helpful_count: Math.floor(Math.random() * 12),
         is_seeded: true,
         created_at: randomRecentTime(),
       });
@@ -250,8 +247,13 @@ async function seedCasino(casino, weatherMain, temp) {
 }
 
 export default async function handler(req, res) {
-  // Allow manual trigger too
+  const force = req.query.force === 'true';
   const total = { seeded: 0, casinos: 0 };
+
+  // Force mode: delete ALL seeded posts first, then reseed everything
+  if (force) {
+    await sbFetch('/posts?is_seeded=eq.true', { method: 'DELETE' });
+  }
 
   for (const casino of CASINOS) {
     const { weatherMain, temp } = await getWeather(casino.lat, casino.lon);
@@ -260,5 +262,5 @@ export default async function handler(req, res) {
     await new Promise(r => setTimeout(r, 100));
   }
 
-  res.status(200).json({ success: true, ...total, timestamp: new Date().toISOString() });
+  res.status(200).json({ success: true, mode: force ? 'force' : 'normal', ...total, timestamp: new Date().toISOString() });
 }
