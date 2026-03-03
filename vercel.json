@@ -2,6 +2,9 @@
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/browse", "destination": "/api/browse" },
+    { "source": "/about", "destination": "/api/about" },
+    { "source": "/terms", "destination": "/api/terms" },
+    { "source": "/privacy", "destination": "/api/privacy" },
     { "source": "/api/weather", "destination": "/api/weather" },
     { "source": "/api/places", "destination": "/api/places" },
     { "source": "/api/score", "destination": "/api/score" },
