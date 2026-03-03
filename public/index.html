@@ -16,6 +16,25 @@
   --muted:#888880;--accent:#1a6b3c;--accent-light:#edf5f0;--accent-dim:#2d8a52;
   --radius:12px;--radius-sm:8px;
 }
+body.dark{
+  --bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;
+  --muted:#6b6860;--accent:#4caf70;--accent-light:#1a2e1f;--accent-dim:#3d9960;
+}
+body.dark nav{background:rgba(15,15,13,0.95)}
+body.dark .compose-input{background:#1e1e1b;color:var(--text)}
+body.dark .compose-select{background:#1e1e1b;color:var(--text)}
+body.dark .search-box{background:#1e1e1b;color:var(--text)}
+body.dark .tag{background:#1e1e1b}
+body.dark .tab{background:#161614}
+body.dark .casino-card{background:#161614}
+body.dark .post-card{background:#161614}
+body.dark .card{background:#161614}
+body.dark .dir-card{background:#161614}
+body.dark .sidebar-card{background:#161614}
+body.dark select{background:#1e1e1b;color:var(--text)}
+body{transition:background .2s,color .2s}
+.dark-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;transition:all .15s;color:var(--text)}
+.dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
 
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
@@ -246,7 +265,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .casino-meta-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .casino-meta-item strong{color:var(--text)}
 @media(max-width:768px){.dir-grid{grid-template-columns:1fr}.casino-hero{padding:24px 20px}}
-padding:28px 40px;display:flex;align-items:center;justify-content:space-between;margin-top:20px}
+footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-between;margin-top:20px;border-top:1px solid var(--border);background:var(--surface)}
 .footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
 .footer-links{display:flex;gap:20px}
 .footer-link{font-size:12px;color:var(--muted);text-decoration:none;transition:color .15s}
@@ -278,7 +297,8 @@ padding:28px 40px;display:flex;align-items:center;justify-content:space-between;
     <span class="nav-link" onclick="filterByCategory('🃏 Poker Room');showPage('home')">Poker Rooms</span>
     <span class="nav-link" onclick="filterByCategory('🎲 Table Games');showPage('home')">Table Games</span>
   </div>
-  <div style="display:flex;gap:10px">
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <button class="btn-outline" style="display:none" id="signInBtn">Sign in</button>
     <button class="btn" onclick="scrollToCompose()">+ Post Update</button>
   </div>
@@ -534,9 +554,9 @@ padding:28px 40px;display:flex;align-items:center;justify-content:space-between;
 </div>
   <div class="footer-logo"><div class="logo-dot" style="animation:none;opacity:.7"></div>Casino<span style="color:var(--accent)">Conditions</span></div>
   <div class="footer-links">
-    <a class="footer-link" href="#">About</a>
-    <a class="footer-link" href="#">Terms</a>
-    <a class="footer-link" href="#">Privacy</a>
+    <a class="footer-link" href="/about">About</a>
+    <a class="footer-link" href="/terms">Terms</a>
+    <a class="footer-link" href="/privacy">Privacy</a>
   </div>
   <div class="footer-copy">© 2026 CasinoConditions</div>
 </footer>
@@ -1396,6 +1416,22 @@ loadPosts();
 
 // Auto-refresh every 30s
 setInterval(loadPosts, 30000);
+
+// Dark mode
+function toggleDark() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('darkToggle').textContent = isDark ? '☀️' : '🌙';
+}
+(function() {
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('darkToggle');
+      if (btn) btn.textContent = '☀️';
+    });
+  }
+})();
 </script>
 </body>
 </html>
