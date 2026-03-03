@@ -35,6 +35,24 @@ const CASINO_PLACE_IDS = {
   'Wind Creek Bethlehem': 'ChIJV1NTGxOHxokRUMh1cDL9Y6s',
 };
 
+// For casinos without a hardcoded place ID, look them up dynamically
+async function getPlaceId(casinoName, casinoLocation, key) {
+  try {
+    const query = encodeURIComponent(`${casinoName} casino ${casinoLocation}`);
+    const r = await fetch(`https://places.googleapis.com/v1/places:searchText`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': key,
+        'X-Goog-FieldMask': 'places.id',
+      },
+      body: JSON.stringify({ textQuery: `${casinoName} ${casinoLocation}`, maxResultCount: 1 })
+    });
+    const data = await r.json();
+    return data.places?.[0]?.id || null;
+  } catch(e) { return null; }
+}
+
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
@@ -110,14 +128,55 @@ export default async function handler(req, res) {
     return res.status(404).send(`<!DOCTYPE html><html><head><title>404 - CasinoConditions</title></head><body style="font-family:sans-serif;text-align:center;padding:80px"><h1>Casino not found</h1><p><a href="/">← Back to home</a></p></body></html>`);
   }
 
-  // Fetch posts server-side for SEO
-  let posts = [];
-  try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/posts?casino=eq.${encodeURIComponent(casino.name)}&order=created_at.desc&limit=50`, {
+  const key = process.env.GOOGLE_KEY;
+  const coords = CASINO_COORDS[casino.name] || null;
+  let placeId = CASINO_PLACE_IDS[casino.name] || null;
+
+  // If no hardcoded place ID, look it up
+  if (!placeId && key) {
+    placeId = await getPlaceId(casino.name, casino.location, key);
+  }
+
+  // Fetch posts, weather, and places all in parallel
+  const [postsRes, weatherRes, placesRes] = await Promise.all([
+    fetch(`${SUPABASE_URL}/rest/v1/posts?casino=eq.${encodeURIComponent(casino.name)}&order=created_at.desc&limit=50`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-    });
-    posts = await r.json();
-  } catch(e) {}
+    }),
+    coords && key ? fetch(`https://weather.googleapis.com/v1/currentConditions:lookup?key=${key}&location.latitude=${coords[0]}&location.longitude=${coords[1]}&unitsSystem=IMPERIAL`) : Promise.resolve(null),
+    placeId && key ? fetch(`https://places.googleapis.com/v1/places/${placeId}?fields=rating,userRatingCount&key=${key}`) : Promise.resolve(null),
+  ]);
+
+  let posts = [], weather = null, places = null;
+  try { posts = await postsRes.json(); } catch(e) {}
+  try { if (weatherRes) weather = await weatherRes.json(); } catch(e) {}
+  try { if (placesRes) places = await placesRes.json(); } catch(e) {}
+
+  // Parse weather
+  let weatherHtml = '<div style="color:var(--muted)">Weather unavailable</div>';
+  if (weather?.temperature) {
+    const temp = Math.round(weather.temperature.degrees);
+    const desc = weather.weatherCondition?.description?.text || '';
+    const type = weather.weatherCondition?.type || '';
+    const isBadWeather = ['RAIN','LIGHT_RAIN','RAIN_SHOWERS','DRIZZLE','SNOW','HEAVY_SNOW','THUNDERSTORM'].includes(type);
+    const impact = isBadWeather ? '↑ Great night to be inside' : temp < 35 ? '↑ Cold outside, good for casino' : '→ Neutral impact';
+    const impactCls = impact.startsWith('↑') ? 'positive' : 'neutral';
+    weatherHtml = `<div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:15px;font-weight:600">${desc}</div><div style="font-size:13px;color:var(--muted);margin-top:2px">${temp}°F</div></div>
+      <div style="text-align:right"><div style="font-size:11px;color:var(--muted)">Casino impact</div><div class="weather-impact ${impactCls}" style="font-size:13px;font-weight:600;margin-top:2px">${impact}</div></div>
+    </div>`;
+  }
+
+  // Parse Google rating
+  let googleHtml = '<div style="color:var(--muted)">Rating unavailable</div>';
+  if (places?.rating) {
+    const rating = places.rating.toFixed(1);
+    const reviews = places.userRatingCount?.toLocaleString() || '0';
+    const stars = '★'.repeat(Math.round(places.rating)) + '☆'.repeat(5 - Math.round(places.rating));
+    googleHtml = `<div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:32px;font-weight:700;font-family:'DM Mono',monospace">${rating}</div>
+      <div><div style="color:#f39c12;font-size:15px">${stars}</div><div style="font-size:12px;color:var(--muted);margin-top:3px">${reviews} reviews</div></div>
+    </div>`;
+  }
 
   const recentCount = posts.filter(p => (Date.now() - new Date(p.created_at)) < 86400000).length;
   const statusText = recentCount > 5 ? 'Busy' : recentCount > 2 ? 'Moderate' : 'Quiet';
@@ -158,6 +217,13 @@ export default async function handler(req, res) {
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f7f7f5;--surface:#fff;--border:#e8e8e4;--text:#1a1a18;--muted:#888880;--accent:#1a6b3c;--accent-light:#edf5f0;--accent-dim:#2d8a52;--radius:12px;--radius-sm:8px}
+body.dark{--bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;--muted:#6b6860;--accent:#4caf70;--accent-light:#1a2e1f;--accent-dim:#3d9960}
+body.dark nav{background:rgba(15,15,13,0.95)}
+body.dark .compose-input,body.dark select{background:#1e1e1b;color:var(--text)}
+body.dark .post-card,body.dark .card{background:#161614}
+body{transition:background .2s,color .2s}
+.dark-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;transition:all .15s}
+.dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
@@ -241,6 +307,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
     <a class="nav-link" href="/">Home</a>
     <a class="nav-link" href="/browse">Browse Casinos</a>
   </div>
+  <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
   <button class="btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
 </nav>
 
@@ -320,13 +387,13 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
     <!-- WEATHER -->
     <div class="card" id="weatherCard">
       <div class="card-title">🌤 Weather Impact</div>
-      <div id="weatherContent" style="font-size:13px;color:var(--muted)">Loading...</div>
+      <div id="weatherContent">${weatherHtml}</div>
     </div>
 
     <!-- GOOGLE RATING -->
     <div class="card" id="googleCard">
       <div class="card-title">⭐ Google Rating</div>
-      <div id="googleContent" style="font-size:13px;color:var(--muted)">Loading...</div>
+      <div id="googleContent">${googleHtml}</div>
     </div>
 
     <!-- NEARBY -->
@@ -435,12 +502,7 @@ async function submitPost() {
 
 async function loadScore() {
   try {
-    const coords = ${JSON.stringify(CASINO_COORDS[casino.name] || null)};
-    const placeId = ${JSON.stringify(CASINO_PLACE_IDS[casino.name] || null)};
-    let url = \`/api/score?casino=\${encodeURIComponent(CASINO_NAME)}\`;
-    if (coords) url += \`&lat=\${coords[0]}&lon=\${coords[1]}\`;
-    if (placeId) url += \`&placeId=\${placeId}\`;
-    const r = await fetch(url);
+    const r = await fetch(\`/api/score?casino=\${encodeURIComponent(CASINO_NAME)}\`);
     const s = await r.json();
     document.getElementById('scoreNum').textContent = s.total;
     document.getElementById('scoreNum').style.color = s.total >= 70 ? '#1a6b3c' : s.total >= 40 ? '#b07d2a' : '#888';
@@ -451,21 +513,6 @@ async function loadScore() {
       ['Weather', s.factors.weather],
       ['Timing', s.factors.timing],
     ].map(([label, val]) => \`<div class="score-row"><span class="score-label">\${label}</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:\${val}%"></div></div><span class="score-val">\${val}</span></div>\`).join('');
-
-    if (s.weatherDesc) {
-      const impact = ['Rain','Snow','Thunderstorm','Drizzle'].includes(s.weatherMain) ? '↑ Good day for casino' : s.temp < 35 ? '↑ Cold outside, good day for casino' : '→ Neutral impact';
-      const impactCls = impact.startsWith('↑') ? 'positive' : 'neutral';
-      document.getElementById('weatherContent').innerHTML = \`<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:500">\${s.weatherDesc}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">\${Math.round(s.temp)}°F</div></div><div style="text-align:right"><div style="font-size:11px;color:var(--muted)">Casino impact</div><div class="weather-impact \${impactCls}" style="font-size:12px;font-weight:600;margin-top:2px">\${impact}</div></div></div>\`;
-    } else {
-      document.getElementById('weatherContent').innerHTML = '<div style="color:var(--muted)">Weather unavailable</div>';
-    }
-
-    if (s.googleRating) {
-      const stars = '★'.repeat(Math.round(s.googleRating)) + '☆'.repeat(5 - Math.round(s.googleRating));
-      document.getElementById('googleContent').innerHTML = \`<div style="display:flex;align-items:center;gap:8px"><span style="color:#f39c12;font-size:16px">\${stars}</span><span style="font-size:15px;font-weight:600">\${s.googleRating}</span><span style="font-size:12px;color:var(--muted)">\${s.googleReviews?.toLocaleString()} reviews</span></div>\`;
-    } else {
-      document.getElementById('googleContent').innerHTML = '<div style="color:var(--muted)">Rating unavailable</div>';
-    }
   } catch(e) {}
 }
 
@@ -479,6 +526,16 @@ setInterval(async () => {
     renderFeed(allPosts);
   } catch(e) {}
 }, 30000);
+
+function toggleDark() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('darkToggle').textContent = isDark ? '☀️' : '🌙';
+}
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark');
+  document.getElementById('darkToggle').textContent = '☀️';
+}
 </script>
 </body>
 </html>`;

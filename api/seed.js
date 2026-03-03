@@ -208,14 +208,18 @@ async function getWeather(lat, lon) {
 }
 
 async function seedCasino(casino, weatherMain, temp) {
-  // Check real post count
+  // Check real post count — don't seed if users are active
   const realPosts = await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.false&select=id`, { returnData: true });
   if ((realPosts?.length || 0) >= 5) return 0;
 
-  // Check seeded post count + get existing bodies
+  // Delete seeded posts older than 3 days to keep feed fresh
+  const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString();
+  await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&created_at=lt.${threeDaysAgo}`, { method: 'DELETE' });
+
+  // Check remaining seeded posts
   const seededPosts = await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`, { returnData: true });
   const seededCount = seededPosts?.length || 0;
-  const target = Math.floor(Math.random() * 6) + 5;
+  const target = Math.floor(Math.random() * 4) + 5; // 5–8 posts per casino
   if (seededCount >= target) return 0;
 
   const existingBodies = new Set((seededPosts || []).map(p => p.body));
@@ -240,7 +244,7 @@ async function seedCasino(casino, weatherMain, temp) {
   }
 
   if (toInsert.length > 0) {
-    await sbFetch('/posts', { method: 'POST', body: JSON.stringify(toInsert) });
+    await sbFetch('/posts', { method: 'POST', body: JSON.stringify(toInsert), prefer: 'return=minimal', headers: { 'Prefer': 'return=minimal' } });
   }
   return toInsert.length;
 }

@@ -65,6 +65,12 @@ export default async function handler(req, res) {
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f7f7f5;--surface:#fff;--border:#e8e8e4;--text:#1a1a18;--muted:#888880;--accent:#1a6b3c;--accent-light:#edf5f0;--accent-dim:#2d8a52;--radius:12px}
+body.dark{--bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;--muted:#6b6860;--accent:#4caf70;--accent-light:#1a2e1f;--accent-dim:#3d9960}
+body.dark nav{background:rgba(15,15,13,0.95)}
+body.dark .dir-card{background:#161614}
+body{transition:background .2s,color .2s}
+.dark-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;transition:all .15s}
+.dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
@@ -102,6 +108,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
     <a class="nav-link" href="/">Home</a>
     <a class="nav-link" href="/browse" style="color:var(--text)">Browse Casinos</a>
   </div>
+  <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
   <a class="btn" href="/">Post Update</a>
 </nav>
 <div class="page-header">
@@ -111,6 +118,17 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
   </div>
 </div>
 <div class="directory-wrap">${statesHtml}</div>
+<script>
+function toggleDark() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('darkToggle').textContent = isDark ? '☀️' : '🌙';
+}
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark');
+  document.getElementById('darkToggle').textContent = '☀️';
+}
+</script>
 </body>
 </html>`;
 
