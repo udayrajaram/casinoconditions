@@ -10,18 +10,26 @@ export default async function handler(req, res) {
 
   const key = process.env.GOOGLE_KEY;
 
+  console.log('score params - casino:', casino, 'lat:', lat, 'lon:', lon, 'placeId:', placeId, 'key exists:', !!key);
+
   // Fetch all in parallel
   const [postsRes, weatherRes, placesRes] = await Promise.all([
     fetch(`${SUPABASE_URL}/rest/v1/posts?casino=eq.${encodeURIComponent(casino)}&select=created_at,helpful_count`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
     }),
-    lat && lon ? fetch(`https://weather.googleapis.com/v1/currentConditions:lookup?key=${key}&location.latitude=${lat}&location.longitude=${lon}&unitsSystem=IMPERIAL`) : Promise.resolve(null),
-    placeId ? fetch(`https://places.googleapis.com/v1/places/${placeId}?fields=rating,userRatingCount&key=${key}`) : Promise.resolve(null),
+    lat && lon ? fetch(`https://weather.googleapis.com/v1/currentConditions:lookup?key=${key}&location.latitude=${lat}&location.longitude=${lon}&unitsSystem=IMPERIAL`).then(r => { console.log('weather status:', r.status); return r; }).catch(e => { console.error('weather fetch error:', e); return null; }) : Promise.resolve(null),
+    placeId ? fetch(`https://places.googleapis.com/v1/places/${placeId}?fields=rating,userRatingCount&key=${key}`).then(r => { console.log('places status:', r.status); return r; }).catch(e => { console.error('places fetch error:', e); return null; }) : Promise.resolve(null),
   ]);
 
   const posts = await postsRes.json();
-  const weather = weatherRes ? await weatherRes.json().catch(() => null) : null;
-  const places = placesRes ? await placesRes.json().catch(() => null) : null;
+  const weather = weatherRes ? await weatherRes.json().catch((e) => { console.error('weather parse error', e); return null; }) : null;
+  const places = placesRes ? await placesRes.json().catch((e) => { console.error('places parse error', e); return null; }) : null;
+
+  // Log raw responses for debugging
+  if (weather) console.log('weather response:', JSON.stringify(weather).slice(0, 300));
+  else console.log('weather: null response (weatherRes was', !!weatherRes, ')');
+  if (places) console.log('places response:', JSON.stringify(places).slice(0, 300));
+  else console.log('places: null response (placesRes was', !!placesRes, ')');
 
   const now = new Date();
   const last24h = posts.filter(p => (now - new Date(p.created_at)) < 86400000);
