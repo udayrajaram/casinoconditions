@@ -804,8 +804,7 @@ function updateTicker(posts) {
   document.getElementById('tickerInner').innerHTML = items + items;
 }
 
-const GOOGLE_KEY = 'AIzaSyCTS5o_VN5zDxYzIkGYQzeESbfJuWHZp6Y';
-const WEATHER_KEY = 'd1aa12137db9bc31ac4e9684167d1a73';
+const GOOGLE_KEY = 'AIzaSyCVo8ONmW3U18lpSQNlvmF9KY-K3mRon9Y';
 
 // Google Place IDs for each casino
 const CASINO_PLACE_IDS = {
@@ -979,8 +978,21 @@ async function fetchGooglePlaces(placeId) {
 
 async function fetchWeather(lat, lon) {
   try {
-    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_KEY}&units=imperial`);
-    return await res.json();
+    const res = await fetch(`https://weather.googleapis.com/v1/currentConditions:lookup?key=${GOOGLE_KEY}&location.latitude=${lat}&location.longitude=${lon}&unitsSystem=IMPERIAL`);
+    const data = await res.json();
+    if (!data.temperature) return null;
+    // Normalize to same shape the rest of the code expects
+    const type = data.weatherCondition?.type || 'CLEAR';
+    const mainMap = {
+      CLEAR:'Clear', CLOUDY:'Clouds', PARTLY_CLOUDY:'Clouds',
+      RAIN:'Rain', LIGHT_RAIN:'Rain', RAIN_SHOWERS:'Rain',
+      DRIZZLE:'Drizzle', SNOW:'Snow', HEAVY_SNOW:'Snow',
+      THUNDERSTORM:'Thunderstorm', FOG:'Fog', MIST:'Mist',
+    };
+    return {
+      weather: [{ main: mainMap[type] || 'Clear', description: data.weatherCondition?.description?.text || 'Clear' }],
+      main: { temp: data.temperature?.degrees || 60 },
+    };
   } catch(e) { return null; }
 }
 
