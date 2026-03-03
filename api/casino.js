@@ -23,22 +23,10 @@ const CASINO_COORDS = {
   'Mount Airy Casino': [41.1248, -75.3571],
 };
 
-const CASINO_PLACE_IDS = {
-  'Mohegan Sun': 'ChIJL7GKBG2-5okRTDFHMnIJiqo',
-  'Foxwoods Resort Casino': 'ChIJP5VwBvm254kRVbH0ZBPANOA',
-  'Encore Boston Harbor': 'ChIJqyYPBYFx44kR9HoQtMEMJu0',
-  'MGM Springfield': 'ChIJoQ8Q_A6s44kRMlb2WKyMzNc',
-  'Borgata': 'ChIJv1KgExFwxokRWzVkNl93N2c',
-  'Hard Rock Atlantic City': 'ChIJdUy6ZXMF44kRyHoEzDNsMjQ',
-  'Caesars Atlantic City': 'ChIJZcTkWHIF44kRzjHoEJYNTtw',
-  'Parx Casino': 'ChIJaQxZJMuGxokRzXzD5HXLK4k',
-  'Wind Creek Bethlehem': 'ChIJV1NTGxOHxokRUMh1cDL9Y6s',
-};
+const CASINO_PLACE_IDS = {}; // Always look up dynamically via Places text search
 
-// For casinos without a hardcoded place ID, look them up dynamically
 async function getPlaceId(casinoName, casinoLocation, key) {
   try {
-    const query = encodeURIComponent(`${casinoName} casino ${casinoLocation}`);
     const r = await fetch(`https://places.googleapis.com/v1/places:searchText`, {
       method: 'POST',
       headers: {
@@ -49,8 +37,9 @@ async function getPlaceId(casinoName, casinoLocation, key) {
       body: JSON.stringify({ textQuery: `${casinoName} ${casinoLocation}`, maxResultCount: 1 })
     });
     const data = await r.json();
+    console.log('getPlaceId response for', casinoName, ':', JSON.stringify(data).slice(0, 200));
     return data.places?.[0]?.id || null;
-  } catch(e) { return null; }
+  } catch(e) { console.error('getPlaceId error:', e); return null; }
 }
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
