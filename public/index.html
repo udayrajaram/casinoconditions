@@ -273,7 +273,7 @@ padding:28px 40px;display:flex;align-items:center;justify-content:space-between;
   </a>
   <div class="nav-links">
     <span class="nav-link" onclick="showPage('home')">Home</span>
-    <span class="nav-link" onclick="showPage('directory')">Browse Casinos</span>
+    <a class="nav-link" href="/browse">Browse Casinos</a>
     <span class="nav-link" onclick="filterByCategory('🃏 Poker Room');showPage('home')">Poker Rooms</span>
     <span class="nav-link" onclick="filterByCategory('🎲 Table Games');showPage('home')">Table Games</span>
   </div>
@@ -292,12 +292,12 @@ padding:28px 40px;display:flex;align-items:center;justify-content:space-between;
     <input class="search-box" id="searchBox" type="text" placeholder="Search a casino... e.g. Mohegan Sun, Bellagio">
     <span class="search-icon">🔍</span>
     <div class="search-suggestions">
-      <span class="suggestion" onclick="showPage('casino','mohegan-sun')">Mohegan Sun</span>
-      <span class="suggestion" onclick="showPage('casino','foxwoods')">Foxwoods</span>
-      <span class="suggestion" onclick="showPage('casino','encore-boston-harbor')">Encore Boston Harbor</span>
-      <span class="suggestion" onclick="showPage('casino','borgata')">Borgata</span>
-      <span class="suggestion" onclick="showPage('casino','mgm-springfield')">MGM Springfield</span>
-      <span class="suggestion" onclick="showPage('directory')">Browse All →</span>
+      <span class="suggestion" onclick="window.location='/mohegan-sun'">Mohegan Sun</span>
+      <span class="suggestion" onclick="window.location='/foxwoods'">Foxwoods</span>
+      <span class="suggestion" onclick="window.location='/encore-boston-harbor'">Encore Boston Harbor</span>
+      <span class="suggestion" onclick="window.location='/borgata'">Borgata</span>
+      <span class="suggestion" onclick="window.location='/mgm-springfield'">MGM Springfield</span>
+      <span class="suggestion" onclick="window.location='/browse'">Browse All →</span>
     </div>
   </div>
   <div class="stats-bar">
@@ -773,7 +773,7 @@ function updateCasinoGrid(posts) {
     const status = pct > 65 ? ['Busy','pill-busy','green'] : pct > 30 ? ['Moderate','pill-moderate','amber'] : ['Quiet','pill-quiet','gray'];
     const loc = CASINO_LOCATIONS[casino] || '';
     const c = CASINOS.find(x => x.name === casino);
-    return `<div class="casino-card" onclick="showPage('casino','${c?.slug || casino.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}')">
+    return `<div class="casino-card" onclick="window.location='/${c?.slug || casino.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}'">
       <div class="casino-card-top">
         <div><div class="casino-card-name">${casino}</div><div class="casino-card-state">${loc}</div></div>
         <div class="status-pill ${status[1]}"><div class="dot-sm dot-${status[2]}"></div>${status[0]}</div>
@@ -1298,7 +1298,7 @@ function renderDirectory() {
           const score = calcCCScore(c, allPosts, null, null);
           const scoreClass = score.total >= 65 ? 'pill-busy' : score.total >= 35 ? 'pill-moderate' : 'pill-quiet';
           return `
-          <div class="dir-card" onclick="showPage('casino','${c.slug}')">
+          <div class="dir-card" onclick="window.location='/${c.slug}'">
             <div class="dir-card-name">${c.name}</div>
             <div class="dir-card-loc">📍 ${c.location}</div>
             <div class="dir-card-desc">${c.desc.slice(0,90)}...</div>
@@ -1333,7 +1333,7 @@ function renderCasinoPage(casino) {
   // Nearby casinos (same state or close)
   const nearby = CASINOS.filter(c => c.slug !== casino.slug && (c.state === casino.state || Math.abs(c.miles - casino.miles) < 60)).slice(0,4);
   document.getElementById('nearbyCasinos').innerHTML = nearby.map(c => `
-    <div class="sidebar-row" onclick="showPage('casino','${c.slug}')">
+    <div class="sidebar-row" onclick="window.location='/${c.slug}'">
       <div><div class="sr-name">${c.name}</div><div class="sr-sub">${c.location}</div></div>
       <div class="sr-count">${c.miles}mi</div>
     </div>`).join('');
