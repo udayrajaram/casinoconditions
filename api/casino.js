@@ -1,3 +1,40 @@
+const CASINO_COORDS = {
+  'Mohegan Sun': [41.4901, -72.0957],
+  'Foxwoods Resort Casino': [41.4898, -71.9590],
+  'Encore Boston Harbor': [42.3957, -71.0820],
+  'MGM Springfield': [42.1015, -72.5898],
+  'Borgata': [39.3636, -74.4421],
+  'Hard Rock Atlantic City': [39.3611, -74.4229],
+  'Caesars Atlantic City': [39.3541, -74.4382],
+  'Parx Casino': [40.1012, -74.9480],
+  'Wind Creek Bethlehem': [40.6196, -75.3647],
+  'Empire City Casino': [40.9312, -73.8988],
+  "Jake's 58 Casino": [40.7937, -73.1885],
+  'Resorts World NYC': [40.6697, -73.8330],
+  "Bally's Twin River": [41.9337, -71.4668],
+  "Bally's Tiverton": [41.6354, -71.2120],
+  'Plainridge Park Casino': [42.0154, -71.3284],
+  'Resorts World Catskills': [41.6537, -74.6910],
+  "Harrah's Atlantic City": [39.3604, -74.4274],
+  "Bally's Atlantic City": [39.3590, -74.4349],
+  'Resorts Casino Atlantic City': [39.3636, -74.4202],
+  'Golden Nugget Atlantic City': [39.3766, -74.4418],
+  'Live! Casino Philadelphia': [39.9100, -75.1675],
+  'Mount Airy Casino': [41.1248, -75.3571],
+};
+
+const CASINO_PLACE_IDS = {
+  'Mohegan Sun': 'ChIJL7GKBG2-5okRTDFHMnIJiqo',
+  'Foxwoods Resort Casino': 'ChIJP5VwBvm254kRVbH0ZBPANOA',
+  'Encore Boston Harbor': 'ChIJqyYPBYFx44kR9HoQtMEMJu0',
+  'MGM Springfield': 'ChIJoQ8Q_A6s44kRMlb2WKyMzNc',
+  'Borgata': 'ChIJv1KgExFwxokRWzVkNl93N2c',
+  'Hard Rock Atlantic City': 'ChIJdUy6ZXMF44kRyHoEzDNsMjQ',
+  'Caesars Atlantic City': 'ChIJZcTkWHIF44kRzjHoEJYNTtw',
+  'Parx Casino': 'ChIJaQxZJMuGxokRzXzD5HXLK4k',
+  'Wind Creek Bethlehem': 'ChIJV1NTGxOHxokRUMh1cDL9Y6s',
+};
+
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
@@ -398,7 +435,12 @@ async function submitPost() {
 
 async function loadScore() {
   try {
-    const r = await fetch(\`/api/score?casino=\${encodeURIComponent(CASINO_NAME)}\`);
+    const coords = ${JSON.stringify(CASINO_COORDS[casino.name] || null)};
+    const placeId = ${JSON.stringify(CASINO_PLACE_IDS[casino.name] || null)};
+    let url = \`/api/score?casino=\${encodeURIComponent(CASINO_NAME)}\`;
+    if (coords) url += \`&lat=\${coords[0]}&lon=\${coords[1]}\`;
+    if (placeId) url += \`&placeId=\${placeId}\`;
+    const r = await fetch(url);
     const s = await r.json();
     document.getElementById('scoreNum').textContent = s.total;
     document.getElementById('scoreNum').style.color = s.total >= 70 ? '#1a6b3c' : s.total >= 40 ? '#b07d2a' : '#888';
