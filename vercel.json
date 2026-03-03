@@ -1,1 +1,10 @@
-{}
+{
+  "rewrites": [
+    { "source": "/browse", "destination": "/api/browse" },
+    { "source": "/api/weather", "destination": "/api/weather" },
+    { "source": "/api/places", "destination": "/api/places" },
+    { "source": "/api/score", "destination": "/api/score" },
+    { "source": "/api/seed", "destination": "/api/seed" },
+    { "source": "/:slug([a-z0-9-]+)", "destination": "/api/casino?slug=:slug" }
+  ]
+}
