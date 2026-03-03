@@ -173,7 +173,49 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .si-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .si-dot.green{background:#27ae60}.si-dot.amber{background:#f39c12}.si-dot.gray{background:#ccc}
 
-/* CASINO DIRECTORY */
+/* CC SCORE */
+.cc-score-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.cc-score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#4CAF50)}
+.cc-score-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cc-score-title{font-size:13px;font-weight:600}
+.cc-score-updated{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.cc-score-main{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.cc-score-circle{width:72px;height:72px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:3px solid}
+.cc-score-num{font-size:24px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
+.cc-score-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.cc-score-high{border-color:#27ae60;color:#27ae60;background:#edf5f0}
+.cc-score-med{border-color:#f39c12;color:#b07d2a;background:#fdf6e8}
+.cc-score-low{border-color:#aaa;color:#888;background:#f5f5f3}
+.cc-score-breakdown{flex:1}
+.cc-factor{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cc-factor-label{font-size:11px;color:var(--muted);width:80px;flex-shrink:0}
+.cc-factor-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.cc-factor-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .6s ease}
+.cc-factor-val{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);width:24px;text-align:right}
+.cc-score-meta{display:flex;gap:12px;flex-wrap:wrap}
+.cc-meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.cc-meta-item strong{color:var(--text)}
+
+/* WEATHER */
+.weather-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.weather-left{display:flex;align-items:center;gap:10px}
+.weather-icon{font-size:28px}
+.weather-temp{font-size:22px;font-weight:700;font-family:'DM Mono',monospace}
+.weather-desc{font-size:12px;color:var(--muted);margin-top:2px}
+.weather-right{text-align:right}
+.weather-label{font-size:11px;color:var(--muted);margin-bottom:2px}
+.weather-impact{font-size:12px;font-weight:600}
+.weather-impact.positive{color:var(--accent)}
+.weather-impact.neutral{color:var(--muted)}
+.weather-impact.negative{color:#c0392b}
+
+/* GOOGLE RATING */
+.google-rating{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)}
+.google-rating:last-child{border-bottom:none}
+.g-stars{color:#f39c12;font-size:13px}
+.g-rating-num{font-size:13px;font-weight:600}
+.g-review-count{font-size:11px;color:var(--muted)}
+
 .directory-wrap{max-width:1100px;margin:0 auto;padding:36px 24px}
 .state-group{margin-bottom:32px}
 .state-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
@@ -241,7 +283,7 @@ padding:28px 40px;display:flex;align-items:center;justify-content:space-between;
 </nav>
 
 <!-- HERO -->
-<div class="hero">
+<div class="hero" id="heroSection">
   <div class="hero-eyebrow"><div class="live-dot"></div> LIVE FLOOR REPORTS</div>
   <h1>Know before<br>you <span>go.</span></h1>
   <p class="hero-sub">Real-time casino floor reports from players like you. Tables, poker rooms, slots — all in one place.</p>
@@ -274,7 +316,7 @@ padding:28px 40px;display:flex;align-items:center;justify-content:space-between;
 </div>
 
 <!-- TICKER -->
-<div class="ticker-wrap">
+<div class="ticker-wrap" id="tickerSection">
   <div class="ticker-inner" id="tickerInner">
     <span class="ticker-item">🎰 Loading live updates...</span>
   </div>
@@ -478,6 +520,9 @@ padding:28px 40px;display:flex;align-items:center;justify-content:space-between;
         <div class="cta-sub">Post a quick update and help other players decide whether to make the trip.</div>
         <button class="btn-white" onclick="document.getElementById('casinoPostBody').focus();document.getElementById('casinoPostBody').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
       </div>
+      <div id="ccScoreCard"></div>
+      <div id="weatherCard"></div>
+      <div id="googleRatingCard"></div>
       <div class="sidebar-card">
         <div class="sidebar-title">🏨 Nearby Casinos</div>
         <div id="nearbyCasinos"></div>
@@ -759,29 +804,486 @@ function updateTicker(posts) {
   document.getElementById('tickerInner').innerHTML = items + items;
 }
 
-// ROUTING
+const GOOGLE_KEY = 'AIzaSyCTS5o_VN5zDxYzIkGYQzeESbfJuWHZp6Y';
+const WEATHER_KEY = 'd1aa12137db9bc31ac4e9684167d1a73';
+
+// Google Place IDs for each casino
+const CASINO_PLACE_IDS = {
+  'Mohegan Sun': 'ChIJo5BbMqxe5okRaFHKBnr0phI',
+  'Foxwoods Resort Casino': 'ChIJqy7QhNZf5okRn0G-GsDRvuA',
+  'Encore Boston Harbor': 'ChIJ5R3GJgh344kRbftyFWJcBOc',
+  'MGM Springfield': 'ChIJ1YdTBQxJ5okR4JQmHqjfGcg',
+  'Borgata': 'ChIJeQ2SEoJuxokRCiFKbWIvz1k',
+  'Hard Rock Atlantic City': 'ChIJn3RHvnxuxokRDVMaCe3JH1k',
+  'Caesars Atlantic City': 'ChIJQ_FBenZuxokRnWbT8VRFJ6Q',
+  'Parx Casino': 'ChIJx3W-LbkHxokRGl4xTfFqkBY',
+  'Wind Creek Bethlehem': 'ChIJI7RBcZcXxokRGV0YFuGmHlU',
+  'Encore Boston Harbor': 'ChIJ5R3GJgh344kRbftyFWJcBOc',
+};
+
+// CC Score calculation
+function calcCCScore(casino, posts, googleData, weatherData) {
+  const casinoPosts = posts.filter(p => p.casino === casino.name);
+  const now = new Date();
+  const last24h = casinoPosts.filter(p => (now - new Date(p.created_at)) < 86400000);
+  const last7d = casinoPosts.filter(p => (now - new Date(p.created_at)) < 604800000);
+  const helpfulVotes = casinoPosts.reduce((sum, p) => sum + (p.helpful_count || 0), 0);
+
+  // Factor 1: Recent activity (0-30 pts)
+  const activityScore = Math.min(30, (last24h.length * 8) + (last7d.length * 2));
+
+  // Factor 2: Community engagement / helpful votes (0-20 pts)
+  const engagementScore = Math.min(20, helpfulVotes * 3);
+
+  // Factor 3: Google rating (0-25 pts)
+  let googleScore = 12; // default neutral
+  if (googleData?.rating) {
+    googleScore = Math.round(((googleData.rating - 1) / 4) * 25);
+  }
+
+  // Factor 4: Weather impact (0-15 pts)
+  let weatherScore = 10; // default neutral
+  if (weatherData) {
+    const condition = weatherData.weather?.[0]?.main?.toLowerCase() || '';
+    const temp = weatherData.main?.temp;
+    if (['rain','drizzle','snow','thunderstorm'].includes(condition)) weatherScore = 15; // bad weather = more casino visits
+    else if (condition === 'clear' && temp > 65) weatherScore = 5; // nice day = less casino
+    else weatherScore = 10;
+  }
+
+  // Factor 5: Day/time bonus (0-10 pts)
+  const hour = now.getHours();
+  const day = now.getDay();
+  let timeScore = 5;
+  if (day === 0 || day === 6) timeScore += 3; // weekend
+  if (hour >= 19 || hour <= 2) timeScore += 2; // evening/night
+
+  const total = Math.min(100, activityScore + engagementScore + googleScore + weatherScore + timeScore);
+
+  return {
+    total: Math.round(total),
+    factors: {
+      activity: Math.round((activityScore/30)*100),
+      engagement: Math.round((engagementScore/20)*100),
+      google: Math.round((googleScore/25)*100),
+      weather: Math.round((weatherScore/15)*100),
+      timing: Math.round((timeScore/10)*100),
+    },
+    last24h: last24h.length,
+    totalPosts: casinoPosts.length,
+    googleRating: googleData?.rating,
+    googleReviews: googleData?.user_ratings_total,
+    weatherDesc: weatherData?.weather?.[0]?.description,
+    weatherTemp: weatherData?.main?.temp,
+    weatherMain: weatherData?.weather?.[0]?.main,
+  };
+}
+
+function renderCCScore(score) {
+  if (!score) return '';
+  const scoreClass = score.total >= 65 ? 'cc-score-high' : score.total >= 35 ? 'cc-score-med' : 'cc-score-low';
+  const scoreLabel = score.total >= 65 ? 'Hot' : score.total >= 35 ? 'Warm' : 'Cool';
+
+  return `<div class="cc-score-card">
+    <div class="cc-score-header">
+      <div class="cc-score-title">🎯 CC Score</div>
+      <div class="cc-score-updated">Updated now</div>
+    </div>
+    <div class="cc-score-main">
+      <div class="cc-score-circle ${scoreClass}">
+        <div class="cc-score-num">${score.total}</div>
+        <div class="cc-score-label">${scoreLabel}</div>
+      </div>
+      <div class="cc-score-breakdown">
+        <div class="cc-factor">
+          <div class="cc-factor-label">Activity</div>
+          <div class="cc-factor-bar"><div class="cc-factor-fill" style="width:${score.factors.activity}%"></div></div>
+          <div class="cc-factor-val">${score.factors.activity}</div>
+        </div>
+        <div class="cc-factor">
+          <div class="cc-factor-label">Community</div>
+          <div class="cc-factor-bar"><div class="cc-factor-fill" style="width:${score.factors.engagement}%"></div></div>
+          <div class="cc-factor-val">${score.factors.engagement}</div>
+        </div>
+        <div class="cc-factor">
+          <div class="cc-factor-label">Rating</div>
+          <div class="cc-factor-bar"><div class="cc-factor-fill" style="width:${score.factors.google}%"></div></div>
+          <div class="cc-factor-val">${score.factors.google}</div>
+        </div>
+        <div class="cc-factor">
+          <div class="cc-factor-label">Weather</div>
+          <div class="cc-factor-bar"><div class="cc-factor-fill" style="width:${score.factors.weather}%"></div></div>
+          <div class="cc-factor-val">${score.factors.weather}</div>
+        </div>
+        <div class="cc-factor">
+          <div class="cc-factor-label">Timing</div>
+          <div class="cc-factor-bar"><div class="cc-factor-fill" style="width:${score.factors.timing}%"></div></div>
+          <div class="cc-factor-val">${score.factors.timing}</div>
+        </div>
+      </div>
+    </div>
+    <div class="cc-score-meta">
+      <div class="cc-meta-item">📝 <strong>${score.last24h}</strong> posts today</div>
+      ${score.googleRating ? `<div class="cc-meta-item">⭐ <strong>${score.googleRating}</strong> on Google</div>` : ''}
+      ${score.totalPosts ? `<div class="cc-meta-item">📊 <strong>${score.totalPosts}</strong> total posts</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderWeather(score) {
+  if (!score?.weatherTemp) return '';
+  const icons = {Clear:'☀️',Clouds:'☁️',Rain:'🌧️',Drizzle:'🌦️',Snow:'❄️',Thunderstorm:'⛈️',Mist:'🌫️',Fog:'🌫️'};
+  const icon = icons[score.weatherMain] || '🌤️';
+  const temp = Math.round(score.weatherTemp);
+  const isBad = ['Rain','Drizzle','Snow','Thunderstorm'].includes(score.weatherMain);
+  const isNice = score.weatherMain === 'Clear' && temp > 65;
+  const impactText = isBad ? '↑ Good day for the casino' : isNice ? '↓ Nice outside, may be quieter' : '→ Neutral impact';
+  const impactClass = isBad ? 'positive' : isNice ? 'negative' : 'neutral';
+
+  return `<div class="weather-card">
+    <div class="weather-left">
+      <div class="weather-icon">${icon}</div>
+      <div>
+        <div class="weather-temp">${temp}°F</div>
+        <div class="weather-desc">${score.weatherDesc || ''}</div>
+      </div>
+    </div>
+    <div class="weather-right">
+      <div class="weather-label">Casino impact</div>
+      <div class="weather-impact ${impactClass}">${impactText}</div>
+    </div>
+  </div>`;
+}
+
+function renderGoogleRating(score) {
+  if (!score?.googleRating) return '';
+  const stars = '★'.repeat(Math.round(score.googleRating)) + '☆'.repeat(5 - Math.round(score.googleRating));
+  return `<div class="sidebar-card">
+    <div class="sidebar-title">🌐 Google Rating</div>
+    <div class="google-rating">
+      <div class="g-stars">${stars}</div>
+      <div class="g-rating-num">${score.googleRating}</div>
+      <div class="g-review-count">(${score.googleReviews?.toLocaleString() || '—'} reviews)</div>
+    </div>
+  </div>`;
+}
+
+async function fetchGooglePlaces(placeId) {
+  if (!placeId) return null;
+  try {
+    const res = await fetch(`https://places.googleapis.com/v1/places/${placeId}?fields=rating,userRatingCount&key=${GOOGLE_KEY}`);
+    const data = await res.json();
+    return { rating: data.rating, user_ratings_total: data.userRatingCount };
+  } catch(e) { return null; }
+}
+
+async function fetchWeather(lat, lon) {
+  try {
+    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_KEY}&units=imperial`);
+    return await res.json();
+  } catch(e) { return null; }
+}
+
+// Casino coordinates for weather
+const CASINO_COORDS = {
+  'Mohegan Sun': [41.4901, -72.0957],
+  'Foxwoods Resort Casino': [41.4898, -71.9590],
+  'Encore Boston Harbor': [42.3957, -71.0820],
+  'MGM Springfield': [42.1015, -72.5898],
+  'Borgata': [39.3636, -74.4421],
+  'Hard Rock Atlantic City': [39.3611, -74.4229],
+  'Caesars Atlantic City': [39.3541, -74.4382],
+  'Parx Casino': [40.1012, -74.9480],
+  'Wind Creek Bethlehem': [40.6196, -75.3647],
+  'Empire City Casino': [40.9312, -73.8988],
+  "Jake's 58 Casino": [40.7937, -73.1885],
+  'Resorts World NYC': [40.6697, -73.8330],
+  "Bally's Twin River": [41.9337, -71.4668],
+  "Bally's Tiverton": [41.6354, -71.2120],
+  'Plainridge Park Casino': [42.0154, -71.3284],
+  'Resorts World Catskills': [41.6537, -74.6910],
+  "Harrah's Atlantic City": [39.3604, -74.4274],
+  "Bally's Atlantic City": [39.3590, -74.4349],
+  'Resorts Casino Atlantic City': [39.3636, -74.4202],
+  'Golden Nugget Atlantic City': [39.3766, -74.4418],
+  'Live! Casino Philadelphia': [39.9100, -75.1675],
+  'Mount Airy Casino': [41.1248, -75.3571],
+};
+
+async function loadCCScore(casino) {
+  const placeId = CASINO_PLACE_IDS[casino.name];
+  const coords = CASINO_COORDS[casino.name];
+
+  const [googleData, weatherData] = await Promise.all([
+    fetchGooglePlaces(placeId),
+    coords ? fetchWeather(coords[0], coords[1]) : Promise.resolve(null)
+  ]);
+
+  const score = calcCCScore(casino, allPosts, googleData, weatherData);
+
+  document.getElementById('ccScoreCard').innerHTML = renderCCScore(score);
+  document.getElementById('weatherCard').innerHTML = renderWeather(score);
+  document.getElementById('googleRatingCard').innerHTML = renderGoogleRating(score);
+}
+
+  document.getElementById('weatherCard').innerHTML = renderWeather(score);
+  document.getElementById('googleRatingCard').innerHTML = renderGoogleRating(score);
+}
+
+// ============================================================
+// SEEDED POST ENGINE
+// ============================================================
+
+const FEMALE_NAMES = ['Ashley','Brittany','Chelsea','Danielle','Emma','Fiona','Grace','Hannah','Isabella','Jamie','Katie','Lauren','Megan','Nicole','Olivia','Paige','Rachel','Samantha','Taylor','Victoria','Amber','Brooke','Cassie','Diana','Elena','Faith','Gina','Holly','Iris','Jessica','Kayla','Lisa','Maria','Natalie','Priya','Quinn','Robin','Sara','Tina','Vanessa','Whitney','Zoe'];
+const MALE_NAMES = ['Alex','Brian','Carlos','Derek','Eddie','Frank','Greg','Hunter','Jason','Kevin','Luis','Mike','Nathan','Oscar','Pete','Rob','Steve','Tyler','Victor','Will','Zach','Adam','Ben','Cole','Dave','Eric','Felix','Gary','Hank','Ian','Jake','Kyle','Liam','Marco','Nick','Owen','Paul','Ray','Sean','Tom','Vince'];
+
+const CASINO_VENUES = {
+  'Mohegan Sun': {
+    bars: ["Bow & Arrow","Lansdowne Pub","Harvest Moon Bar","Star Bar","Taughannick Falls Bar","Vista Lounge","MJ23 Sports Bar","Tom's Watch Bar","Novelle"],
+    restaurants: ["Ballo","Michael Jordan's Steak House","SolToro","TAO","Hash House A Go Go","Frank Pepe Pizzeria","The Shed","Tuscany","Comix Roadhouse","Beauty & Essex"],
+    slots: ["the high limit room","the main floor","Earth Casino","Sky Casino","the penny slots"],
+    poker: ["the poker room","the main poker room"],
+  },
+  'Foxwoods Resort Casino': {
+    bars: ["Spin Bar","Scorpion Bar","Grand Bar","PLAY Bar","Truth Bar","High Rollers Sports Lounge","Live@Atrium Bar"],
+    restaurants: ["Guy Fieri's Kitchen + Bar","Hell's Kitchen","Momosan","Hard Rock Cafe","Junior's","David Burke Prime","Alta Strada","Cedars Steaks & Oysters","Sugar Factory","Matches Tavern","Wahlburgers"],
+    slots: ["the high limit slots","Great Cedar Casino","Grand Pequot Casino","the main floor","the penny slots"],
+    poker: ["the poker room","the main poker room","the high stakes room"],
+  },
+  'Encore Boston Harbor': {
+    bars: ["Overlook Bar","Lobby Bar","Harbor Bar","On Deck Sports Bar"],
+    restaurants: ["Rare Steakhouse","Sinatra","Fratelli","Mystique","State Road Restaurant & Tavern"],
+    slots: ["the main floor","the high limit room","the slots lounge"],
+    poker: ["the poker room"],
+  },
+  'MGM Springfield': {
+    bars: ["TAP Sports Bar","Voltaire","Roar"],
+    restaurants: ["Chandler Steakhouse","Wahlburgers","The Rye","Mardi Gras"],
+    slots: ["the main floor","the high limit slots","the gaming floor"],
+    poker: ["the poker room"],
+  },
+  'Borgata': {
+    bars: ["The Borgata Bar","Gypsy Bar","Izakaya"],
+    restaurants: ["Bobby Flay Steak","Wolfgang Puck American Grille","Old Homestead Steakhouse","Fornelletto"],
+    slots: ["the high limit room","the main floor","the slots lounge"],
+    poker: ["the poker room","the World Poker Tour room"],
+  },
+  'default': {
+    bars: ["the bar","the sports bar","the lounge","the main bar"],
+    restaurants: ["the steakhouse","the buffet","the main restaurant","the cafe"],
+    slots: ["the slots floor","the high limit room","the main floor"],
+    poker: ["the poker room"],
+  }
+};
+
+function getVenues(casinoName) { return CASINO_VENUES[casinoName] || CASINO_VENUES['default']; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function maybe(chance) { return Math.random() < chance; }
+
+function randomAuthor() {
+  const all = [...FEMALE_NAMES, ...MALE_NAMES];
+  if (maybe(0.3)) return { name: 'Anonymous', isAnon: true };
+  return { name: pick(all), isAnon: false };
+}
+
+function getWeatherPosts(weatherMain, temp) {
+  if (!weatherMain) return [];
+  const cold = temp < 35, chilly = temp >= 35 && temp < 50, hot = temp > 82;
+  const rainy = ['Rain','Drizzle'].includes(weatherMain);
+  const snowy = weatherMain === 'Snow';
+  const stormy = weatherMain === 'Thunderstorm';
+  const posts = [];
+  if (cold || snowy) posts.push(
+    `it is FREEZING out there lol, glad i'm in here`,
+    `literally could not feel my face walking from the parking lot 😂`,
+    `cold asf outside but nice and warm in here`,
+    `perfect night to stay inside honestly`,
+    `my car said ${Math.round(temp)}° when i pulled in... yeah i'm not leaving anytime soon`,
+  );
+  if (rainy || stormy) posts.push(
+    `nasty out there tonight, perfect excuse to be here`,
+    `it's pouring out, good night to be inside`,
+    `came in soaking wet but worth it lol`,
+    `rain brought me in, slots might keep me here 😅`,
+    `couldn't think of a better night to be inside tbh`,
+  );
+  if (chilly) posts.push(`little chilly out tonight, nice in here though`, `needed somewhere warm, ended up here 😄`);
+  if (hot) posts.push(
+    `AC in here is everything on a night like this`,
+    `too hot to be outside anyway so here i am`,
+    `${Math.round(temp)}° outside... yeah the casino it is`,
+  );
+  return posts;
+}
+
+function buildPostPool(casino, weatherMain, temp) {
+  const v = getVenues(casino.name);
+  const pool = [
+    // GENERAL VIBES
+    { b: `good energy in here tonight`, c: '📢 General' },
+    { b: `love this place honestly`, c: '📢 General' },
+    { b: `been here since like 7, still going 😅`, c: '📢 General' },
+    { b: `my friend dragged me here and now i don't wanna leave lol`, c: '📢 General' },
+    { b: `date night turned into a whole thing 😂`, c: '📢 General' },
+    { b: `just needed to get out of the house, good call`, c: '📢 General' },
+    { b: `pretty decent crowd tonight`, c: '📢 General' },
+    { b: `vibes are immaculate rn ngl`, c: '📢 General' },
+    { b: `first time back in a while, forgot how fun this is`, c: '📢 General' },
+    { b: `the energy in here is different on weekends fr`, c: '📢 General' },
+    { b: `came with coworkers, turned into a whole night out 😂`, c: '📢 General' },
+    { b: `celebrating tonight in the best way 🎉`, c: '📢 General' },
+    { b: `service has been really solid all night`, c: '📢 General' },
+    { b: `this place never disappoints tbh`, c: '📢 General' },
+    { b: `parking was smooth tonight, no wait at all`, c: '📢 General' },
+    { b: `not too crowded, easy to move around tonight`, c: '📢 General' },
+    { b: `super busy tonight, great atmosphere`, c: '📢 General' },
+    { b: `floors are packed rn`, c: '📢 General' },
+    // FOOD & DRINKS
+    { b: `drinks at ${pick(v.bars)} are hitting tonight 🍹`, c: '📢 General' },
+    { b: `just ate at ${pick(v.restaurants)}, honestly really good`, c: '📢 General' },
+    { b: `bartender at ${pick(v.bars)} is amazing, best service all night`, c: '📢 General' },
+    { b: `${pick(v.restaurants)} did not disappoint, would recommend`, c: '📢 General' },
+    { b: `cocktails at ${pick(v.bars)} are dangerous rn 😂`, c: '📢 General' },
+    { b: `stopped at ${pick(v.restaurants)} before hitting the floor, solid move`, c: '📢 General' },
+    { b: `food at ${pick(v.restaurants)} was way better than expected`, c: '📢 General' },
+    { b: `service at ${pick(v.bars)} was on point tonight`, c: '📢 General' },
+    { b: `happy hour at ${pick(v.bars)} was a great call`, c: '📢 General' },
+    { b: `${pick(v.restaurants)} is always a W`, c: '📢 General' },
+    { b: `drinks are flowing and the vibes are good 🍸`, c: '📢 General' },
+    // SLOTS
+    { b: `slots have been kind to me tonight 🎰`, c: '🎰 Slots' },
+    { b: `up a little on slots, calling it a win`, c: '🎰 Slots' },
+    { b: `making money at slots rn, don't wanna jinx it 🤫`, c: '🎰 Slots' },
+    { b: `hit a nice little bonus on ${pick(v.slots)}, great night so far`, c: '🎰 Slots' },
+    { b: `${pick(v.slots)} is popping tonight`, c: '🎰 Slots' },
+    { b: `found a hot machine on ${pick(v.slots)} 🔥`, c: '🎰 Slots' },
+    { b: `down a little but had a blast on the slots tbh`, c: '🎰 Slots' },
+    { b: `my friend just hit a nice bonus on ${pick(v.slots)} 🎉`, c: '🎰 Slots' },
+    { b: `been on the penny slots for an hour, up a bit lol`, c: '🎰 Slots' },
+    { b: `high limit room is buzzing tonight`, c: '🎰 Slots' },
+    { b: `slots feel loose tonight honestly`, c: '🎰 Slots' },
+    // TABLE GAMES
+    { b: `blackjack tables have been good to me tonight 🃏`, c: '🎲 Table Games' },
+    { b: `dealer's been busting a lot, good table energy`, c: '🎲 Table Games' },
+    { b: `craps table is LOUD tonight lol, always a good sign`, c: '🎲 Table Games' },
+    { b: `roulette hitting on my numbers tonight 🤑`, c: '🎲 Table Games' },
+    { b: `table minimums are reasonable tonight`, c: '🎲 Table Games' },
+    { b: `good run at blackjack, up a couple hundred 🙌`, c: '🎲 Table Games' },
+    { b: `tables are packed but moving fast`, c: '🎲 Table Games' },
+    { b: `found a $10 blackjack table 👍`, c: '🎲 Table Games' },
+    { b: `dealer been ice cold tonight, our table is eating 😂`, c: '🎲 Table Games' },
+    { b: `baccarat crowd is lively rn`, c: '🎲 Table Games' },
+    // POKER
+    { b: `poker room is busy tonight, good action 🃏`, c: '🃏 Poker Room' },
+    { b: `should i play 1/2 NL tonight or just stick to slots? lol`, c: '🃏 Poker Room' },
+    { b: `anyone know if the 2/5 game is running tonight?`, c: '🃏 Poker Room' },
+    { b: `1/2 NL is super soft tonight, lots of recreational players 🐟`, c: '🃏 Poker Room' },
+    { b: `just sat down at 1/2, table looks fun`, c: '🃏 Poker Room' },
+    { b: `should i jump on the 1/2 or wait for a 2/5 seat?`, c: '🃏 Poker Room' },
+    { b: `poker room has great energy tonight`, c: '🃏 Poker Room' },
+    { b: `wait for 1/2 is pretty short right now fyi`, c: '🃏 Poker Room' },
+    { b: `tournament just started, crowd is fired up 🔥`, c: '🃏 Poker Room' },
+    { b: `good mix of players tonight in ${pick(v.poker)}`, c: '🃏 Poker Room' },
+    { b: `been grinding 1/2 for a few hours, up a buy in 🙌`, c: '🃏 Poker Room' },
+    { b: `is the 2/5 worth it tonight or is 1/2 better action?`, c: '🃏 Poker Room' },
+    { b: `poker room staff super friendly tonight`, c: '🃏 Poker Room' },
+    { b: `just doubled up at 1/2, great table 🃏`, c: '🃏 Poker Room' },
+  ];
+
+  // Add weather posts
+  getWeatherPosts(weatherMain, temp).forEach(w => pool.push({ b: w, c: '📢 General' }));
+  return pool;
+}
+
+function randomRecentTime() {
+  const now = new Date();
+  const daysAgo = Math.floor(Math.random() * 3);
+  const date = new Date(now);
+  date.setDate(date.getDate() - daysAgo);
+  const hour = 16 + Math.floor(Math.random() * 10);
+  date.setHours(hour % 24, Math.floor(Math.random() * 60), 0, 0);
+  if (hour >= 24) date.setDate(date.getDate() + 1);
+  return date.toISOString();
+}
+
+async function seedCasinoIfNeeded(casino, weatherMain, temp) {
+  const { data: realPosts } = await db.from('posts').select('id').eq('casino', casino.name).eq('is_seeded', false);
+  if ((realPosts?.length || 0) >= 5) return;
+
+  const { data: seededPosts } = await db.from('posts').select('body').eq('casino', casino.name).eq('is_seeded', true);
+  const seededCount = seededPosts?.length || 0;
+  const target = Math.floor(Math.random() * 6) + 5;
+  if (seededCount >= target) return;
+
+  const existingBodies = new Set((seededPosts || []).map(p => p.body));
+  const pool = buildPostPool(casino, weatherMain, temp);
+  const toInsert = [];
+  let attempts = 0;
+
+  while (toInsert.length < (target - seededCount) && attempts < 80) {
+    attempts++;
+    const item = pick(pool);
+    if (!existingBodies.has(item.b)) {
+      existingBodies.add(item.b);
+      const { name, isAnon } = randomAuthor();
+      toInsert.push({
+        body: item.b, casino: casino.name, category: item.c,
+        author: name, is_anonymous: isAnon,
+        helpful_count: Math.floor(Math.random() * 7),
+        is_seeded: true,
+        created_at: randomRecentTime(),
+      });
+    }
+  }
+  if (toInsert.length > 0) await db.from('posts').insert(toInsert);
+}
+
+async function seedAllCasinos() {
+  let weatherMain = null, temp = 60;
+  try {
+    const w = await fetchWeather(41.49, -72.09);
+    if (w?.weather) { weatherMain = w.weather[0].main; temp = w.main.temp; }
+  } catch(e) {}
+
+  for (const casino of CASINOS) {
+    const coords = CASINO_COORDS[casino.name];
+    let lw = weatherMain, lt = temp;
+    if (coords) {
+      try {
+        const w = await fetchWeather(coords[0], coords[1]);
+        if (w?.weather) { lw = w.weather[0].main; lt = w.main.temp; }
+      } catch(e) {}
+    }
+    await seedCasinoIfNeeded(casino, lw, lt);
+    await new Promise(r => setTimeout(r, 150));
+  }
+}
+
 let currentPage = 'home';
 let currentCasino = null;
 let casinoPageCategory = '';
 let casinoIsAnon = true;
 
 function showPage(page, casinoSlug) {
+  // Hide everything
+  document.getElementById('heroSection').style.display = 'none';
+  document.getElementById('tickerSection').style.display = 'none';
+  document.getElementById('homeMainWrap').style.display = 'none';
   document.getElementById('directoryPage').style.display = 'none';
   document.getElementById('casinoPage').style.display = 'none';
-  const homeEls = document.querySelectorAll('.hero, .ticker-wrap, .main-wrap');
 
   if (page === 'home') {
-    homeEls.forEach(el => el.style.display = '');
+    document.getElementById('heroSection').style.display = '';
+    document.getElementById('tickerSection').style.display = '';
+    document.getElementById('homeMainWrap').style.display = '';
     document.getElementById('pageTitle').textContent = 'CasinoConditions — Know Before You Go';
     window.scrollTo(0,0);
   } else if (page === 'directory') {
-    homeEls.forEach(el => el.style.display = 'none');
     document.getElementById('directoryPage').style.display = 'block';
     document.getElementById('pageTitle').textContent = 'Browse Casinos — CasinoConditions';
     renderDirectory();
     window.scrollTo(0,0);
   } else if (page === 'casino' && casinoSlug) {
-    homeEls.forEach(el => el.style.display = 'none');
     document.getElementById('casinoPage').style.display = 'block';
     currentCasino = CASINOS.find(c => c.slug === casinoSlug);
     if (currentCasino) renderCasinoPage(currentCasino);
@@ -813,16 +1315,19 @@ function renderDirectory() {
     return `<div class="state-group">
       <div class="state-label">${stateNames[state]}</div>
       <div class="dir-grid">
-        ${casinos.map(c => `
+        ${casinos.map(c => {
+          const score = calcCCScore(c, allPosts, null, null);
+          const scoreClass = score.total >= 65 ? 'pill-busy' : score.total >= 35 ? 'pill-moderate' : 'pill-quiet';
+          return `
           <div class="dir-card" onclick="showPage('casino','${c.slug}')">
             <div class="dir-card-name">${c.name}</div>
             <div class="dir-card-loc">📍 ${c.location}</div>
             <div class="dir-card-desc">${c.desc.slice(0,90)}...</div>
             <div class="dir-card-footer">
               <span class="dir-card-dist">${c.miles} mi away</span>
-              <span class="dir-card-posts">${counts[c.name] || 0} posts</span>
+              <span class="status-pill ${scoreClass}" style="font-size:10px">CC ${score.total}</span>
             </div>
-          </div>`).join('')}
+          </div>`}).join('')}
       </div>
     </div>`;
   }).join('');
@@ -853,6 +1358,10 @@ function renderCasinoPage(casino) {
       <div><div class="sr-name">${c.name}</div><div class="sr-sub">${c.location}</div></div>
       <div class="sr-count">${c.miles}mi</div>
     </div>`).join('');
+
+  // Load CC Score (async)
+  document.getElementById('ccScoreCard').innerHTML = `<div class="sidebar-card"><div class="sidebar-title">🎯 CC Score</div><div style="color:var(--muted);font-size:13px">Calculating...</div></div>`;
+  loadCCScore(casino);
 }
 
 function filterCasinoPage(cat) {
@@ -903,7 +1412,9 @@ window.addEventListener('hashchange', handleHash);
 handleHash();
 
 // Init
-loadPosts();
+loadPosts().then(() => {
+  seedAllCasinos();
+});
 
 // Auto-refresh every 30s
 setInterval(loadPosts, 30000);
