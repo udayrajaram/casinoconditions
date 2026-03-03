@@ -294,7 +294,13 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 .live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:20px;font-family:'DM Mono',monospace}
 .live-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;flex-shrink:0}
-@media(max-width:768px){.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}}
+@media(max-width:768px){.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}footer{flex-direction:column;gap:12px;text-align:center;padding:20px}}
+footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);background:var(--surface);margin-top:20px}
+.footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.footer-links{display:flex;gap:20px}
+.footer-link{font-size:12px;color:var(--muted);text-decoration:none}
+.footer-link:hover{color:var(--text)}
+.footer-copy{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -537,6 +543,15 @@ if (localStorage.getItem('theme') === 'dark') {
   document.getElementById('darkToggle').textContent = '☀️';
 }
 </script>
+<footer>
+  <div class="footer-logo"><div class="logo-dot" style="animation:none;opacity:.7"></div>Casino<span style="color:var(--accent)">Conditions</span></div>
+  <div class="footer-links">
+    <a class="footer-link" href="/about">About</a>
+    <a class="footer-link" href="/terms">Terms</a>
+    <a class="footer-link" href="/privacy">Privacy</a>
+  </div>
+  <div class="footer-copy">© 2026 CasinoConditions</div>
+</footer>
 </body>
 </html>`;
 
