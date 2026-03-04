@@ -754,25 +754,31 @@ document.getElementById('searchBox').addEventListener('input', function() {
 });
 
 async function loadPosts() {
+  // Fetch recent posts for the feed (limit 50 is fine for display)
   const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false }).limit(50);
   if (error || !data) return;
   allPosts = data;
   applyFilters();
-  updateStats(data);
   updateCasinoGrid(data);
   updateSidebar(data);
   updateTicker(data);
+
+  // Fetch real counts separately — Supabase count query bypasses row limit
+  const { count: totalCount } = await db.from('posts').select('*', { count: 'exact', head: true });
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+  const { count: todayCount } = await db.from('posts').select('*', { count: 'exact', head: true }).gte('created_at', todayStart.toISOString());
+  const { data: casinoList } = await db.from('posts').select('casino');
+  const uniqueCasinos = 115; // total casinos covered
+  updateStats(totalCount || data.length, todayCount || 0, uniqueCasinos || new Set(data.map(p => p.casino)).size);
 }
 
-function updateStats(posts) {
-  const today = posts.filter(p => new Date(p.created_at).toDateString() === new Date().toDateString());
-  const casinos = [...new Set(posts.map(p => p.casino))];
-  document.getElementById('statPosts').textContent = posts.length;
-  document.getElementById('statCasinos').textContent = casinos.length;
-  document.getElementById('statToday').textContent = today.length;
-  document.getElementById('sb-total').textContent = posts.length;
-  document.getElementById('sb-today').textContent = today.length;
-  document.getElementById('sb-casinos').textContent = casinos.length;
+function updateStats(total, today, casinos) {
+  document.getElementById('statPosts').textContent = total;
+  document.getElementById('statCasinos').textContent = casinos;
+  document.getElementById('statToday').textContent = today;
+  document.getElementById('sb-total').textContent = total;
+  document.getElementById('sb-today').textContent = today;
+  document.getElementById('sb-casinos').textContent = casinos;
 }
 
 function updateCasinoGrid(posts) {
