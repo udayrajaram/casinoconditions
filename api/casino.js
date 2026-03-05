@@ -961,6 +961,11 @@ async function loadProfile() {
   try {
     const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\`);
     userProfile = await r.json();
+    // If we just came back from magic link callback, use sessionStorage email
+    // in case DB write hasn't propagated yet
+    if (sessionStorage.getItem('cc_signed_in') && !userProfile.email) {
+      userProfile.email = sessionStorage.getItem('cc_email') || '(linked)';
+    }
     renderProfile();
   } catch(e) {}
 }
