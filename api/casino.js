@@ -515,6 +515,8 @@ body.dark .post-card,body.dark .card{background:#161614}
 body{transition:background .2s,color .2s}
 .dark-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;transition:all .15s}
 .dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-outline:hover{border-color:var(--text)}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
@@ -585,7 +587,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 .live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:20px;font-family:'DM Mono',monospace}
 .live-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;flex-shrink:0}
-@media(max-width:768px){.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.mobile-cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}footer{flex-direction:column;gap:12px;text-align:center;padding:20px}}
+@media(max-width:768px){.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.mobile-cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}.nav-post-btn{display:none}footer{flex-direction:column;gap:12px;text-align:center;padding:20px}#casinoSignInBtn{display:inline-flex !important;font-size:12px;padding:6px 12px}}
 @media(min-width:769px){.mobile-cards{display:none}}
 footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);background:var(--surface);margin-top:20px}
 .footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
@@ -671,7 +673,8 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
   </div>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
-  <button class="btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
+  <button class="btn-outline" id="casinoSignInBtn" onclick="showCasinoSignIn()" style="font-size:13px;padding:7px 14px">Sign in</button>
+  <button class="btn nav-post-btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
 </nav>
 
 <div class="casino-hero">
@@ -973,6 +976,7 @@ async function loadProfile() {
       userProfile.email = sessionStorage.getItem('cc_email') || '(linked)';
     }
     renderProfile();
+    updateSignInBtn();
   } catch(e) {}
 }
 
@@ -1354,6 +1358,39 @@ async function loadLeaderboard() {
       </div>
     \`).join('');
   } catch(e) {}
+}
+
+// ── CASINO SIGN IN (mobile) ────────────────────────────────
+function showCasinoSignIn() {
+  // On desktop just scroll to profile card
+  if (window.innerWidth > 768) {
+    document.getElementById('profileCard')?.scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  // On mobile scroll to compose which has the sign in prompts
+  // Or if signed in, show a quick status toast
+  if (userProfile?.email) {
+    const rank = userProfile.rank || 'Rail Bird';
+    const pts = userProfile.points || 0;
+    const rankEmojis = {'Rail Bird':'🎰','Fish':'🐟','Regular':'♠️','Floor Regular':'🎲','High Roller':'💰','Whale':'👑'};
+    showToast(`${rankEmojis[rank] || '🎰'} ${userProfile.username || rank} · ${pts} pts`);
+    // Update button to show name
+    const btn = document.getElementById('casinoSignInBtn');
+    if (btn) btn.textContent = '👤 ' + (userProfile.username || rank);
+  } else {
+    // Scroll to compose card where sign in prompt lives
+    document.getElementById('composeCard')?.scrollIntoView({behavior:'smooth'});
+    showToast('Sign in via the profile section below 👇');
+  }
+}
+
+// Update sign in button once profile loads
+function updateSignInBtn() {
+  const btn = document.getElementById('casinoSignInBtn');
+  if (!btn) return;
+  if (userProfile?.email) {
+    btn.textContent = '👤 ' + (userProfile.username || userProfile.email.split('@')[0]);
+  }
 }
 
 // ── INIT ───────────────────────────────────────────────────
