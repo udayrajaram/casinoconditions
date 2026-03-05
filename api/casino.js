@@ -497,6 +497,8 @@ export default async function handler(req, res) {
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="${pageTitle}">
 <meta name="twitter:description" content="${pageDesc}">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="canonical" href="https://casinoconditions.com/${slug}">
 <script type="application/ld+json">${jsonLd}</script>
 <script type="application/ld+json">${faqSchema}</script>
@@ -801,15 +803,18 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
         <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:center" id="rankProgress">0 pts to next rank</div>
         <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center" id="streakDisplay"></div>
         <div id="signInPrompt" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Sign in to appear on the leaderboard</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">🏆 Sign in to appear on the leaderboard</div>
           <input id="magicEmail" class="compose-select" type="email" placeholder="your@email.com" style="width:100%;margin-bottom:8px">
           <button class="btn" style="width:100%;font-size:12px" onclick="sendMagicLink()">✉️ Send Magic Link</button>
           <div id="magicStatus" style="font-size:11px;color:var(--accent);margin-top:6px;display:none"></div>
         </div>
         <div id="signedInBar" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-          <div style="font-size:12px;color:var(--accent);font-weight:600" id="signedInEmail"></div>
-          <input id="usernameInput" class="compose-select" placeholder="Set leaderboard name" style="width:100%;margin-top:8px">
-          <button class="btn" style="width:100%;font-size:12px;margin-top:6px" onclick="saveUsername()">Save name</button>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">LEADERBOARD NAME</div>
+          <div style="display:flex;gap:6px">
+            <input id="usernameInput" class="compose-select" placeholder="e.g. PokerGrinder88" style="flex:1;min-width:0">
+            <button class="btn" style="font-size:12px;padding:6px 12px;flex-shrink:0" onclick="saveUsername()">Save</button>
+          </div>
+          <div style="font-size:11px;color:var(--accent);margin-top:6px" id="signedInEmail"></div>
         </div>
       </div>
     </div>
@@ -980,7 +985,7 @@ function renderProfile() {
   if (userProfile.email) {
     document.getElementById('signInPrompt').style.display = 'none';
     document.getElementById('signedInBar').style.display = 'block';
-    document.getElementById('signedInEmail').textContent = '✅ ' + userProfile.email;
+    document.getElementById('signedInEmail').textContent = '✅ Signed in as ' + userProfile.email;
     if (userProfile.username) {
       document.getElementById('usernameInput').value = userProfile.username;
     }
