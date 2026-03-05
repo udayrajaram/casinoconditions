@@ -705,8 +705,12 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
     <a class="nav-link" href="/bookmarks">⭐ Saved</a>
   </div>
-  <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
-  <button class="btn-outline" id="casinoSignInBtn" onclick="showCasinoSignIn()" style="font-size:13px;padding:7px 14px">Sign in</button>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button class="btn-outline" id="casinoSignInBtn" onclick="showCasinoSignIn()" style="font-size:13px;padding:7px 14px">Sign in</button>
+    <button class="btn nav-post-btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
+  </div>
+</nav>
 <script>
 (function(){
   const u = localStorage.getItem('cc_username') || '';
@@ -717,8 +721,6 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   }
 })();
 </script>
-  <button class="btn nav-post-btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
-</nav>
 
 <div class="casino-hero">
   <div class="casino-hero-inner">
@@ -1036,9 +1038,18 @@ async function loadProfile() {
     const emailParam = email ? '&email=' + encodeURIComponent(email) : '';
     const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\` + emailParam);
     userProfile = await r.json();
+    // If we got Rail Bird (0 pts) but are signed in, try fetching by email directly
+    const email = localStorage.getItem('cc_email') || '';
+    if (email && localStorage.getItem('cc_signed_in') && (!userProfile.points || userProfile.points === 0) && !userProfile.email) {
+      try {
+        const r2 = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}&email=\${encodeURIComponent(email)}\`);
+        const p2 = await r2.json();
+        if (p2.points > 0 || p2.email) userProfile = p2;
+      } catch(e2) {}
+    }
     // Always merge localStorage email/username in case DB hasn't propagated
     if (localStorage.getItem('cc_signed_in')) {
-      if (!userProfile.email) userProfile.email = localStorage.getItem('cc_email') || '';
+      if (!userProfile.email) userProfile.email = email;
       if (!userProfile.username) userProfile.username = localStorage.getItem('cc_username') || '';
     }
     renderProfile();
