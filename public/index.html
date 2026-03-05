@@ -310,6 +310,37 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 </head>
 <body>
 
+<!-- SIGN IN MODAL -->
+<div id="signInModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;padding:32px 28px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:700;color:#1a1a18">🎰 Sign in</div>
+      <button onclick="hideSignInModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888;padding:0">×</button>
+    </div>
+    <div id="signInModalBody">
+      <p style="font-size:14px;color:#888;margin:0 0 16px;line-height:1.6">Enter your email and we'll send you a magic link — no password needed.</p>
+      <input id="modalEmail" type="email" placeholder="your@email.com" style="width:100%;padding:10px 14px;border:1px solid #e8e8e4;border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:12px;box-sizing:border-box">
+      <button onclick="sendModalMagicLink()" style="width:100%;background:#1a6b3c;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">✉️ Send Magic Link</button>
+      <div id="modalStatus" style="font-size:12px;margin-top:10px;text-align:center;display:none"></div>
+    </div>
+    <div id="signedInModalBody" style="display:none">
+      <div style="text-align:center;padding:8px 0">
+        <div style="font-size:32px;margin-bottom:8px" id="modalRankEmoji">🎰</div>
+        <div style="font-weight:700;font-size:16px" id="modalRankName">Rail Bird</div>
+        <div style="color:#888;font-size:13px;margin-top:4px"><span id="modalPoints">0</span> pts</div>
+        <div style="margin-top:16px;font-size:13px;color:#1a6b3c;font-weight:600" id="modalEmail2"></div>
+        <div style="margin-top:14px">
+          <div style="font-size:11px;color:#888;text-align:left;margin-bottom:6px;font-weight:600">LEADERBOARD NAME</div>
+          <div style="display:flex;gap:8px">
+            <input id="modalUsername" placeholder="e.g. PokerGod83" style="flex:1;padding:8px 12px;border:1px solid #e8e8e4;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif">
+            <button onclick="saveModalUsername()" style="background:#1a6b3c;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <nav>
   <a class="logo" href="#">
     <div class="logo-dot"></div>
@@ -323,7 +354,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
-    <button class="btn-outline" style="display:none" id="signInBtn">Sign in</button>
+    <button class="btn-outline" id="signInBtn" onclick="showSignInModal()">Sign in</button>
     <button class="btn" onclick="scrollToCompose()">+ Post Update</button>
   </div>
 </nav>
@@ -1480,6 +1511,104 @@ async function loadLeaderboard() {
 }
 
 // Dark mode
+// ── SIGN IN MODAL ──────────────────────────────────────────
+function showSignInModal() {
+  const modal = document.getElementById('signInModal');
+  modal.style.display = 'flex';
+  // Check if already signed in
+  const cookieId = document.cookie.split('; ').find(r => r.startsWith('cc_uid='))?.split('=')[1];
+  if (cookieId) {
+    fetch(`/api/profile?cookie_id=${encodeURIComponent(cookieId)}`)
+      .then(r => r.json())
+      .then(profile => {
+        if (profile.email) {
+          showSignedInModal(profile);
+        }
+      }).catch(() => {});
+  }
+}
+
+function hideSignInModal() {
+  document.getElementById('signInModal').style.display = 'none';
+}
+
+function showSignedInModal(profile) {
+  document.getElementById('signInModalBody').style.display = 'none';
+  document.getElementById('signedInModalBody').style.display = 'block';
+  const rankEmojis = {'Rail Bird':'🎰','Fish':'🐟','Regular':'♠️','Floor Regular':'🎲','High Roller':'💰','Whale':'👑'};
+  document.getElementById('modalRankEmoji').textContent = rankEmojis[profile.rank] || '🎰';
+  document.getElementById('modalRankName').textContent = profile.rank || 'Rail Bird';
+  document.getElementById('modalPoints').textContent = (profile.points || 0).toLocaleString();
+  document.getElementById('modalEmail2').textContent = '✅ ' + profile.email;
+  if (profile.username) document.getElementById('modalUsername').value = profile.username;
+  // Update nav button
+  document.getElementById('signInBtn').textContent = '👤 ' + (profile.username || profile.email.split('@')[0]);
+}
+
+async function sendModalMagicLink() {
+  const email = document.getElementById('modalEmail').value.trim();
+  if (!email || !email.includes('@')) return;
+  const cookieId = document.cookie.split('; ').find(r => r.startsWith('cc_uid='))?.split('=')[1]
+    || 'cc_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const status = document.getElementById('modalStatus');
+  status.style.display = 'block';
+  status.style.color = '#888';
+  status.textContent = 'Sending...';
+  try {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'magic_link', email, cookie_id: cookieId })
+    });
+    const data = await r.json();
+    if (data.success) {
+      status.style.color = '#1a6b3c';
+      status.textContent = '✅ Check your email for the magic link!';
+    } else {
+      status.style.color = '#e74c3c';
+      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+    }
+  } catch(e) {
+    status.style.color = '#e74c3c';
+    status.textContent = '❌ Connection error, try again';
+  }
+}
+
+async function saveModalUsername() {
+  const username = document.getElementById('modalUsername').value.trim();
+  if (!username) return;
+  const cookieId = document.cookie.split('; ').find(r => r.startsWith('cc_uid='))?.split('=')[1];
+  if (!cookieId) return;
+  try {
+    await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'set_username', cookie_id: cookieId, username })
+    });
+    document.getElementById('modalEmail2').textContent = '✅ Saved as: ' + username;
+    document.getElementById('signInBtn').textContent = '👤 ' + username;
+  } catch(e) {}
+}
+
+// Close modal on backdrop click
+document.getElementById('signInModal').addEventListener('click', function(e) {
+  if (e.target === this) hideSignInModal();
+});
+
+// Check sign-in state on load and update nav button
+(function() {
+  const cookieId = document.cookie.split('; ').find(r => r.startsWith('cc_uid='))?.split('=')[1];
+  if (!cookieId) return;
+  fetch(`/api/profile?cookie_id=${encodeURIComponent(cookieId)}`)
+    .then(r => r.json())
+    .then(profile => {
+      if (profile.email) {
+        const btn = document.getElementById('signInBtn');
+        btn.textContent = '👤 ' + (profile.username || profile.email.split('@')[0]);
+      }
+    }).catch(() => {});
+})();
+
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark');
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
