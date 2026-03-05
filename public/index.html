@@ -305,6 +305,8 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   .post-casino-tag{max-width:120px}
   .post-meta{min-width:0;flex:1}
   .post-author{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px}
+  #signInBtn{display:inline-flex !important}
+  .nav-post-btn{display:none}
 }
 </style>
 </head>
@@ -355,7 +357,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   <div style="display:flex;gap:10px;align-items:center">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <button class="btn-outline" id="signInBtn" onclick="showSignInModal()">Sign in</button>
-    <button class="btn" onclick="scrollToCompose()">+ Post Update</button>
+    <button class="btn nav-post-btn" onclick="scrollToCompose()">+ Post Update</button>
   </div>
 </nav>
 
