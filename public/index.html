@@ -358,6 +358,16 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   <div style="display:flex;gap:10px;align-items:center">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <button class="btn-outline" id="signInBtn" onclick="showSignInModal()">Sign in</button>
+    <script>
+    (function(){
+      const u = localStorage.getItem('cc_username') || '';
+      const e = localStorage.getItem('cc_email') || '';
+      if (localStorage.getItem('cc_signed_in') && (u || e)) {
+        const b = document.getElementById('signInBtn');
+        if (b) b.textContent = '\u{1F464} ' + (u || e.split('@')[0]);
+      }
+    })();
+    </script>
     <button class="btn nav-post-btn" onclick="scrollToCompose()">+ Post Update</button>
   </div>
 </nav>
