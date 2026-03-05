@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/digest?secret=REPLACE_WITH_YOUR_SECRET",
+      "schedule": "0 10 * * 1"
+    }
+  ],
   "redirects": [
     { "source": "/scarlet-pearl-casino-resort", "destination": "/scarlet-pearl-casino", "permanent": true }
   ],
