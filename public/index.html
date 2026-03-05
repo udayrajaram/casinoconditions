@@ -55,7 +55,7 @@ body{transition:background .2s,color .2s}
 .dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
 
-nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:8px}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
 .logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
@@ -305,8 +305,9 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   .post-casino-tag{max-width:120px}
   .post-meta{min-width:0;flex:1}
   .post-author{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px}
-  #signInBtn{display:inline-flex !important}
+  #signInBtn{display:inline-flex !important;font-size:12px;padding:6px 12px}
   .nav-post-btn{display:none}
+  nav{padding:0 16px}
 }
 </style>
 </head>
