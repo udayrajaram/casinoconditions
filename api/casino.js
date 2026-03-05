@@ -1373,7 +1373,7 @@ function showCasinoSignIn() {
     const rank = userProfile.rank || 'Rail Bird';
     const pts = userProfile.points || 0;
     const rankEmojis = {'Rail Bird':'🎰','Fish':'🐟','Regular':'♠️','Floor Regular':'🎲','High Roller':'💰','Whale':'👑'};
-    showToast(`${rankEmojis[rank] || '🎰'} ${userProfile.username || rank} · ${pts} pts`);
+    showToast(\`\${rankEmojis[rank] || '🎰'} \${userProfile.username || rank} · \${pts} pts\`);
     // Update button to show name
     const btn = document.getElementById('casinoSignInBtn');
     if (btn) btn.textContent = '👤 ' + (userProfile.username || rank);
