@@ -72,8 +72,15 @@ export default async function handler(req, res) {
       const emailProfile = emailProfiles?.[0] || null;
 
       if (emailProfile) {
-        // Already linked — just return it
-        return res.status(200).json({ success: true, profile: emailProfile });
+        // Found by email — update cookie_id to current browser cookie so profile loads correctly
+        if (cid && emailProfile.cookie_id !== cid) {
+          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?id=eq.${emailProfile.id}`, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cookie_id: cid, updated_at: new Date().toISOString() })
+          });
+        }
+        return res.status(200).json({ success: true, profile: { ...emailProfile, cookie_id: cid } });
       }
 
       if (profile) {
