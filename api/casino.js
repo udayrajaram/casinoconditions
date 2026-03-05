@@ -968,7 +968,9 @@ function getNextRank(pts) {
 async function loadProfile() {
   userCookieId = getCookieId();
   try {
-    const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\`);
+    const email = localStorage.getItem('cc_email') || '';
+    const emailParam = email ? '&email=' + encodeURIComponent(email) : '';
+    const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\` + emailParam);
     userProfile = await r.json();
     // Always merge localStorage email/username in case DB hasn't propagated
     if (localStorage.getItem('cc_signed_in')) {

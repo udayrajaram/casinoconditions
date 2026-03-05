@@ -36,26 +36,55 @@ export default async function handler(req, res) {
 
   // GET PROFILE
   if (req.method === 'GET') {
+    const email = req.query.email || null;
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cookie_id)}&limit=1`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-      });
-      const profiles = await r.json();
+      let profile = null;
 
-      if (profiles?.[0]) {
-        const profile = profiles[0];
+      // If email is provided (signed-in user), prefer email lookup — always gets the right profile on any device
+      if (email) {
+        const byEmail = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?email=eq.${encodeURIComponent(email)}&limit=1`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        const emailProfiles = await byEmail.json();
+        profile = emailProfiles?.[0] || null;
+        // Update cookie_id to current device cookie if different
+        if (profile && profile.cookie_id !== cookie_id) {
+          // Delete any empty placeholder with this cookie first
+          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cookie_id)}&points=eq.0&email=is.null`, {
+            method: 'DELETE',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+          });
+          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?id=eq.${profile.id}`, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cookie_id, updated_at: new Date().toISOString() })
+          });
+          profile.cookie_id = cookie_id;
+        }
+      }
+
+      // Fall back to cookie lookup
+      if (!profile) {
+        const byCookie = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cookie_id)}&limit=1`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        const cookieProfiles = await byCookie.json();
+        profile = cookieProfiles?.[0] || null;
+      }
+
+      if (profile) {
         const rank = getRank(profile.points);
         return res.status(200).json({ ...profile, rank: rank.name, rank_emoji: rank.emoji, ranks: RANKS });
       }
 
-      // Create new profile for first-time visitor
+      // Brand new visitor — create empty profile
       const newRes = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles`, {
         method: 'POST',
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
         body: JSON.stringify({ cookie_id, points: 0, rank: 'Rail Bird', streak_days: 0 })
       });
-      const [profile] = await newRes.json();
-      return res.status(200).json({ ...profile, rank: 'Rail Bird', rank_emoji: '🎰', ranks: RANKS });
+      const [newProfile] = await newRes.json();
+      return res.status(200).json({ ...newProfile, rank: 'Rail Bird', rank_emoji: '🎰', ranks: RANKS });
     } catch(e) {
       return res.status(500).json({ error: 'Server error' });
     }
