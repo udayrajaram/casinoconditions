@@ -1039,7 +1039,6 @@ async function loadProfile() {
     const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\` + emailParam);
     userProfile = await r.json();
     // If we got Rail Bird (0 pts) but are signed in, try fetching by email directly
-    const email = localStorage.getItem('cc_email') || '';
     if (email && localStorage.getItem('cc_signed_in') && (!userProfile.points || userProfile.points === 0) && !userProfile.email) {
       try {
         const r2 = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}&email=\${encodeURIComponent(email)}\`);
