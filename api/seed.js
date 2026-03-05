@@ -768,9 +768,23 @@ function getWeatherPosts(weatherMain, temp) {
   return posts;
 }
 
+function getTimeOfDay() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return 'morning';
+  if (h >= 12 && h < 17) return 'afternoon';
+  if (h >= 17 && h < 21) return 'evening';
+  return 'night';
+}
+
 function buildPool(casino, weatherMain, temp) {
   const v = getVenues(casino.name);
-  const pool = [
+  const name = casino.name;
+  const isVegas = casino.state === 'NV';
+  const isAC = casino.state === 'NJ';
+  const isCT = casino.state === 'CT';
+
+  // GENERAL posts — varied, realistic, casino-specific where possible
+  const general = [
     { b: `good energy in here tonight`, c: '📢 General' },
     { b: `love this place honestly`, c: '📢 General' },
     { b: `been here since like 7, still going 😅`, c: '📢 General' },
@@ -795,7 +809,41 @@ function buildPool(casino, weatherMain, temp) {
     { b: `food at ${pick(v.restaurants)} was way better than expected`, c: '📢 General' },
     { b: `happy hour at ${pick(v.bars)} was a great call`, c: '📢 General' },
     { b: `${pick(v.restaurants)} is always a W`, c: '📢 General' },
-    { b: `drinks are flowing and the vibes are good 🍸`, c: '📢 General' },
+    { b: `floor is hopping right now, good turnout`, c: '📢 General' },
+    { b: `surprisingly not too crowded for a ${['Friday','Saturday','Sunday'][Math.floor(Math.random()*3)]}`, c: '📢 General' },
+    { b: `security was quick at the door, no wait to get in`, c: '📢 General' },
+    { b: `valet took like 3 mins, super smooth tonight`, c: '📢 General' },
+    { b: `just cashed out, great run tonight 💰`, c: '📢 General' },
+    { b: `been here ${Math.floor(Math.random()*4)+2} hours and still not ready to leave`, c: '📢 General' },
+    { b: `staff are super friendly tonight, shoutout to everyone working`, c: '📢 General' },
+    { b: `AC is perfect in here, much better than outside rn`, c: '📢 General' },
+    { b: `brought my parents for their anniversary, they're having a blast 🥰`, c: '📢 General' },
+    { b: `bachelorette party on the floor making it fun lol`, c: '📢 General' },
+    { b: `live entertainment tonight is actually really good`, c: '📢 General' },
+    { b: `hit the floor right as it opened up, perfect timing`, c: '📢 General' },
+    { b: `loyalty card is paying off tonight, got comped dinner`, c: '📢 General' },
+    { b: `came for an hour, stayed for four, you know how it goes 😂`, c: '📢 General' },
+    { b: `place is packed but the vibe is great`, c: '📢 General' },
+    { b: `surprisingly easy to find a machine or table tonight`, c: '📢 General' },
+    ...(isVegas ? [
+      { b: `classic Vegas night, loving every second`, c: '📢 General' },
+      { b: `flew in just for the weekend, ${name} never disappoints`, c: '📢 General' },
+      { b: `this is my 4th time at ${name}, still my favorite stop on the Strip`, c: '📢 General' },
+      { b: `Vegas is fully back, energy in here is insane 🎰`, c: '📢 General' },
+    ] : []),
+    ...(isAC ? [
+      { b: `AC weekend trip, ${name} is the move as always`, c: '📢 General' },
+      { b: `drove down from Philly, totally worth it tonight`, c: '📢 General' },
+      { b: `AC never gets old honestly, great night here`, c: '📢 General' },
+    ] : []),
+    ...(isCT ? [
+      { b: `CT casino night, ${name} still the best in the state imo`, c: '📢 General' },
+      { b: `made the drive out and it was worth it, busy night`, c: '📢 General' },
+    ] : []),
+  ];
+
+  // SLOTS posts
+  const slots = [
     { b: `slots have been kind to me tonight 🎰`, c: '🎰 Slots' },
     { b: `up a little on slots, calling it a win`, c: '🎰 Slots' },
     { b: `making money at slots rn, don't wanna jinx it 🤫`, c: '🎰 Slots' },
@@ -806,6 +854,20 @@ function buildPool(casino, weatherMain, temp) {
     { b: `my friend just hit a nice bonus on ${pick(v.slots)} 🎉`, c: '🎰 Slots' },
     { b: `high limit room is buzzing tonight`, c: '🎰 Slots' },
     { b: `slots feel loose tonight honestly`, c: '🎰 Slots' },
+    { b: `hit a free spins bonus on ${pick(v.slots)}, paid out really well`, c: '🎰 Slots' },
+    { b: `lost track of time on the slots lol, been here way too long 😂`, c: '🎰 Slots' },
+    { b: `${pick(v.slots)} machines are not hitting for me tonight 😩`, c: '🎰 Slots' },
+    { b: `just hit $${[200,350,500,750,1200][Math.floor(Math.random()*5)]} on a bonus round 🎉`, c: '🎰 Slots' },
+    { b: `high limit room feels different, more energy than usual`, c: '🎰 Slots' },
+    { b: `penny slots on ${pick(v.slots)} aren't hitting tonight, moving on`, c: '🎰 Slots' },
+    { b: `had a great run on ${pick(v.slots)}, calling it before it turns around lol`, c: '🎰 Slots' },
+    { b: `Buffalo is everywhere tonight on the floor, everyone playing it`, c: '🎰 Slots' },
+    { b: `Dragon Link is packed on both sides, popular tonight`, c: '🎰 Slots' },
+    { b: `Lightning Link hitting for a few people near me 👀`, c: '🎰 Slots' },
+  ];
+
+  // TABLE GAMES posts
+  const tables = [
     { b: `blackjack tables have been good to me tonight 🃏`, c: '🎲 Table Games' },
     { b: `dealer's been busting a lot, good table energy`, c: '🎲 Table Games' },
     { b: `craps table is LOUD tonight lol, always a good sign`, c: '🎲 Table Games' },
@@ -813,23 +875,73 @@ function buildPool(casino, weatherMain, temp) {
     { b: `table minimums are reasonable tonight`, c: '🎲 Table Games' },
     { b: `good run at blackjack, up a couple hundred 🙌`, c: '🎲 Table Games' },
     { b: `tables are packed but moving fast`, c: '🎲 Table Games' },
-    { b: `found a $10 blackjack table 👍`, c: '🎲 Table Games' },
+    { b: `found a $${[10,15,25][Math.floor(Math.random()*3)]} blackjack table 👍`, c: '🎲 Table Games' },
     { b: `dealer been ice cold tonight, our table is eating 😂`, c: '🎲 Table Games' },
     { b: `baccarat crowd is lively rn`, c: '🎲 Table Games' },
+    { b: `6:5 blackjack tables are brutal, hunting for a 3:2 game`, c: '🎲 Table Games' },
+    { b: `found a good 3:2 BJ table with low min, staying here all night`, c: '🎲 Table Games' },
+    { b: `craps table went on a 20 min run, place went CRAZY 🎲`, c: '🎲 Table Games' },
+    { b: `three blackjacks in the last hour, running hot 🔥`, c: '🎲 Table Games' },
+    { b: `roulette wheel hitting red like 6 times in a row, wild`, c: '🎲 Table Games' },
+    { b: `table games floor is packed, might be a wait for BJ`, c: '🎲 Table Games' },
+    { b: `Spanish 21 table open if anyone is looking`, c: '🎲 Table Games' },
+    { b: `three card poker is a trap but i keep playing it lol`, c: '🎲 Table Games' },
+    { b: `$${[25,50,100][Math.floor(Math.random()*3)]} min at most tables tonight, it's busy`, c: '🎲 Table Games' },
+    { b: `great run on craps, shooter held the dice for like 15 minutes`, c: '🎲 Table Games' },
+  ];
+
+  // POKER posts
+  const poker = [
     { b: `poker room is busy tonight, good action 🃏`, c: '🃏 Poker Room' },
-    { b: `should i play 1/2 NL tonight or just stick to slots? lol`, c: '🃏 Poker Room' },
-    { b: `anyone know if the 2/5 game is running tonight?`, c: '🃏 Poker Room' },
     { b: `1/2 NL is super soft tonight, lots of recreational players 🐟`, c: '🃏 Poker Room' },
     { b: `just sat down at 1/2, table looks fun`, c: '🃏 Poker Room' },
-    { b: `should i jump on the 1/2 or wait for a 2/5 seat?`, c: '🃏 Poker Room' },
     { b: `poker room has great energy tonight`, c: '🃏 Poker Room' },
     { b: `wait for 1/2 is pretty short right now fyi`, c: '🃏 Poker Room' },
     { b: `tournament just started, crowd is fired up 🔥`, c: '🃏 Poker Room' },
     { b: `been grinding 1/2 for a few hours, up a buy in 🙌`, c: '🃏 Poker Room' },
-    { b: `is the 2/5 worth it tonight or is 1/2 better action?`, c: '🃏 Poker Room' },
     { b: `poker room staff super friendly tonight`, c: '🃏 Poker Room' },
     { b: `just doubled up at 1/2, great table 🃏`, c: '🃏 Poker Room' },
+    { b: `${pick(v.poker)} is running great games tonight`, c: '🃏 Poker Room' },
+    { b: `2/5 game is running, maybe ${Math.floor(Math.random()*3)+1} tables going right now`, c: '🃏 Poker Room' },
+    { b: `1/2 game has some real fish tonight 🐟 easy table`, c: '🃏 Poker Room' },
+    { b: `waiting for a seat at 1/2, list is about ${Math.floor(Math.random()*4)+2} deep`, c: '🃏 Poker Room' },
+    { b: `bad beat jackpot is up to $${Math.floor(Math.random()*40+60)}k, playing scared poker out here lol`, c: '🃏 Poker Room' },
+    { b: `straddle game going on at my table, action is great 🎰`, c: '🃏 Poker Room' },
+    { b: `just got moved to a new table, this one is way better action`, c: '🃏 Poker Room' },
+    { b: `sat down with $${[200,300,500][Math.floor(Math.random()*3)]}, already almost doubled up`, c: '🃏 Poker Room' },
+    { b: `tournament has ${Math.floor(Math.random()*80+40)} runners, good field tonight`, c: '🃏 Poker Room' },
+    { b: `5/10 is running if anyone wants that action`, c: '🃏 Poker Room' },
+    { b: `${pick(v.poker)} has about ${Math.floor(Math.random()*6+4)} tables of 1/2 running rn`, c: '🃏 Poker Room' },
+    { b: `late night poker is always the best here, looser play`, c: '🃏 Poker Room' },
+    { b: `ran a bluff and got looked up, lesson learned 😂`, c: '🃏 Poker Room' },
+    { b: `table is super fun tonight, great mix of players`, c: '🃏 Poker Room' },
   ];
+
+  // ASK / QUESTION posts (post_type: 'ask')
+  const asks = [
+    { b: `is the 1/2 NL running right now at ${name}?`, c: '🃏 Poker Room', t: 'ask' },
+    { b: `what's the poker room wait like tonight?`, c: '🃏 Poker Room', t: 'ask' },
+    { b: `anyone know if the 2/5 game is going tonight?`, c: '🃏 Poker Room', t: 'ask' },
+    { b: `should i bother driving out to ${name} tonight or is it dead?`, c: '📢 General', t: 'ask' },
+    { b: `how crowded is ${name} right now? worth heading out?`, c: '📢 General', t: 'ask' },
+    { b: `what are the blackjack minimums tonight?`, c: '🎲 Table Games', t: 'ask' },
+    { b: `anyone at ${name} right now? how's the floor looking?`, c: '📢 General', t: 'ask' },
+    { b: `is parking a nightmare tonight or pretty normal?`, c: '📢 General', t: 'ask' },
+    { b: `are the slots hitting at all tonight or should i go somewhere else lol`, c: '🎰 Slots', t: 'ask' },
+    { b: `how's the high limit room tonight?`, c: '🎰 Slots', t: 'ask' },
+    { b: `worth making the drive out tonight? thinking about heading over`, c: '📢 General', t: 'ask' },
+    { b: `craps table still running? what's the min?`, c: '🎲 Table Games', t: 'ask' },
+    { b: `anyone know if there's a tournament going on tonight?`, c: '🃏 Poker Room', t: 'ask' },
+    { b: `how long is the poker room waitlist right now?`, c: '🃏 Poker Room', t: 'ask' },
+    { b: `is ${pick(v.restaurants)} busy tonight? trying to get a table`, c: '📢 General', t: 'ask' },
+    { b: `anyone playing 1/2 tonight? table any good?`, c: '🃏 Poker Room', t: 'ask' },
+    { b: `how's the vibe tonight compared to last weekend?`, c: '📢 General', t: 'ask' },
+    { b: `any $10 blackjack tables open or all $25 min tonight?`, c: '🎲 Table Games', t: 'ask' },
+    { b: `is the floor busy enough to make it worth coming out tonight?`, c: '📢 General', t: 'ask' },
+    { b: `what time does it usually start picking up on a ${['Friday','Saturday','Sunday','Thursday'][Math.floor(Math.random()*4)]}?`, c: '📢 General', t: 'ask' },
+  ];
+
+  const pool = [...general, ...slots, ...tables, ...poker, ...asks];
   getWeatherPosts(weatherMain, temp).forEach(w => pool.push({ b: w, c: '📢 General' }));
   return pool;
 }
@@ -873,32 +985,33 @@ async function getWeather(lat, lon) {
 }
 
 async function seedCasino(casino, weatherMain, temp) {
-  // Check real post count — don't seed if users are very active
   const realPosts = await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.false&select=id`, { returnData: true });
-  if ((realPosts?.length || 0) >= 20) return 0; // back off if tons of real users
+  if ((realPosts?.length || 0) >= 20) return 0;
 
-  // Delete seeded posts older than 7 days to avoid infinite growth
   const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
   await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&created_at=lt.${sevenDaysAgo}`, { method: 'DELETE' });
 
-  // Always add 2-4 fresh posts per run to build up engagement
   const existingPosts = await sbFetch(`/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`, { returnData: true });
   const existingBodies = new Set((existingPosts || []).map(p => p.body));
   const pool = buildPool(casino, weatherMain, temp);
-  const toAdd = Math.floor(Math.random() * 3) + 2; // 2-4 per run
+  const toAdd = Math.floor(Math.random() * 3) + 2;
   const toInsert = [];
   let attempts = 0;
 
-  while (toInsert.length < toAdd && attempts < 80) {
+  while (toInsert.length < toAdd && attempts < 100) {
     attempts++;
     const item = pick(pool);
     if (!existingBodies.has(item.b)) {
       existingBodies.add(item.b);
       const { name, isAnon } = randomAuthor();
       toInsert.push({
-        body: item.b, casino: casino.name, category: item.c,
-        author: name, is_anonymous: isAnon,
-        helpful_count: Math.floor(Math.random() * 12),
+        body: item.b,
+        casino: casino.name,
+        category: item.c,
+        post_type: item.t || 'report',
+        author: name,
+        is_anonymous: isAnon,
+        helpful_count: item.t === 'ask' ? 0 : Math.floor(Math.random() * 12),
         is_seeded: true,
         created_at: randomRecentTime(),
       });
@@ -911,16 +1024,44 @@ async function seedCasino(casino, weatherMain, temp) {
   return toInsert.length;
 }
 
+// Seed fake leaderboard profiles so the board isn't empty
+const LEADERBOARD_SEEDS = [
+  { cookie_id: 'seed_001', username: 'PokerGrinder88', points: 2840, rank: 'Whale', streak_days: 12 },
+  { cookie_id: 'seed_002', username: 'SlotQueenNV', points: 1920, rank: 'Whale', streak_days: 7 },
+  { cookie_id: 'seed_003', username: 'TableKing_AC', points: 1340, rank: 'High Roller', streak_days: 4 },
+  { cookie_id: 'seed_004', username: 'VegasRegular', points: 980, rank: 'High Roller', streak_days: 3 },
+  { cookie_id: 'seed_005', username: 'FloorReporter', points: 720, rank: 'High Roller', streak_days: 5 },
+  { cookie_id: 'seed_006', username: 'CrapsShoooter', points: 560, rank: 'Floor Regular', streak_days: 2 },
+  { cookie_id: 'seed_007', username: 'NightOwl_BJ', points: 430, rank: 'Floor Regular', streak_days: 1 },
+  { cookie_id: 'seed_008', username: 'WheelSpinner', points: 290, rank: 'Regular', streak_days: 0 },
+  { cookie_id: 'seed_009', username: 'FishFinder_NJ', points: 180, rank: 'Regular', streak_days: 2 },
+  { cookie_id: 'seed_010', username: 'NewToThis2025', points: 90, rank: 'Fish', streak_days: 1 },
+];
+
+async function seedLeaderboard() {
+  for (const profile of LEADERBOARD_SEEDS) {
+    // Check if already exists
+    const existing = await sbFetch(`/user_profiles?cookie_id=eq.${profile.cookie_id}&select=id`, { returnData: true });
+    if (existing?.length > 0) continue;
+    await sbFetch('/user_profiles', {
+      method: 'POST',
+      body: JSON.stringify({ ...profile, last_post_date: new Date().toISOString().split('T')[0] }),
+      headers: { 'Prefer': 'return=minimal' },
+    });
+  }
+}
+
 export default async function handler(req, res) {
   const force = req.query.force === 'true';
   const total = { seeded: 0, casinos: 0 };
 
-  // Force mode: delete ALL seeded posts first, then reseed everything
   if (force) {
     await sbFetch('/posts?is_seeded=eq.true', { method: 'DELETE' });
   }
 
-  // Process in parallel batches of 10 — skip weather for speed
+  // Seed leaderboard profiles on every run (idempotent — skips if already exists)
+  await seedLeaderboard();
+
   const batchSize = 10;
   for (let i = 0; i < CASINOS.length; i += batchSize) {
     const batch = CASINOS.slice(i, i + batchSize);

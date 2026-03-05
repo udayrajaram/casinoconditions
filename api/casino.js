@@ -447,6 +447,7 @@ export default async function handler(req, res) {
   const cityName = casino.location.split(',')[0].trim();
   const stateName = casino.location.split(',')[1]?.trim() || '';
   const hasPoker = casino.desc.toLowerCase().includes('poker');
+
   const pageTitle = `${casino.name} Floor Conditions Right Now | ${cityName} Casino Updates`;
   const pageDesc = `Is ${casino.name} busy right now? See real-time floor reports from players — poker room wait times, table game availability, slot conditions & crowd levels at ${casino.name} in ${casino.location}. Updated live.`;
 
@@ -604,7 +605,55 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 .tips-list li{font-size:13px;color:var(--muted);line-height:1.6;padding-left:16px;position:relative}
 .tips-list li::before{content:'→';position:absolute;left:0;color:var(--accent);font-weight:600}
 .last-reported{font-size:12px;color:var(--muted);margin-top:8px;font-family:'DM Mono',monospace}
-@media(max-width:768px){.seo-inner{grid-template-columns:1fr}.seo-section{padding:32px 16px}}
+.bookmark-btn{margin-top:10px;background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.bookmark-btn:hover{border-color:var(--accent);color:var(--accent)}
+.bookmark-btn.saved{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+
+/* REACTIONS STRIP */
+.reactions-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px}
+.reactions-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+.reactions-btns{display:flex;gap:8px;margin-bottom:8px}
+.reaction-btn{flex:1;padding:8px 4px;border:1px solid var(--border);border-radius:8px;background:var(--bg);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;color:var(--text)}
+.reaction-btn:hover{border-color:var(--accent);background:var(--accent-light)}
+.reaction-btn.reacted{border-color:var(--accent);background:var(--accent-light);font-weight:700}
+.reaction-counts{display:flex;gap:12px}
+.rx-count{font-size:13px;font-weight:600;color:var(--text)}
+
+/* POST TYPE TOGGLE */
+.post-type-toggle{display:flex;gap:6px;margin-bottom:14px}
+.post-type-btn{flex:1;padding:7px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;color:var(--muted)}
+.post-type-btn.active{background:var(--text);color:#fff;border-color:var(--text)}
+.post-type-btn:hover:not(.active){border-color:var(--muted)}
+.points-hint{font-size:11px;color:var(--muted);margin-top:10px;text-align:center}
+
+/* ASK POSTS */
+.post-ask{border-left:3px solid #f39c12 !important}
+.ask-badge{font-size:10px;font-weight:600;background:#fdf2e9;color:#784212;padding:3px 8px;border-radius:20px}
+.question-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;border-left:3px solid #f39c12}
+.question-body{font-size:13px;color:var(--text);line-height:1.5}
+
+/* PROFILE CARD */
+.rank-bar-wrap{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px}
+.rank-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#4caf70);border-radius:3px;transition:width .6s ease}
+
+/* SCRATCH TICKET OVERLAY */
+.scratch-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;transition:opacity .2s}
+.scratch-overlay.visible{opacity:1}
+.scratch-card{background:var(--surface);border-radius:20px;padding:40px 48px;text-align:center;max-width:320px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:scratchPop .3s ease}
+@keyframes scratchPop{from{transform:scale(.8)}to{transform:scale(1)}}
+.scratch-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.scratch-prize{font-size:72px;font-weight:800;font-family:'DM Mono',monospace;color:var(--accent);line-height:1;margin-bottom:4px}
+.scratch-prize.medium{color:#f39c12}
+.scratch-prize.jackpot{color:#e74c3c;animation:jackpotPulse .4s infinite alternate}
+@keyframes jackpotPulse{from{transform:scale(1)}to{transform:scale(1.05)}}
+.scratch-unit{font-size:14px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.scratch-jackpot-label{font-size:20px;font-weight:700;color:#e74c3c;margin-bottom:6px}
+.scratch-streak{font-size:14px;color:#f39c12;font-weight:600;margin-bottom:4px}
+.scratch-rankup{font-size:14px;color:var(--accent);font-weight:700;margin-bottom:8px}
+.scratch-total{font-size:12px;color:var(--muted);margin-bottom:20px}
+.scratch-close{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+@media(max-width:768px){.seo-inner{grid-template-columns:1fr}.seo-section{padding:32px 16px}.reactions-btns{gap:6px}.scratch-prize{font-size:56px}}
 </style>
 </head>
 <body>
@@ -642,6 +691,8 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
         <div class="status-badge" style="color:${statusColor}">● ${statusText}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:6px">${recentCount} update${recentCount !== 1 ? 's' : ''} today</div>
         ${posts.length > 0 ? `<div class="last-reported">Last report: ${timeAgo(posts[0].created_at)}</div>` : ''}
+        <button class="bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark this casino">☆ Save</button>
+      </div>
       </div>
     </div>
   </div>
@@ -671,9 +722,25 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 
 <div class="main-wrap">
   <div>
+    <!-- ONE-TAP REACTIONS -->
+    <div class="reactions-strip">
+      <div class="reactions-label">Quick reaction — how's the floor right now?</div>
+      <div class="reactions-btns">
+        <button class="reaction-btn" id="rxBusy" onclick="postReaction('busy')">🟢 Busy</button>
+        <button class="reaction-btn" id="rxModerate" onclick="postReaction('moderate')">🟡 Moderate</button>
+        <button class="reaction-btn" id="rxQuiet" onclick="postReaction('quiet')">🔴 Quiet</button>
+      </div>
+      <div class="reaction-counts" id="reactionCounts"></div>
+    </div>
+
     <!-- COMPOSE -->
     <div class="card" id="composeCard">
-      <div class="card-title">Share a floor update at ${casino.name}</div>
+      <!-- POST TYPE TOGGLE -->
+      <div class="post-type-toggle">
+        <button class="post-type-btn active" id="btnReport" onclick="setPostType('report')">📋 Report</button>
+        <button class="post-type-btn" id="btnAsk" onclick="setPostType('ask')">❓ Ask</button>
+      </div>
+      <div class="card-title" id="composeTitle">Share a floor update at ${casino.name}</div>
       <textarea class="compose-input" id="composeBody" rows="3" placeholder="e.g. Poker room is packed, 3 tables of 1/2 NL running. Lots of fish tonight 🐠"></textarea>
       <div class="compose-bottom">
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
@@ -691,6 +758,16 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
         </div>
         <button class="btn" id="postBtn" onclick="submitPost()">Post Update</button>
       </div>
+      <!-- POINTS EARNED for logged-in users -->
+      <div class="points-hint" id="pointsHint">✨ Earn <strong>10 pts</strong> for reporting · <strong>8 pts</strong> for asking</div>
+    </div>
+
+    <!-- UNANSWERED QUESTIONS -->
+    <div id="questionsSection" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title">❓ Players are asking</div>
+      </div>
+      <div id="questionsFeed"></div>
     </div>
 
     <!-- FEED -->
@@ -709,6 +786,34 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   </div>
 
   <div class="sidebar">
+    <!-- USER PROFILE CARD -->
+    <div class="card" id="profileCard">
+      <div class="card-title">🎰 Your Profile</div>
+      <div id="profileContent">
+        <div style="text-align:center;padding:8px 0 12px">
+          <div style="font-size:32px" id="profileRankEmoji">🎰</div>
+          <div style="font-size:18px;font-weight:700;margin-top:4px" id="profileRankName">Rail Bird</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px"><span id="profilePoints">0</span> pts</div>
+        </div>
+        <div class="rank-bar-wrap">
+          <div class="rank-bar-fill" id="rankBarFill" style="width:0%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:center" id="rankProgress">0 pts to next rank</div>
+        <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center" id="streakDisplay"></div>
+        <div id="signInPrompt" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Sign in to appear on the leaderboard</div>
+          <input id="magicEmail" class="compose-select" type="email" placeholder="your@email.com" style="width:100%;margin-bottom:8px">
+          <button class="btn" style="width:100%;font-size:12px" onclick="sendMagicLink()">✉️ Send Magic Link</button>
+          <div id="magicStatus" style="font-size:11px;color:var(--accent);margin-top:6px;display:none"></div>
+        </div>
+        <div id="signedInBar" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:12px;color:var(--accent);font-weight:600" id="signedInEmail"></div>
+          <input id="usernameInput" class="compose-select" placeholder="Set leaderboard name" style="width:100%;margin-top:8px">
+          <button class="btn" style="width:100%;font-size:12px;margin-top:6px" onclick="saveUsername()">Save name</button>
+        </div>
+      </div>
+    </div>
+
     <!-- CC SCORE -->
     <div class="card" id="ccScoreCard">
       <div class="card-title">🏆 CC Score</div>
@@ -813,7 +918,213 @@ const SUPABASE_URL = '${SUPABASE_URL}';
 const SUPABASE_KEY = '${SUPABASE_KEY}';
 let allPosts = ${JSON.stringify(posts)};
 let isAnon = true;
+let currentPostType = 'report';
+let userProfile = null;
+let userCookieId = null;
 
+// ── COOKIE ID ──────────────────────────────────────────────
+function getCookieId() {
+  let id = document.cookie.split('; ').find(r => r.startsWith('cc_uid='))?.split('=')[1];
+  if (!id) {
+    id = 'cc_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    document.cookie = \`cc_uid=\${id};max-age=31536000;path=/;SameSite=Lax\`;
+  }
+  return id;
+}
+
+// ── RANK CONFIG ────────────────────────────────────────────
+const RANKS = [
+  { name: 'Rail Bird',     min: 0,    emoji: '🎰' },
+  { name: 'Fish',          min: 50,   emoji: '🐟' },
+  { name: 'Regular',       min: 150,  emoji: '♠️' },
+  { name: 'Floor Regular', min: 400,  emoji: '🎲' },
+  { name: 'High Roller',   min: 800,  emoji: '💰' },
+  { name: 'Whale',         min: 1500, emoji: '👑' },
+];
+function getRank(pts) {
+  let r = RANKS[0];
+  for (const rank of RANKS) { if (pts >= rank.min) r = rank; }
+  return r;
+}
+function getNextRank(pts) {
+  return RANKS.find(r => r.min > pts) || null;
+}
+
+// ── PROFILE ────────────────────────────────────────────────
+async function loadProfile() {
+  userCookieId = getCookieId();
+  try {
+    const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\`);
+    userProfile = await r.json();
+    renderProfile();
+  } catch(e) {}
+}
+
+function renderProfile() {
+  if (!userProfile) return;
+  const pts = userProfile.points || 0;
+  const rank = getRank(pts);
+  const next = getNextRank(pts);
+  document.getElementById('profileRankEmoji').textContent = rank.emoji;
+  document.getElementById('profileRankName').textContent = rank.name;
+  document.getElementById('profilePoints').textContent = pts.toLocaleString();
+  const pct = next ? Math.round(((pts - rank.min) / (next.min - rank.min)) * 100) : 100;
+  document.getElementById('rankBarFill').style.width = pct + '%';
+  document.getElementById('rankProgress').textContent = next
+    ? \`\${next.min - pts} pts to \${next.emoji} \${next.name}\`
+    : '👑 Max rank achieved!';
+  const streak = userProfile.streak_days || 0;
+  document.getElementById('streakDisplay').textContent = streak > 1
+    ? \`🔥 \${streak} day streak! Keep it up\`
+    : streak === 1 ? '🔥 1 day streak — come back tomorrow!' : '';
+  if (userProfile.email) {
+    document.getElementById('signInPrompt').style.display = 'none';
+    document.getElementById('signedInBar').style.display = 'block';
+    document.getElementById('signedInEmail').textContent = '✅ ' + userProfile.email;
+    if (userProfile.username) {
+      document.getElementById('usernameInput').value = userProfile.username;
+    }
+  }
+}
+
+async function addPoints(action) {
+  if (!userCookieId) return null;
+  try {
+    const r = await fetch('/api/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cookie_id: userCookieId, action })
+    });
+    const data = await r.json();
+    userProfile = { ...userProfile, ...data };
+    renderProfile();
+    return data;
+  } catch(e) { return null; }
+}
+
+// ── SCRATCH TICKET ─────────────────────────────────────────
+function showScratchTicket(pointsData) {
+  const pts = pointsData?.points_earned || 10;
+  const isJackpot = pts >= 100;
+  const isMedium = pts >= 20;
+  const overlay = document.createElement('div');
+  overlay.className = 'scratch-overlay';
+  overlay.innerHTML = \`
+    <div class="scratch-card">
+      <div class="scratch-label">🎰 FLOOR REPORTER BONUS</div>
+      <div class="scratch-prize \${isJackpot ? 'jackpot' : isMedium ? 'medium' : ''}">
+        +\${pts}
+      </div>
+      <div class="scratch-unit">CC POINTS</div>
+      \${isJackpot ? '<div class="scratch-jackpot-label">🎉 JACKPOT!</div>' : ''}
+      \${pointsData?.streak_bonus ? '<div class="scratch-streak">🔥 +' + pointsData.streak_bonus + ' streak bonus!</div>' : ''}
+      \${pointsData?.rank_up ? '<div class="scratch-rankup">⬆️ RANK UP: ' + pointsData.rank_emoji + ' ' + pointsData.rank + '!</div>' : ''}
+      <div class="scratch-total">Total: \${(userProfile?.points || 0).toLocaleString()} pts · \${getRank(userProfile?.points || 0).emoji} \${getRank(userProfile?.points || 0).name}</div>
+      <button class="scratch-close" onclick="this.closest('.scratch-overlay').remove()">Continue →</button>
+    </div>
+  \`;
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.classList.add('visible'), 10);
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 4000);
+}
+
+// ── POST TYPE TOGGLE ───────────────────────────────────────
+function setPostType(type) {
+  currentPostType = type;
+  document.getElementById('btnReport').classList.toggle('active', type === 'report');
+  document.getElementById('btnAsk').classList.toggle('active', type === 'ask');
+  document.getElementById('composeTitle').textContent = type === 'ask'
+    ? \`Ask the community about \${CASINO_NAME}\`
+    : \`Share a floor update at \${CASINO_NAME}\`;
+  document.getElementById('composeBody').placeholder = type === 'ask'
+    ? 'e.g. Should I head to Foxwoods tonight? Is the 1/2 NL running?'
+    : 'e.g. Poker room is packed, 3 tables of 1/2 NL running. Lots of fish tonight 🐠';
+  document.getElementById('postBtn').textContent = type === 'ask' ? 'Ask Question' : 'Post Update';
+  document.getElementById('pointsHint').innerHTML = type === 'ask'
+    ? '✨ Earn <strong>8 pts</strong> for asking a question'
+    : '✨ Earn <strong>10 pts</strong> for reporting + scratch bonus';
+}
+
+// ── REACTIONS ──────────────────────────────────────────────
+async function loadReactions() {
+  try {
+    const r = await fetch(\`\${SUPABASE_URL}/rest/v1/reactions?casino=eq.\${encodeURIComponent(CASINO_NAME)}&created_at=gte.\${new Date(Date.now()-86400000).toISOString()}\`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const reactions = await r.json();
+    const counts = { busy: 0, moderate: 0, quiet: 0 };
+    reactions.forEach(rx => { if (counts[rx.reaction] !== undefined) counts[rx.reaction]++; });
+    const total = counts.busy + counts.moderate + counts.quiet;
+    document.getElementById('reactionCounts').innerHTML = total === 0
+      ? '<span style="color:var(--muted);font-size:12px">No reactions yet today — be first!</span>'
+      : \`<span class="rx-count">🟢 \${counts.busy}</span><span class="rx-count">🟡 \${counts.moderate}</span><span class="rx-count">🔴 \${counts.quiet}</span>\`;
+    // Highlight user's previous reaction
+    if (userCookieId) {
+      const mine = reactions.find(rx => rx.cookie_id === userCookieId);
+      if (mine) {
+        document.getElementById('rx' + mine.reaction.charAt(0).toUpperCase() + mine.reaction.slice(1))?.classList.add('reacted');
+      }
+    }
+  } catch(e) {}
+}
+
+async function postReaction(reaction) {
+  if (!userCookieId) userCookieId = getCookieId();
+  try {
+    await fetch(\`\${SUPABASE_URL}/rest/v1/reactions\`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ casino: CASINO_NAME, cookie_id: userCookieId, reaction })
+    });
+    // Add 2 points for reaction
+    addPoints('reaction');
+    loadReactions();
+    // Visual feedback
+    ['rxBusy','rxModerate','rxQuiet'].forEach(id => document.getElementById(id)?.classList.remove('reacted'));
+    document.getElementById('rx' + reaction.charAt(0).toUpperCase() + reaction.slice(1))?.classList.add('reacted');
+  } catch(e) {}
+}
+
+// ── MAGIC LINK AUTH ────────────────────────────────────────
+async function sendMagicLink() {
+  const email = document.getElementById('magicEmail').value.trim();
+  if (!email || !email.includes('@')) return;
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'magic_link', email, cookie_id: userCookieId })
+    });
+    const data = await r.json();
+    const status = document.getElementById('magicStatus');
+    status.style.display = 'block';
+    if (data.success) {
+      status.textContent = '✅ Check your email for the magic link!';
+      status.style.color = 'var(--accent)';
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+      status.style.color = '#e74c3c';
+    }
+  } catch(e) {}
+  btn.disabled = false; btn.textContent = '✉️ Send Magic Link';
+}
+
+async function saveUsername() {
+  const username = document.getElementById('usernameInput').value.trim();
+  if (!username) return;
+  try {
+    await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'set_username', cookie_id: userCookieId, username })
+    });
+    document.getElementById('signedInEmail').textContent = '✅ Saved as: ' + username;
+  } catch(e) {}
+}
+
+// ── MISC ───────────────────────────────────────────────────
 function toggleAnon() {
   isAnon = !isAnon;
   document.getElementById('anonToggle').classList.toggle('on', isAnon);
@@ -825,6 +1136,7 @@ function filterPosts(type, btn) {
   document.querySelectorAll('.filter-tabs .tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   const filtered = type === 'all' ? allPosts :
+    type === 'questions' ? allPosts.filter(p => p.post_type === 'ask') :
     allPosts.filter(p => {
       if (type === 'poker') return p.category.includes('Poker');
       if (type === 'tables') return p.category.includes('Table');
@@ -849,10 +1161,11 @@ function renderFeed(posts) {
     return;
   }
   feed.innerHTML = posts.map(p => {
+    const isAsk = p.post_type === 'ask';
     const initials = p.is_anonymous ? '👤' : p.author.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const avatarStyle = p.is_anonymous ? 'background:#f0f0ee;color:#888;font-size:14px' : 'background:#edf5f0;color:#1a6b3c';
     const tagCls = p.category.includes('Poker') ? 'tag-poker' : p.category.includes('Table') ? 'tag-tables' : p.category.includes('Slots') ? 'tag-slots' : 'tag-general';
-    return \`<div class="post-card">
+    return \`<div class="post-card \${isAsk ? 'post-ask' : ''}">
       <div class="post-top">
         <div class="post-meta">
           <div class="avatar" style="\${avatarStyle}">\${initials}</div>
@@ -861,6 +1174,7 @@ function renderFeed(posts) {
             <div class="post-time">\${timeAgo(p.created_at)}</div>
           </div>
         </div>
+        \${isAsk ? '<span class="ask-badge">❓ Asking</span>' : ''}
       </div>
       <div class="post-body">\${p.body}</div>
       <div class="post-bottom">
@@ -869,6 +1183,22 @@ function renderFeed(posts) {
       </div>
     </div>\`;
   }).join('');
+
+  // Load unanswered questions section
+  const questions = allPosts.filter(p => p.post_type === 'ask' && (p.answer_count || 0) === 0);
+  const qs = document.getElementById('questionsSection');
+  if (questions.length > 0) {
+    qs.style.display = 'block';
+    document.getElementById('questionsFeed').innerHTML = questions.slice(0,3).map(p => \`
+      <div class="question-card">
+        <div class="question-body">\${p.body}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">\${timeAgo(p.created_at)} · 0 answers</div>
+        <button class="action-btn" style="margin-top:8px;font-size:12px" onclick="document.getElementById('composeBody').focus();setPostType('report')">Answer →</button>
+      </div>
+    \`).join('');
+  } else {
+    qs.style.display = 'none';
+  }
 }
 
 async function helpful(btn, id) {
@@ -895,14 +1225,35 @@ async function submitPost() {
     const r = await fetch(\`\${SUPABASE_URL}/rest/v1/posts\`, {
       method: 'POST',
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
-      body: JSON.stringify({ body, casino: CASINO_NAME, category: document.getElementById('composeCategory').value, author, is_anonymous: isAnon, helpful_count: 0, is_seeded: false })
+      body: JSON.stringify({
+        body,
+        casino: CASINO_NAME,
+        category: document.getElementById('composeCategory').value,
+        author,
+        is_anonymous: isAnon,
+        helpful_count: 0,
+        is_seeded: false,
+        post_type: currentPostType,
+      })
     });
     const [newPost] = await r.json();
     allPosts.unshift(newPost);
     renderFeed(allPosts);
     document.getElementById('composeBody').value = '';
+
+    // Award points + show scratch ticket
+    const action = currentPostType === 'ask' ? 'post_ask' : 'post_report';
+    const pointsData = await addPoints(action);
+    // Scratch roll for reports only
+    if (currentPostType === 'report') {
+      const scratchData = await addPoints('scratch');
+      showScratchTicket({ ...pointsData, points_earned: scratchData?.points_earned || 10 });
+    } else {
+      showScratchTicket(pointsData);
+    }
   } catch(e) {}
-  btn.disabled = false; btn.textContent = 'Post Update';
+  btn.disabled = false;
+  btn.textContent = currentPostType === 'ask' ? 'Ask Question' : 'Post Update';
 }
 
 async function loadScore() {
@@ -917,27 +1268,14 @@ async function loadScore() {
       ['Weather', s.factors.weather],
       ['Timing', s.factors.timing],
     ].map(([label, val]) => \`<div class="score-row"><span class="score-label">\${label}</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:\${val}%"></div></div><span class="score-val">\${val}</span></div>\`).join('');
-    // Update desktop sidebar
     document.getElementById('scoreNum').textContent = s.total;
     document.getElementById('scoreNum').style.color = scoreColor;
     document.getElementById('scoreFactors').innerHTML = factorsHtml;
-    // Update mobile cards
     document.getElementById('scoreNumMobile').textContent = s.total;
     document.getElementById('scoreNumMobile').style.color = scoreColor;
     document.getElementById('scoreFactorsMobile').innerHTML = factorsHtml;
   } catch(e) {}
 }
-
-loadScore();
-setInterval(async () => {
-  try {
-    const r = await fetch(\`\${SUPABASE_URL}/rest/v1/posts?casino=eq.\${encodeURIComponent(CASINO_NAME)}&order=created_at.desc&limit=50\`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    });
-    allPosts = await r.json();
-    renderFeed(allPosts);
-  } catch(e) {}
-}, 30000);
 
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark');
@@ -948,6 +1286,48 @@ if (localStorage.getItem('theme') === 'dark') {
   document.body.classList.add('dark');
   document.getElementById('darkToggle').textContent = '☀️';
 }
+
+// ── BOOKMARK ───────────────────────────────────────────────
+function toggleBookmark() {
+  const bookmarks = JSON.parse(localStorage.getItem('cc_bookmarks') || '[]');
+  const idx = bookmarks.indexOf(CASINO_SLUG);
+  if (idx === -1) {
+    bookmarks.push(CASINO_SLUG);
+    localStorage.setItem('cc_bookmarks', JSON.stringify(bookmarks));
+    renderBookmark(true);
+  } else {
+    bookmarks.splice(idx, 1);
+    localStorage.setItem('cc_bookmarks', JSON.stringify(bookmarks));
+    renderBookmark(false);
+  }
+}
+function renderBookmark(saved) {
+  const btn = document.getElementById('bookmarkBtn');
+  if (!btn) return;
+  btn.textContent = saved ? '★ Saved' : '☆ Save';
+  btn.classList.toggle('saved', saved);
+}
+// Init bookmark state
+(function() {
+  const bookmarks = JSON.parse(localStorage.getItem('cc_bookmarks') || '[]');
+  renderBookmark(bookmarks.includes(CASINO_SLUG));
+})();
+
+// ── INIT ───────────────────────────────────────────────────
+loadProfile();
+loadScore();
+loadReactions();
+renderFeed(allPosts);
+
+setInterval(async () => {
+  try {
+    const r = await fetch(\`\${SUPABASE_URL}/rest/v1/posts?casino=eq.\${encodeURIComponent(CASINO_NAME)}&order=created_at.desc&limit=50\`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    allPosts = await r.json();
+    renderFeed(allPosts);
+  } catch(e) {}
+}, 30000);
 </script>
 <footer>
   <div class="footer-logo"><div class="logo-dot" style="animation:none;opacity:.7"></div>Casino<span style="color:var(--accent)">Conditions</span></div>
