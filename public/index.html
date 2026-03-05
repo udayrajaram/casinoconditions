@@ -3,8 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">CasinoConditions — Know Before You Go</title>
-<meta name="description" id="pageDesc" content="Real-time casino floor reports from players like you. Know before you go.">
+<title>CasinoConditions — Real-Time Casino Floor Reports | Know Before You Go</title>
+<meta name="description" content="Real-time casino floor reports from players at 115 US casinos. Check poker room wait times, table game availability, and crowd levels at Mohegan Sun, Bellagio, Borgata, and more before you go.">
+<link rel="canonical" href="https://casinoconditions.com">
+<meta property="og:title" content="CasinoConditions — Real-Time Casino Floor Reports">
+<meta property="og:description" content="Real-time floor reports from players at 115 US casinos. Know before you go.">
+<meta property="og:url" content="https://casinoconditions.com">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CasinoConditions — Real-Time Casino Floor Reports">
+<meta name="twitter:description" content="Real-time floor reports from players at 115 US casinos. Know before you go.">
+<script type="application/ld+json">${JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "CasinoConditions",
+  "url": "https://casinoconditions.com",
+  "description": "Real-time casino floor reports from players at 115 US casinos",
+  "potentialAction": { "@type": "SearchAction", "target": "https://casinoconditions.com/browse?q={search_term_string}", "query-input": "required name=search_term_string" }
+})}</script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RYX8RTNPQG"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-RYX8RTNPQG');</script>
@@ -294,8 +310,8 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   <div class="nav-links">
     <span class="nav-link" onclick="showPage('home')">Home</span>
     <a class="nav-link" href="/browse">Browse Casinos</a>
-    <span class="nav-link" onclick="filterByCategory('🃏 Poker Room');showPage('home')">Poker Rooms</span>
-    <span class="nav-link" onclick="filterByCategory('🎲 Table Games');showPage('home')">Table Games</span>
+    <a class="nav-link" href="/poker-rooms">Poker Rooms</a>
+    <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
