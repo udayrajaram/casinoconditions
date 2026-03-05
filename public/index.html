@@ -1635,12 +1635,13 @@ handleHash();
     });
     const data = await r.json();
     const email = data.profile?.email || '';
+    const username = data.profile?.username || '';
     if (email) {
       localStorage.setItem('cc_email', email);
       localStorage.setItem('cc_signed_in', '1');
-      // Update sign-in button if visible
+      if (username) localStorage.setItem('cc_username', username);
       const btn = document.getElementById('signInBtn');
-      if (btn) btn.textContent = '👤 ' + email.split('@')[0];
+      if (btn) btn.textContent = '👤 ' + (username || email.split('@')[0]);
     }
   } catch(e) { console.error('token detection error:', e); }
 })();
