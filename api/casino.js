@@ -1358,7 +1358,7 @@ function checkTimeConflict(body) {
   const isDay = hour >= 7 && hour < 17;
   const isNight = hour >= 20 || hour < 4;
   const dayWords = ["tonight", "tonight's", "last night", "this evening", "evening crowd"];
-  const nightWords = ['this morning', 'today's lunch', 'afternoon'];
+  const nightWords = ["this morning", "today's lunch", "afternoon"];
   if (isDay && dayWords.some(w => lower.includes(w))) {
     return "Heads up — it's daytime at this casino. Did you mean to say "tonight"?";
   }
