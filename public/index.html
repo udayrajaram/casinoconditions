@@ -1630,16 +1630,30 @@ document.getElementById('signInModal').addEventListener('click', function(e) {
   if (e.target === this) hideSignInModal();
 });
 
-// Check sign-in state on load and update nav button
+// Check sign-in state on load — use email param so we always get the right profile
 (function() {
   const cookieId = document.cookie.split('; ').find(r => r.startsWith('cc_uid='))?.split('=')[1];
+  const email = localStorage.getItem('cc_email') || '';
   if (!cookieId) return;
-  fetch(`/api/profile?cookie_id=${encodeURIComponent(cookieId)}`)
+  // Immediately restore from localStorage (fast, no network)
+  if (localStorage.getItem('cc_signed_in')) {
+    const username = localStorage.getItem('cc_username') || '';
+    const btn = document.getElementById('signInBtn');
+    if (btn) btn.textContent = '👤 ' + (username || email.split('@')[0]);
+  }
+  // Then fetch from API with email param to get correct profile + update cookie if needed
+  const emailParam = email ? `&email=${encodeURIComponent(email)}` : '';
+  fetch(`/api/profile?cookie_id=${encodeURIComponent(cookieId)}${emailParam}`)
     .then(r => r.json())
     .then(profile => {
-      if (profile.email) {
+      if (profile.email || profile.username) {
         const btn = document.getElementById('signInBtn');
-        btn.textContent = '👤 ' + (profile.username || profile.email.split('@')[0]);
+        const name = profile.username || localStorage.getItem('cc_username') || profile.email?.split('@')[0] || '';
+        if (btn && name) btn.textContent = '👤 ' + name;
+        // Keep localStorage in sync
+        if (profile.email) localStorage.setItem('cc_email', profile.email);
+        if (profile.username) localStorage.setItem('cc_username', profile.username);
+        if (profile.email) localStorage.setItem('cc_signed_in', '1');
       }
     }).catch(() => {});
 })();
