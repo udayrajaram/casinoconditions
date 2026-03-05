@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   // HANDLE CALLBACK - merge cookie_id with auth user
   if (action === 'callback') {
     const { access_token, cookie_id: cid } = req.body;
-    if (!access_token || !cid) return res.status(400).json({ error: 'Missing params' });
+    if (!access_token) return res.status(400).json({ error: 'Missing access_token' });
     try {
       // Get user from token
       const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
@@ -50,31 +50,50 @@ export default async function handler(req, res) {
       const user = await userRes.json();
       if (!user?.email) return res.status(400).json({ error: 'Invalid token' });
 
-      // Merge: find existing profile by cookie_id and attach email
-      const profileRes = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cid)}&limit=1`, {
+      // Try to find profile by cookie_id first, then by email
+      let profile = null;
+
+      if (cid) {
+        const bycookie = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cid)}&limit=1`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        const cookieProfiles = await bycookie.json();
+        profile = cookieProfiles?.[0] || null;
+      }
+
+      // Also check if a profile already exists with this email
+      const byEmail = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?email=eq.${encodeURIComponent(user.email)}&limit=1`, {
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
       });
-      const profiles = await profileRes.json();
+      const emailProfiles = await byEmail.json();
+      const emailProfile = emailProfiles?.[0] || null;
 
-      if (profiles?.[0]) {
-        // Update existing profile with email
+      if (emailProfile) {
+        // Already linked — just return it
+        return res.status(200).json({ success: true, profile: emailProfile });
+      }
+
+      if (profile) {
+        // Found by cookie — attach email
         await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cid)}`, {
           method: 'PATCH',
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: user.email, updated_at: new Date().toISOString() })
         });
-        return res.status(200).json({ success: true, profile: { ...profiles[0], email: user.email } });
-      } else {
-        // Create new profile
-        const newProfile = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles`, {
-          method: 'POST',
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
-          body: JSON.stringify({ cookie_id: cid, email: user.email, points: 0, rank: 'Rail Bird' })
-        });
-        const [profile] = await newProfile.json();
-        return res.status(200).json({ success: true, profile });
+        return res.status(200).json({ success: true, profile: { ...profile, email: user.email } });
       }
+
+      // No profile found at all — create one
+      const newRes = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+        body: JSON.stringify({ cookie_id: cid || ('email_' + Date.now()), email: user.email, points: 0, rank: 'Rail Bird' })
+      });
+      const [newProfile] = await newRes.json();
+      return res.status(200).json({ success: true, profile: newProfile });
+
     } catch(e) {
+      console.error('callback error:', e);
       return res.status(500).json({ error: 'Server error' });
     }
   }
