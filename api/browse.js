@@ -144,13 +144,16 @@ export default async function handler(req, res) {
       <div class="state-label">${STATE_NAMES[state] || state}</div>
       <div class="dir-grid">
         ${casinos.map(c => `
-          <a href="/${c.slug}" class="dir-card">
+          <a href="/${c.slug}" class="dir-card" id="card-${c.slug}">
             <div class="dir-card-name">${c.name}</div>
             <div class="dir-card-loc">📍 ${c.location}</div>
             <div class="dir-card-desc">${c.desc}</div>
             <div class="dir-card-footer">
               <span class="dir-card-dist">${c.miles} miles</span>
-              <span class="dir-card-posts">View updates →</span>
+              <div style="display:flex;align-items:center;gap:10px">
+                <button class="dir-card-star" id="star-${c.slug}" onclick="toggleStar(event, '${c.slug}')" title="Save casino">☆</button>
+                <span class="dir-card-posts">View updates →</span>
+              </div>
             </div>
           </a>`).join('')}
       </div>
@@ -205,6 +208,10 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .dir-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
 .dir-card-dist{font-size:11px;color:var(--muted);font-family:monospace}
 .dir-card-posts{font-size:11px;color:var(--accent);font-weight:500}
+.dir-card-star{background:none;border:none;cursor:pointer;font-size:16px;padding:2px 4px;border-radius:6px;transition:all .15s;line-height:1;flex-shrink:0}
+.dir-card-star:hover{transform:scale(1.2)}
+.dir-card-star.saved{filter:drop-shadow(0 0 3px rgba(255,200,0,.6))}
+.dir-card{position:relative}
 @media(max-width:768px){.dir-grid{grid-template-columns:1fr}.page-header{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}}
 </style>
 </head>
@@ -235,6 +242,40 @@ if (localStorage.getItem('theme') === 'dark') {
   document.body.classList.add('dark');
   document.getElementById('darkToggle').textContent = '☀️';
 }
+
+function getBookmarks() { return JSON.parse(localStorage.getItem('cc_bookmarks') || '[]'); }
+
+function toggleStar(e, slug) {
+  e.preventDefault();
+  e.stopPropagation();
+  const bookmarks = getBookmarks();
+  const idx = bookmarks.indexOf(slug);
+  const isSaved = idx === -1;
+  if (isSaved) bookmarks.push(slug);
+  else bookmarks.splice(idx, 1);
+  localStorage.setItem('cc_bookmarks', JSON.stringify(bookmarks));
+  renderStar(slug, isSaved);
+  // Flash feedback
+  const btn = document.getElementById('star-' + slug);
+  if (btn) {
+    btn.style.transform = 'scale(1.4)';
+    setTimeout(() => btn.style.transform = '', 200);
+  }
+}
+
+function renderStar(slug, saved) {
+  const btn = document.getElementById('star-' + slug);
+  if (!btn) return;
+  btn.textContent = saved ? '⭐' : '☆';
+  btn.classList.toggle('saved', saved);
+  btn.title = saved ? 'Remove from saved' : 'Save casino';
+}
+
+// Init all stars on load
+(function() {
+  const bookmarks = getBookmarks();
+  bookmarks.forEach(slug => renderStar(slug, true));
+})();
 </script>
 </body>
 </html>`;
