@@ -1447,6 +1447,37 @@ function updateSignInBtn() {
 }
 
 // ── INIT ───────────────────────────────────────────────────
+// ── MAGIC LINK TOKEN DETECTION ────────────────────────────
+// Catch Supabase token if redirected back to any page with #access_token
+(async function detectMagicLinkToken() {
+  const hash = window.location.hash.slice(1);
+  const hp = new URLSearchParams(hash);
+  const token = hp.get('access_token');
+  const error = hp.get('error_description') || hp.get('error');
+  if (error) {
+    console.warn('Auth error in hash:', error);
+    window.location.hash = '';
+    return;
+  }
+  if (!token) return;
+  // Clear hash immediately so it doesn't show in URL
+  history.replaceState(null, '', window.location.pathname);
+  try {
+    const cookieId = getCookieId();
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'callback', access_token: token, cookie_id: cookieId })
+    });
+    const data = await r.json();
+    const email = data.profile?.email || '';
+    if (email) {
+      localStorage.setItem('cc_email', email);
+      localStorage.setItem('cc_signed_in', '1');
+    }
+  } catch(e) { console.error('token detection error:', e); }
+})();
+
 loadProfile();
 loadScore();
 loadReactions();
