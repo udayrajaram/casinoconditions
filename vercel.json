@@ -11,6 +11,7 @@
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/browse", "destination": "/api/browse" },
+    { "source": "/bookmarks", "destination": "/api/bookmarks" },
     { "source": "/about", "destination": "/api/about" },
     { "source": "/terms", "destination": "/api/terms" },
     { "source": "/privacy", "destination": "/api/privacy" },
