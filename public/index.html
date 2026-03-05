@@ -472,6 +472,10 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
       <div class="sidebar-title">🏆 Top Casinos</div>
       <div style="color:var(--muted);font-size:13px">Loading...</div>
     </div>
+    <div class="sidebar-card" id="leaderboardCard">
+      <div class="sidebar-title">🥇 Top Reporters This Week</div>
+      <div id="leaderboardContent" style="color:var(--muted);font-size:13px">Loading...</div>
+    </div>
     <div class="sidebar-card">
       <div class="sidebar-title">📍 Near You (CT)</div>
       <div class="status-indicator"><div class="si-left"><div class="si-dot green"></div><span style="font-size:13px;font-weight:500">Mohegan Sun</span></div><span class="status-pill pill-busy" style="font-size:10px">Busy</span></div>
@@ -1436,9 +1440,36 @@ handleHash();
 
 // Init
 loadPosts();
+loadLeaderboard();
 
 // Auto-refresh every 30s
 setInterval(loadPosts, 30000);
+
+async function loadLeaderboard() {
+  try {
+    const r = await fetch('/api/leaderboard');
+    const data = await r.json();
+    const el = document.getElementById('leaderboardContent');
+    if (!el) return;
+    if (!data.leaderboard?.length) {
+      el.innerHTML = '<div style="font-size:13px;color:var(--muted)">No reporters yet — be first! 🎰</div>';
+      return;
+    }
+    el.innerHTML = data.leaderboard.map((p, i) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;font-weight:700;color:var(--muted);width:16px">${i+1}</span>
+          <span style="font-size:13px">${p.rank_emoji}</span>
+          <div>
+            <div style="font-size:13px;font-weight:600">${p.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${p.rank}${p.streak > 1 ? ' · 🔥'+p.streak : ''}</div>
+          </div>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'DM Mono',monospace">${p.points.toLocaleString()}</span>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
 
 // Dark mode
 function toggleDark() {
