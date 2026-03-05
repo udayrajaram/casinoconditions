@@ -10,13 +10,7 @@
     { "source": "/privacy", "destination": "/api/privacy" },
     { "source": "/las-vegas-casinos", "destination": "/api/las-vegas-casinos" },
     { "source": "/poker-rooms", "destination": "/api/poker-rooms" },
-    { "source": "/api/auth", "destination": "/api/auth" },
-    { "source": "/api/profile", "destination": "/api/profile" },
-    { "source": "/api/leaderboard", "destination": "/api/leaderboard" },
     { "source": "/api/auth/callback", "destination": "/api/auth-callback" },
-    { "source": "/api/places", "destination": "/api/places" },
-    { "source": "/api/score", "destination": "/api/score" },
-    { "source": "/api/seed", "destination": "/api/seed" },
     { "source": "/:slug([a-z0-9-]+)", "destination": "/api/casino?slug=:slug" }
   ]
 }
