@@ -1573,49 +1573,46 @@ function updateSignInBtn() {
 // ── BEST TIME TO VISIT ─────────────────────────────────────
 async function loadBestTime() {
   try {
-    const r = await fetch(`/api/best-time?casino=${encodeURIComponent(CASINO_NAME)}`);
+    const r = await fetch(\`/api/best-time?casino=\${encodeURIComponent(CASINO_NAME)}\`);
     const data = await r.json();
     const card = document.getElementById('bestTimeCard');
-    const content = document.getElementById('bestTimeContent');
+    const el = document.getElementById('bestTimeContent');
     if (!data.hasData || !card) return;
     card.style.display = 'block';
 
     const maxScore = Math.max(...data.dayScores.filter(d => d.score !== null).map(d => d.score), 1);
 
     const dayBars = data.dayScores.map(d => {
-      const pct = d.score !== null ? Math.round((d.score / 100) * 100) : 0;
       const color = d.score === null ? 'var(--border)' : d.score >= 66 ? '#1a6b3c' : d.score >= 33 ? '#e6a817' : '#e05c5c';
       const height = d.score !== null ? Math.max(8, Math.round((d.score / maxScore) * 40)) : 4;
-      const tip = d.score !== null ? `${d.dayFull}: ${d.topReaction} (${d.score}% busy score)` : `${d.dayFull}: no data`;
-      return `<div class="bt-day" title="${tip}">
-        <div class="bt-day-bar" style="height:${height}px;background:${color}"></div>
-        <div class="bt-day-label">${d.day}</div>
-      </div>`;
+      const tip = d.score !== null ? d.dayFull + ': ' + d.topReaction + ' (' + d.score + '% busy score)' : d.dayFull + ': no data';
+      return '<div class="bt-day" title="' + tip + '">'
+        + '<div class="bt-day-bar" style="height:' + height + 'px;background:' + color + '"></div>'
+        + '<div class="bt-day-label">' + d.day + '</div>'
+        + '</div>';
     }).join('');
 
     const slotCards = data.slotScores.map(s => {
       const pct = s.score !== null ? s.score : 0;
       const color = pct >= 66 ? '#1a6b3c' : pct >= 33 ? '#e6a817' : '#e05c5c';
-      return `<div class="bt-slot">
-        <div class="bt-slot-icon">${s.icon}</div>
-        <div class="bt-slot-label">${s.label}</div>
-        <div class="bt-slot-hours">${s.hours}</div>
-        <div class="bt-slot-bar-wrap"><div class="bt-slot-bar" style="width:${pct}%;background:${color}"></div></div>
-        <div style="font-size:10px;color:var(--muted)">${s.score !== null ? s.topReaction : '—'}</div>
-      </div>`;
+      return '<div class="bt-slot">'
+        + '<div class="bt-slot-icon">' + s.icon + '</div>'
+        + '<div class="bt-slot-label">' + s.label + '</div>'
+        + '<div class="bt-slot-hours">' + s.hours + '</div>'
+        + '<div class="bt-slot-bar-wrap"><div class="bt-slot-bar" style="width:' + pct + '%;background:' + color + '"></div></div>'
+        + '<div style="font-size:10px;color:var(--muted)">' + (s.score !== null ? s.topReaction : '—') + '</div>'
+        + '</div>';
     }).join('');
 
-    const bestBadge = data.bestDay ? `<div class="bt-badge bt-badge-busy">🔥 Busiest: ${data.bestDay.dayFull}</div>` : '';
-    const quietBadge = data.worstDay ? `<div class="bt-badge bt-badge-quiet">😴 Quietest: ${data.worstDay.dayFull}</div>` : '';
+    const bestBadge = data.bestDay ? '<div class="bt-badge bt-badge-busy">🔥 Busiest: ' + data.bestDay.dayFull + '</div>' : '';
+    const quietBadge = data.worstDay ? '<div class="bt-badge bt-badge-quiet">😴 Quietest: ' + data.worstDay.dayFull + '</div>' : '';
 
-    content.innerHTML = `
-      <div class="bt-day-grid">${dayBars}</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">${bestBadge}${quietBadge}</div>
-      <div style="margin-top:12px;margin-bottom:4px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">By time of day</div>
-      <div class="bt-slot-grid">${slotCards}</div>
-      ${data.summary ? `<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5">${data.summary}</div>` : ''}
-      <div style="font-size:10px;color:var(--muted);margin-top:8px">Based on ${data.totalReactions} reports in the last 90 days</div>
-    `;
+    el.innerHTML = '<div class="bt-day-grid">' + dayBars + '</div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap">' + bestBadge + quietBadge + '</div>'
+      + '<div style="margin-top:12px;margin-bottom:4px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">By time of day</div>'
+      + '<div class="bt-slot-grid">' + slotCards + '</div>'
+      + (data.summary ? '<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5">' + data.summary + '</div>' : '')
+      + '<div style="font-size:10px;color:var(--muted);margin-top:8px">Based on ' + data.totalReactions + ' reports in the last 90 days</div>';
   } catch(e) {
     console.error('best-time error:', e);
   }
