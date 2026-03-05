@@ -1353,13 +1353,12 @@ function showPage(page, casinoSlug) {
     renderDirectory();
     window.scrollTo(0,0);
   } else if (page === 'casino' && casinoSlug) {
-    document.getElementById('casinoPage').style.display = 'block';
-    currentCasino = CASINOS.find(c => c.slug === casinoSlug);
-    if (currentCasino) renderCasinoPage(currentCasino);
-    window.scrollTo(0,0);
+    // Redirect to the real casino page (full gamification experience via casino.js)
+    window.location.href = '/' + casinoSlug;
+    return;
   }
   currentPage = page;
-  window.location.hash = page === 'home' ? '' : page === 'directory' ? 'casinos' : 'casino/' + casinoSlug;
+  window.location.hash = page === 'home' ? '' : page === 'directory' ? 'casinos' : '';
 }
 
 // Handle hash routing on load
@@ -1367,7 +1366,8 @@ function handleHash() {
   const hash = window.location.hash.replace('#','');
   if (hash.startsWith('casino/')) {
     const slug = hash.replace('casino/','');
-    showPage('casino', slug);
+    // Redirect to real casino page for full gamification experience
+    window.location.href = '/' + slug;
   } else if (hash === 'casinos') {
     showPage('directory');
   }
