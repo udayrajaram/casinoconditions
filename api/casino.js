@@ -970,9 +970,10 @@ async function loadProfile() {
   try {
     const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\`);
     userProfile = await r.json();
-    // Use localStorage as fallback if DB email not yet propagated
-    if (!userProfile.email && localStorage.getItem('cc_signed_in')) {
-      userProfile.email = localStorage.getItem('cc_email') || '';
+    // Always merge localStorage email/username in case DB hasn't propagated
+    if (localStorage.getItem('cc_signed_in')) {
+      if (!userProfile.email) userProfile.email = localStorage.getItem('cc_email') || '';
+      if (!userProfile.username) userProfile.username = localStorage.getItem('cc_username') || '';
     }
     renderProfile();
     updateSignInBtn();
@@ -1002,12 +1003,14 @@ function renderProfile() {
   document.getElementById('streakDisplay').textContent = streak > 1
     ? \`🔥 \${streak} day streak! Keep it up\`
     : streak === 1 ? '🔥 1 day streak — come back tomorrow!' : '';
-  if (userProfile.email) {
+  const emailToShow = userProfile.email || localStorage.getItem('cc_email') || '';
+  if (emailToShow) {
     document.getElementById('signInPrompt').style.display = 'none';
     document.getElementById('signedInBar').style.display = 'block';
-    document.getElementById('signedInEmail').textContent = '✅ Signed in as ' + userProfile.email;
+    document.getElementById('signedInEmail').textContent = '✅ Signed in as ' + emailToShow;
     if (userProfile.username) {
       document.getElementById('usernameInput').value = userProfile.username;
+      localStorage.setItem('cc_username', userProfile.username);
     }
   }
 }
@@ -1145,7 +1148,10 @@ async function saveUsername() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'set_username', cookie_id: userCookieId, username })
     });
+    localStorage.setItem('cc_username', username);
     document.getElementById('signedInEmail').textContent = '✅ Saved as: ' + username;
+    const btn = document.getElementById('casinoSignInBtn');
+    if (btn) btn.textContent = '👤 ' + username;
   } catch(e) {}
 }
 
@@ -1442,7 +1448,8 @@ function updateSignInBtn() {
   const btn = document.getElementById('casinoSignInBtn');
   if (!btn) return;
   if (userProfile?.email) {
-    btn.textContent = '👤 ' + (userProfile.username || userProfile.email.split('@')[0]);
+    const displayName = userProfile.username || localStorage.getItem('cc_username') || userProfile.email.split('@')[0];
+    btn.textContent = '👤 ' + displayName;
   }
 }
 
