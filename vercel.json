@@ -5,6 +5,8 @@
     { "source": "/about", "destination": "/api/about" },
     { "source": "/terms", "destination": "/api/terms" },
     { "source": "/privacy", "destination": "/api/privacy" },
+    { "source": "/las-vegas-casinos", "destination": "/api/las-vegas-casinos" },
+    { "source": "/poker-rooms", "destination": "/api/poker-rooms" },
     { "source": "/api/weather", "destination": "/api/weather" },
     { "source": "/api/places", "destination": "/api/places" },
     { "source": "/api/score", "destination": "/api/score" },
