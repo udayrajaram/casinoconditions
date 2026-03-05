@@ -56,7 +56,13 @@ async function handleCallback() {
   const hash = window.location.hash.slice(1);
   const params = new URLSearchParams(hash);
   const accessToken = params.get('access_token');
-  const tokenType = params.get('type'); // 'signup' or 'magiclink'
+  const errorDesc = params.get('error_description') || params.get('error');
+
+  if (errorDesc) {
+    show('❌', 'Sign-in failed', decodeURIComponent(errorDesc));
+    setTimeout(() => window.location = '/', 3000);
+    return;
+  }
 
   if (!accessToken) {
     show('❌', 'Link expired', 'Magic links expire after 1 hour. Please request a new one from a casino page.');

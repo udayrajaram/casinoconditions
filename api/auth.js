@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   if (action === 'magic_link') {
     if (!email || !cookie_id) return res.status(400).json({ error: 'Missing email or cookie_id' });
     try {
-      const r = await fetch(`${SUPABASE_URL}/auth/v1/magiclink`, {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_KEY,
@@ -23,17 +23,22 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           email,
+          create_user: true,
           options: {
-            emailRedirectTo: `https://casinoconditions.com/api/auth/callback?cookie_id=${encodeURIComponent(cookie_id)}`
+            emailRedirectTo: `https://casinoconditions.com/api/auth-callback`
           }
         })
       });
+      const responseText = await r.text();
       if (!r.ok) {
-        const err = await r.json();
-        return res.status(400).json({ error: err.msg || 'Failed to send magic link' });
+        let errMsg = 'Failed to send magic link';
+        try { errMsg = JSON.parse(responseText)?.msg || JSON.parse(responseText)?.error_description || errMsg; } catch(e) {}
+        console.error('magic link error:', r.status, responseText);
+        return res.status(400).json({ error: errMsg });
       }
       return res.status(200).json({ success: true });
     } catch(e) {
+      console.error('magic link exception:', e);
       return res.status(500).json({ error: 'Server error' });
     }
   }
