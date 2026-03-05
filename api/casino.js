@@ -1039,11 +1039,15 @@ async function loadProfile() {
     const r = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}\` + emailParam);
     userProfile = await r.json();
     // If we got Rail Bird (0 pts) but are signed in, try fetching by email directly
-    if (email && localStorage.getItem('cc_signed_in') && (!userProfile.points || userProfile.points === 0) && !userProfile.email) {
+    if (email && localStorage.getItem('cc_signed_in') && (!userProfile.points || userProfile.points === 0)) {
       try {
         const r2 = await fetch(\`/api/profile?cookie_id=\${encodeURIComponent(userCookieId)}&email=\${encodeURIComponent(email)}\`);
         const p2 = await r2.json();
-        if (p2.points > 0 || p2.email) userProfile = p2;
+        if (p2.points > 0 || p2.email) {
+          userProfile = p2;
+          renderProfile();
+          updateSignInBtn();
+        }
       } catch(e2) {}
     }
     // Always merge localStorage email/username in case DB hasn't propagated
