@@ -72,8 +72,15 @@ export default async function handler(req, res) {
       const emailProfile = emailProfiles?.[0] || null;
 
       if (emailProfile) {
-        // Found by email — update cookie_id to current browser cookie so profile loads correctly
+        // Found by email — delete any empty placeholder profile with the new cookie_id,
+        // then update the real profile's cookie_id to the current browser cookie
         if (cid && emailProfile.cookie_id !== cid) {
+          // Delete the empty profile that was auto-created for this cookie (if any)
+          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cid)}&points=eq.0&email=is.null`, {
+            method: 'DELETE',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+          });
+          // Now update the real profile to use this cookie_id
           await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?id=eq.${emailProfile.id}`, {
             method: 'PATCH',
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
