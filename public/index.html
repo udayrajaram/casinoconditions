@@ -282,6 +282,11 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .casino-meta-row{display:flex;gap:20px;flex-wrap:wrap}
 .casino-meta-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .casino-meta-item strong{color:var(--text)}
+.rank-bar-wrap{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}.rank-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#4caf70);border-radius:3px;transition:width .6s ease}
+.mobile-profile-bar{display:none;background:#fff;border-bottom:1px solid var(--border);padding:12px 16px;align-items:center;justify-content:space-between}
+.mobile-profile-bar.visible{display:flex}
+body.dark .rank-bar-wrap{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}.rank-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#4caf70);border-radius:3px;transition:width .6s ease}
+.mobile-profile-bar{background:#161614}
 @media(max-width:768px){.dir-grid{grid-template-columns:1fr}.casino-hero{padding:24px 20px}}
 footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-between;margin-top:20px;border-top:1px solid var(--border);background:var(--surface)}
 .footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
@@ -373,6 +378,21 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 </nav>
 
 <!-- HERO -->
+<div class="mobile-profile-bar" id="mobileProfileBar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:22px" id="mpbEmoji">🎰</span>
+    <div>
+      <div style="font-size:14px;font-weight:700" id="mpbRankName">Rail Bird</div>
+      <div style="font-size:12px;color:var(--muted)"><span id="mpbPoints">0</span> pts · <span id="mpbStreak"></span></div>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div class="rank-bar-wrap" style="width:80px;margin-bottom:4px">
+      <div class="rank-bar-fill" id="mpbBar" style="width:0%"></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted)" id="mpbNext"></div>
+  </div>
+</div>
 <div class="hero" id="heroSection">
   <div class="hero-eyebrow"><div class="live-dot"></div> LIVE FLOOR REPORTS</div>
   <h1>Know before<br>you <span>go.</span></h1>
@@ -1660,10 +1680,26 @@ document.getElementById('signInModal').addEventListener('click', function(e) {
         const btn = document.getElementById('signInBtn');
         const name = profile.username || localStorage.getItem('cc_username') || profile.email?.split('@')[0] || '';
         if (btn && name) btn.textContent = '👤 ' + name;
-        // Keep localStorage in sync
         if (profile.email) localStorage.setItem('cc_email', profile.email);
         if (profile.username) localStorage.setItem('cc_username', profile.username);
         if (profile.email) localStorage.setItem('cc_signed_in', '1');
+      }
+      // Update mobile profile bar
+      const RANKS = [{name:'Rail Bird',min:0,emoji:'🎰'},{name:'Fish',min:50,emoji:'🐟'},{name:'Regular',min:150,emoji:'♠️'},{name:'Floor Regular',min:400,emoji:'🎲'},{name:'High Roller',min:800,emoji:'💰'},{name:'Whale',min:1500,emoji:'👑'}];
+      const pts = profile.points || 0;
+      let rank = RANKS[0], next = null;
+      for (const r of RANKS) { if (pts >= r.min) rank = r; }
+      next = RANKS.find(r => r.min > pts) || null;
+      const bar = document.getElementById('mobileProfileBar');
+      if (bar && (profile.email || profile.points > 0)) {
+        bar.classList.add('visible');
+        document.getElementById('mpbEmoji').textContent = rank.emoji;
+        document.getElementById('mpbRankName').textContent = rank.name;
+        document.getElementById('mpbPoints').textContent = pts.toLocaleString();
+        document.getElementById('mpbBar').style.width = next ? Math.round(((pts - rank.min) / (next.min - rank.min)) * 100) + '%' : '100%';
+        document.getElementById('mpbNext').textContent = next ? (next.min - pts) + ' to ' + next.name : '👑 Max rank';
+        const streak = profile.streak_days || 0;
+        document.getElementById('mpbStreak').textContent = streak > 1 ? '🔥 ' + streak + 'd' : '';
       }
     }).catch(() => {});
 })();
