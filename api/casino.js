@@ -1367,20 +1367,68 @@ function showCasinoSignIn() {
     document.getElementById('profileCard')?.scrollIntoView({behavior:'smooth'});
     return;
   }
-  // On mobile scroll to compose which has the sign in prompts
-  // Or if signed in, show a quick status toast
+  // On mobile — show modal with current state
   if (userProfile?.email) {
+    // Already signed in — show toast with rank
     const rank = userProfile.rank || 'Rail Bird';
     const pts = userProfile.points || 0;
     const rankEmojis = {'Rail Bird':'🎰','Fish':'🐟','Regular':'♠️','Floor Regular':'🎲','High Roller':'💰','Whale':'👑'};
     showToast(\`\${rankEmojis[rank] || '🎰'} \${userProfile.username || rank} · \${pts} pts\`);
-    // Update button to show name
     const btn = document.getElementById('casinoSignInBtn');
     if (btn) btn.textContent = '👤 ' + (userProfile.username || rank);
   } else {
-    // Scroll to compose card where sign in prompt lives
-    document.getElementById('composeCard')?.scrollIntoView({behavior:'smooth'});
-    showToast('Sign in via the profile section below 👇');
+    // Not signed in — show inline sign-in modal
+    showMobileSignInModal();
+  }
+}
+
+function showMobileSignInModal() {
+  // Remove existing modal if any
+  document.getElementById('mobileSignInModal')?.remove();
+  const modal = document.createElement('div');
+  modal.id = 'mobileSignInModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = \`
+    <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:17px;font-weight:700;color:#1a1a18">🎰 Sign in</div>
+        <button onclick="document.getElementById('mobileSignInModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888;line-height:1">×</button>
+      </div>
+      <p style="font-size:13px;color:#888;margin:0 0 14px;line-height:1.6">Enter your email for a magic link — no password needed. Your points stay linked.</p>
+      <input id="mobileSignInEmail" type="email" placeholder="your@email.com" style="width:100%;padding:10px 14px;border:1px solid #e8e8e4;border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:10px;box-sizing:border-box;outline:none">
+      <button onclick="sendMobileSignInLink()" style="width:100%;background:#1a6b3c;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">✉️ Send Magic Link</button>
+      <div id="mobileSignInStatus" style="font-size:12px;margin-top:10px;text-align:center;display:none"></div>
+    </div>
+  \`;
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('mobileSignInEmail')?.focus(), 100);
+}
+
+async function sendMobileSignInLink() {
+  const email = document.getElementById('mobileSignInEmail')?.value.trim();
+  if (!email || !email.includes('@')) return;
+  const status = document.getElementById('mobileSignInStatus');
+  status.style.display = 'block';
+  status.style.color = '#888';
+  status.textContent = 'Sending...';
+  try {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'magic_link', email, cookie_id: userCookieId })
+    });
+    const data = await r.json();
+    if (data.success) {
+      status.style.color = '#1a6b3c';
+      status.textContent = '✅ Check your email!';
+    } else {
+      status.style.color = '#e74c3c';
+      status.textContent = '❌ ' + (data.error || 'Something went wrong');
+    }
+  } catch(e) {
+    status.style.color = '#e74c3c';
+    status.textContent = '❌ Connection error';
   }
 }
 
