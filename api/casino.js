@@ -819,6 +819,12 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
       </div>
     </div>
 
+    <!-- LEADERBOARD -->
+    <div class="card" id="leaderboardCard">
+      <div class="card-title">🥇 Top Reporters</div>
+      <div id="leaderboardContent" style="color:var(--muted);font-size:13px">Loading...</div>
+    </div>
+
     <!-- CC SCORE -->
     <div class="card" id="ccScoreCard">
       <div class="card-title">🏆 CC Score</div>
@@ -1323,10 +1329,38 @@ function renderBookmark(saved) {
   renderBookmark(bookmarks.includes(CASINO_SLUG));
 })();
 
+// ── LEADERBOARD ────────────────────────────────────────────
+async function loadLeaderboard() {
+  try {
+    const r = await fetch('/api/leaderboard');
+    const data = await r.json();
+    const el = document.getElementById('leaderboardContent');
+    if (!el) return;
+    if (!data.leaderboard?.length) {
+      el.innerHTML = '<div style="font-size:13px;color:var(--muted)">No reporters yet — be first! 🎰</div>';
+      return;
+    }
+    el.innerHTML = data.leaderboard.map((p, i) => \`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;font-weight:700;color:var(--muted);width:16px">\${i+1}</span>
+          <span style="font-size:13px">\${p.rank_emoji}</span>
+          <div>
+            <div style="font-size:13px;font-weight:600">\${p.name}</div>
+            <div style="font-size:11px;color:var(--muted)">\${p.rank}\${p.streak > 1 ? ' · 🔥'+p.streak : ''}</div>
+          </div>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'DM Mono',monospace">\${p.points.toLocaleString()}</span>
+      </div>
+    \`).join('');
+  } catch(e) {}
+}
+
 // ── INIT ───────────────────────────────────────────────────
 loadProfile();
 loadScore();
 loadReactions();
+loadLeaderboard();
 renderFeed(allPosts);
 
 setInterval(async () => {
