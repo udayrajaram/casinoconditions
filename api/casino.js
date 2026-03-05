@@ -674,6 +674,16 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   </div>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
   <button class="btn-outline" id="casinoSignInBtn" onclick="showCasinoSignIn()" style="font-size:13px;padding:7px 14px">Sign in</button>
+<script>
+(function(){
+  const u = localStorage.getItem('cc_username') || '';
+  const e = localStorage.getItem('cc_email') || '';
+  if (localStorage.getItem('cc_signed_in') && (u || e)) {
+    const b = document.getElementById('casinoSignInBtn');
+    if (b) b.textContent = '\u{1F464} ' + (u || e.split('@')[0]);
+  }
+})();
+</script>
   <button class="btn nav-post-btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
 </nav>
 
@@ -705,6 +715,22 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 
 <!-- MOBILE ONLY: key cards shown below hero -->
 <div class="mobile-cards">
+  <!-- MOBILE PROFILE CARD -->
+  <div class="card" id="mobileProfileCard" style="display:none">
+    <div class="card-title">🎰 Your Profile</div>
+    <div style="display:flex;align-items:center;gap:14px;padding:4px 0 8px">
+      <div style="font-size:36px" id="mobileRankEmoji">🎰</div>
+      <div style="flex:1">
+        <div style="font-size:17px;font-weight:700" id="mobileRankName">Rail Bird</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px"><span id="mobilePoints">0</span> pts</div>
+        <div class="rank-bar-wrap" style="margin-top:8px">
+          <div class="rank-bar-fill" id="mobileRankBar" style="width:0%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px" id="mobileRankProgress"></div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--accent);font-weight:600" id="mobileStreakDisplay"></div>
+  </div>
   <div class="card" id="ccScoreCardMobile">
     <div class="card-title">🏆 CC Score</div>
     <div style="text-align:center;padding:8px 0 12px">
@@ -1014,6 +1040,21 @@ function renderProfile() {
       document.getElementById('usernameInput').value = userProfile.username;
       localStorage.setItem('cc_username', userProfile.username);
     }
+    // Show mobile profile card when signed in
+    const mpc = document.getElementById('mobileProfileCard');
+    if (mpc) mpc.style.display = 'block';
+  }
+  // Update mobile profile card
+  const mRankEmoji = document.getElementById('mobileRankEmoji');
+  if (mRankEmoji) {
+    mRankEmoji.textContent = rank.emoji;
+    document.getElementById('mobileRankName').textContent = rank.name;
+    document.getElementById('mobilePoints').textContent = pts.toLocaleString();
+    const mpct = next ? Math.round(((pts - rank.min) / (next.min - rank.min)) * 100) : 100;
+    document.getElementById('mobileRankBar').style.width = mpct + '%';
+    document.getElementById('mobileRankProgress').textContent = next ? (next.min - pts) + ' pts to ' + next.emoji + ' ' + next.name : '👑 Max rank!';
+    const mStreak = document.getElementById('mobileStreakDisplay');
+    if (mStreak) mStreak.textContent = streak > 1 ? '🔥 ' + streak + ' day streak!' : '';
   }
 }
 
