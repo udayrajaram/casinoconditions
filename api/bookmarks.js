@@ -191,19 +191,19 @@ async function render() {
   // Render skeleton first
   wrap.innerHTML = bookmarks.map(slug => {
     const info = getCasinoInfo(slug);
-    return \`<a class="card" href="/\${slug}" id="card-\${slug}">
+    return \`<div class="card" id="card-\${slug}" onclick="window.location='/\${slug}'" style="cursor:pointer">
       <div class="card-emoji">🎰</div>
       <div class="card-body">
         <div class="card-name">\${info.name}</div>
         <div class="card-loc">📍 \${info.location}</div>
         <div class="card-status"><div class="dot dot-unknown"></div><span>Loading...</span></div>
       </div>
-      <div class="card-right">
+      <div class="card-right" onclick="event.stopPropagation()">
         <div class="card-updates" id="updates-\${slug}">—</div>
         <div class="card-last" id="last-\${slug}"></div>
         <button class="remove-btn" onclick="removeBookmark(event, '\${slug}')" title="Remove bookmark">✕</button>
       </div>
-    </a>\`;
+    </div>\`;
   }).join('');
 
   // Fetch live data for each casino
