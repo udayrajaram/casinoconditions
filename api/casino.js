@@ -352,6 +352,23 @@ function renderPost(post) {
   </div>`;
 }
 
+const STATE_TZ = {
+  'CT':'America/New_York','NY':'America/New_York','NJ':'America/New_York','PA':'America/New_York',
+  'MA':'America/New_York','RI':'America/New_York','NH':'America/New_York','VT':'America/New_York',
+  'ME':'America/New_York','MD':'America/New_York','DE':'America/New_York','VA':'America/New_York',
+  'NC':'America/New_York','SC':'America/New_York','GA':'America/New_York','FL':'America/New_York',
+  'OH':'America/New_York','MI':'America/New_York','IN':'America/Indiana/Indianapolis',
+  'KY':'America/New_York','WV':'America/New_York',
+  'IL':'America/Chicago','WI':'America/Chicago','MN':'America/Chicago','IA':'America/Chicago',
+  'MO':'America/Chicago','AR':'America/Chicago','LA':'America/Chicago','MS':'America/Chicago',
+  'AL':'America/Chicago','TN':'America/Chicago',
+  'TX':'America/Chicago','OK':'America/Chicago','KS':'America/Chicago','NE':'America/Chicago',
+  'SD':'America/Chicago','ND':'America/Chicago',
+  'MT':'America/Denver','WY':'America/Denver','CO':'America/Denver','NM':'America/Denver',
+  'UT':'America/Denver','ID':'America/Denver','AZ':'America/Phoenix',
+  'NV':'America/Los_Angeles','CA':'America/Los_Angeles','OR':'America/Los_Angeles',
+  'WA':'America/Los_Angeles','HI':'Pacific/Honolulu','AK':'America/Anchorage'
+};
 export default async function handler(req, res) {
   const slug = req.query.slug;
   const casino = CASINOS.find(c => c.slug === slug);
@@ -671,6 +688,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
     <a class="nav-link" href="/browse">Browse Casinos</a>
     <a class="nav-link" href="/poker-rooms">Poker Rooms</a>
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
+    <a class="nav-link" href="/bookmarks">⭐ Saved</a>
   </div>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
   <button class="btn-outline" id="casinoSignInBtn" onclick="showCasinoSignIn()" style="font-size:13px;padding:7px 14px">Sign in</button>
@@ -954,6 +972,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 <script>
 const CASINO_NAME = ${JSON.stringify(casino.name)};
 const CASINO_SLUG = ${JSON.stringify(casino.slug)};
+const CASINO_TZ = ${JSON.stringify(STATE_TZ[casino.state] || 'America/New_York')};
 const SUPABASE_URL = '${SUPABASE_URL}';
 const SUPABASE_KEY = '${SUPABASE_KEY}';
 let allPosts = ${JSON.stringify(posts)};
@@ -1289,9 +1308,44 @@ async function helpful(btn, id) {
   } catch(e) {}
 }
 
+// Time-aware post validation
+function getCasinoLocalHour() {
+  // Use casino's timezone offset from IANA if available, else estimate from state
+  const tz = CASINO_TZ || 'America/New_York';
+  try {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: tz }).formatToParts(now);
+    return parseInt(parts.find(p => p.type === 'hour').value);
+  } catch(e) { return new Date().getHours(); }
+}
+
+function checkTimeConflict(body) {
+  const hour = getCasinoLocalHour();
+  const lower = body.toLowerCase();
+  const isDay = hour >= 7 && hour < 17;
+  const isNight = hour >= 20 || hour < 4;
+  const dayWords = ['tonight', 'tonight's', 'last night', 'this evening', 'evening crowd'];
+  const nightWords = ['this morning', 'today's lunch', 'afternoon'];
+  if (isDay && dayWords.some(w => lower.includes(w))) {
+    return "Heads up — it's daytime at this casino. Did you mean to say "tonight"?";
+  }
+  if (isNight && nightWords.some(w => lower.includes(w))) {
+    return "Heads up — it's nighttime at this casino. Double-check your timing!";
+  }
+  return null;
+}
+
 async function submitPost() {
   const body = document.getElementById('composeBody').value.trim();
   if (!body) return;
+
+  // Time conflict check
+  const timeWarning = checkTimeConflict(body);
+  if (timeWarning) {
+    const proceed = confirm(timeWarning + '\n\nPost anyway?');
+    if (!proceed) return;
+  }
+
   const btn = document.getElementById('postBtn');
   btn.disabled = true; btn.textContent = 'Posting...';
   const author = isAnon ? 'Anonymous' : (document.getElementById('authorName').value.trim() || 'Anonymous');
