@@ -1642,9 +1642,14 @@ async function loadBestTime() {
     });
     const data = await r.json();
     const email = data.profile?.email || '';
+    const username = data.profile?.username || '';
     if (email) {
       localStorage.setItem('cc_email', email);
       localStorage.setItem('cc_signed_in', '1');
+      if (username) localStorage.setItem('cc_username', username);
+      // Update nav button immediately with correct name
+      const btn = document.getElementById('casinoSignInBtn');
+      if (btn) btn.textContent = '\u{1F464} ' + (username || email.split('@')[0]);
     }
   } catch(e) { console.error('token detection error:', e); }
 })();
