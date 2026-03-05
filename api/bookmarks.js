@@ -141,10 +141,11 @@ async function getRecentActivity(casinoName) {
     });
     const reactions = await r.json();
 
-    const r2 = await fetch(\`\${SUPABASE_URL}/rest/v1/posts?casino=eq.\${encodeURIComponent(casinoName)}&created_at=gte.\${since}&select=created_at&order=created_at.desc&limit=1\`, {
+    const r2 = await fetch(\`\${SUPABASE_URL}/rest/v1/posts?casino=eq.\${encodeURIComponent(casinoName)}&created_at=gte.\${since}&select=created_at&order=created_at.desc&limit=20\`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
     const posts = await r2.json();
+    const postCount = posts?.length || 0;
 
     // Tally reactions
     const tally = { Busy: 0, Moderate: 0, Quiet: 0 };
@@ -159,12 +160,12 @@ async function getRecentActivity(casinoName) {
 
     let lastReport = '';
     if (posts?.[0]?.created_at) {
-      const diff = Date.now() - new Date(posts[0].created_at).getTime();
+      const diff = Math.abs(Date.now() - new Date(posts[0].created_at).getTime());
       const mins = Math.floor(diff / 60000);
-      lastReport = mins < 60 ? \`\${mins}m ago\` : \`\${Math.floor(mins/60)}h ago\`;
+      lastReport = mins < 60 ? \`\${mins}m ago\` : mins < 1440 ? \`\${Math.floor(mins/60)}h ago\` : \`\${Math.floor(mins/1440)}d ago\`;
     }
 
-    return { status, dotClass, total, lastReport };
+    return { status, dotClass, total, postCount, lastReport };
   } catch(e) {
     return { status: 'Unknown', dotClass: 'dot-unknown', total: 0, lastReport: '' };
   }
@@ -213,7 +214,8 @@ async function render() {
     if (!card) return;
     const statusEl = card.querySelector('.card-status');
     statusEl.innerHTML = \`<div class="dot \${activity.dotClass}"></div><span>\${activity.status}</span>\`;
-    document.getElementById('updates-' + slug).textContent = activity.total > 0 ? activity.total + ' reactions today' : 'No reactions yet';
+    const updatesText = activity.total > 0 ? activity.total + ' reactions today' : activity.postCount > 0 ? activity.postCount + ' posts today' : 'No activity today';
+    document.getElementById('updates-' + slug).textContent = updatesText;
     if (activity.lastReport) document.getElementById('last-' + slug).textContent = 'Last report: ' + activity.lastReport;
     // Set emoji based on status
     card.querySelector('.card-emoji').textContent = activity.status === 'Busy' ? '🔥' : activity.status === 'Moderate' ? '🟡' : activity.status === 'Quiet' ? '😴' : '🎰';

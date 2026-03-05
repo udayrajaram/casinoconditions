@@ -592,6 +592,21 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .tab.active{background:var(--text);color:#fff;border-color:var(--text)}
 .tab:hover:not(.active){border-color:var(--text);color:var(--text)}
 .score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.bt-day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:10px 0}
+.bt-day{display:flex;flex-direction:column;align-items:center;gap:3px}
+.bt-day-label{font-size:10px;color:var(--muted);font-weight:500}
+.bt-day-bar{width:100%;border-radius:3px;min-height:4px;transition:height .4s ease}
+.bt-day-score{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.bt-slot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.bt-slot{background:var(--bg);border-radius:8px;padding:8px 10px;text-align:center}
+.bt-slot-icon{font-size:18px;margin-bottom:2px}
+.bt-slot-label{font-size:11px;font-weight:600;color:var(--text)}
+.bt-slot-hours{font-size:10px;color:var(--muted)}
+.bt-slot-bar-wrap{height:4px;background:var(--border);border-radius:2px;margin:5px 0 3px;overflow:hidden}
+.bt-slot-bar{height:100%;border-radius:2px;transition:width .5s}
+.bt-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:12px;margin-top:8px}
+.bt-badge-busy{background:#edf5f0;color:#1a6b3c}
+.bt-badge-quiet{background:#fef3e2;color:#b07d2a}
 .score-label{font-size:12px;color:var(--muted)}
 .score-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:2px;margin:0 10px;overflow:hidden}
 .score-bar-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .5s}
@@ -895,6 +910,10 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
     </div>
 
     <!-- NEARBY -->
+    <div class="card" id="bestTimeCard" style="display:none">
+      <div class="card-title">🕐 Best Time to Visit</div>
+      <div id="bestTimeContent"><div style="color:var(--muted);font-size:13px">Loading...</div></div>
+    </div>
     ${nearbyHtml ? `<div class="card"><div class="card-title">📍 Nearby in ${casino.state}</div>${nearbyHtml}</div>` : ''}
   </div>
 </div>
@@ -1551,6 +1570,57 @@ function updateSignInBtn() {
 }
 
 // ── INIT ───────────────────────────────────────────────────
+// ── BEST TIME TO VISIT ─────────────────────────────────────
+async function loadBestTime() {
+  try {
+    const r = await fetch(`/api/best-time?casino=${encodeURIComponent(CASINO_NAME)}`);
+    const data = await r.json();
+    const card = document.getElementById('bestTimeCard');
+    const content = document.getElementById('bestTimeContent');
+    if (!data.hasData || !card) return;
+    card.style.display = 'block';
+
+    const maxScore = Math.max(...data.dayScores.filter(d => d.score !== null).map(d => d.score), 1);
+
+    const dayBars = data.dayScores.map(d => {
+      const pct = d.score !== null ? Math.round((d.score / 100) * 100) : 0;
+      const color = d.score === null ? 'var(--border)' : d.score >= 66 ? '#1a6b3c' : d.score >= 33 ? '#e6a817' : '#e05c5c';
+      const height = d.score !== null ? Math.max(8, Math.round((d.score / maxScore) * 40)) : 4;
+      const tip = d.score !== null ? `${d.dayFull}: ${d.topReaction} (${d.score}% busy score)` : `${d.dayFull}: no data`;
+      return `<div class="bt-day" title="${tip}">
+        <div class="bt-day-bar" style="height:${height}px;background:${color}"></div>
+        <div class="bt-day-label">${d.day}</div>
+      </div>`;
+    }).join('');
+
+    const slotCards = data.slotScores.map(s => {
+      const pct = s.score !== null ? s.score : 0;
+      const color = pct >= 66 ? '#1a6b3c' : pct >= 33 ? '#e6a817' : '#e05c5c';
+      return `<div class="bt-slot">
+        <div class="bt-slot-icon">${s.icon}</div>
+        <div class="bt-slot-label">${s.label}</div>
+        <div class="bt-slot-hours">${s.hours}</div>
+        <div class="bt-slot-bar-wrap"><div class="bt-slot-bar" style="width:${pct}%;background:${color}"></div></div>
+        <div style="font-size:10px;color:var(--muted)">${s.score !== null ? s.topReaction : '—'}</div>
+      </div>`;
+    }).join('');
+
+    const bestBadge = data.bestDay ? `<div class="bt-badge bt-badge-busy">🔥 Busiest: ${data.bestDay.dayFull}</div>` : '';
+    const quietBadge = data.worstDay ? `<div class="bt-badge bt-badge-quiet">😴 Quietest: ${data.worstDay.dayFull}</div>` : '';
+
+    content.innerHTML = `
+      <div class="bt-day-grid">${dayBars}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${bestBadge}${quietBadge}</div>
+      <div style="margin-top:12px;margin-bottom:4px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">By time of day</div>
+      <div class="bt-slot-grid">${slotCards}</div>
+      ${data.summary ? `<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5">${data.summary}</div>` : ''}
+      <div style="font-size:10px;color:var(--muted);margin-top:8px">Based on ${data.totalReactions} reports in the last 90 days</div>
+    `;
+  } catch(e) {
+    console.error('best-time error:', e);
+  }
+}
+
 // ── MAGIC LINK TOKEN DETECTION ────────────────────────────
 // Catch Supabase token if redirected back to any page with #access_token
 (async function detectMagicLinkToken() {
@@ -1586,6 +1656,7 @@ loadProfile();
 loadScore();
 loadReactions();
 loadLeaderboard();
+loadBestTime();
 renderFeed(allPosts);
 
 setInterval(async () => {
