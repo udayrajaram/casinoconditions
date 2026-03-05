@@ -55,6 +55,8 @@ export default function handler(req, res) {
   const urls = [
     { loc: base, priority: '1.0', changefreq: 'hourly' },
     { loc: `${base}/browse`, priority: '0.8', changefreq: 'daily' },
+    { loc: `${base}/las-vegas-casinos`, priority: '0.9', changefreq: 'daily' },
+    { loc: `${base}/poker-rooms`, priority: '0.9', changefreq: 'daily' },
     ...CASINOS.map(slug => ({
       loc: `${base}/${slug}`,
       priority: '0.9',

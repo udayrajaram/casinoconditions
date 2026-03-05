@@ -14,8 +14,8 @@ export default async function handler(req, res) {
 
   // Fetch all in parallel
   const [postsRes, weatherRes, placesRes] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/posts?casino=eq.${encodeURIComponent(casino)}&select=created_at,helpful_count`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    fetch(`${SUPABASE_URL}/rest/v1/posts?casino=eq.${encodeURIComponent(casino)}&select=created_at,helpful_count&limit=1000`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Range': '0-999' }
     }),
     lat && lon ? fetch(`https://weather.googleapis.com/v1/currentConditions:lookup?key=${key}&location.latitude=${lat}&location.longitude=${lon}&unitsSystem=IMPERIAL`).then(r => { console.log('weather status:', r.status); return r; }).catch(e => { console.error('weather fetch error:', e); return null; }) : Promise.resolve(null),
     placeId ? fetch(`https://places.googleapis.com/v1/places/${placeId}?fields=rating,userRatingCount&key=${key}`).then(r => { console.log('places status:', r.status); return r; }).catch(e => { console.error('places fetch error:', e); return null; }) : Promise.resolve(null),

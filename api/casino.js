@@ -152,6 +152,34 @@ async function getPlaceId(casinoName, casinoLocation, key) {
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
+// Cache Google rating + weather in Supabase for 1 hour to avoid API costs
+async function getCached(casinoName) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/casino_cache?casino=eq.${encodeURIComponent(casinoName)}&select=*&limit=1`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const data = await r.json();
+    if (!data?.[0]) return null;
+    const age = Date.now() - new Date(data[0].updated_at).getTime();
+    if (age > 3600000) return null; // expired after 1 hour
+    return data[0];
+  } catch(e) { return null; }
+}
+
+async function setCached(casinoName, payload) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/casino_cache?casino=eq.${encodeURIComponent(casinoName)}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    await fetch(`${SUPABASE_URL}/rest/v1/casino_cache`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ casino: casinoName, ...payload, updated_at: new Date().toISOString() })
+    });
+  } catch(e) {}
+}
+
 const CASINOS = [
   { name: 'Mohegan Sun', location: 'Uncasville, CT', state: 'CT', miles: 30, slug: 'mohegan-sun', desc: 'One of the largest casinos in the US with 300,000+ sq ft of gaming, 4,000 slots, 300 table games, and 30 poker tables.' },
   { name: 'Foxwoods Resort Casino', location: 'Mashantucket, CT', state: 'CT', miles: 41, slug: 'foxwoods', desc: 'The second-largest casino in the US featuring 340,000 sq ft of gaming, 3,500 slots, 250 table games, and a 54-table poker room.' },
@@ -336,24 +364,43 @@ export default async function handler(req, res) {
   const coords = CASINO_COORDS[casino.name] || null;
   let placeId = CASINO_PLACE_IDS[casino.name] || null;
 
-  // If no hardcoded place ID, look it up
-  if (!placeId && key) {
+  // Check cache first
+  let cached = await getCached(casino.name);
+
+  // If no hardcoded place ID and not cached, look it up
+  if (!placeId && !cached?.place_id && key) {
     placeId = await getPlaceId(casino.name, casino.location, key);
+  } else if (cached?.place_id) {
+    placeId = cached.place_id;
   }
 
-  // Fetch posts, weather, and places all in parallel
-  const [postsRes, weatherRes, placesRes] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/posts?casino=eq.${encodeURIComponent(casino.name)}&order=created_at.desc&limit=50`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-    }),
-    coords && key ? fetch(`https://weather.googleapis.com/v1/currentConditions:lookup?key=${key}&location.latitude=${coords[0]}&location.longitude=${coords[1]}&unitsSystem=IMPERIAL`) : Promise.resolve(null),
-    placeId && key ? fetch(`https://places.googleapis.com/v1/places/${placeId}?fields=rating,userRatingCount&key=${key}`) : Promise.resolve(null),
-  ]);
-
+  // Fetch posts always fresh, use cache for expensive Google/weather APIs
   let posts = [], weather = null, places = null;
+
+  const postsRes = await fetch(`${SUPABASE_URL}/rest/v1/posts?casino=eq.${encodeURIComponent(casino.name)}&order=created_at.desc&limit=50`, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+  });
   try { posts = await postsRes.json(); } catch(e) {}
-  try { if (weatherRes) weather = await weatherRes.json(); } catch(e) {}
-  try { if (placesRes) places = await placesRes.json(); } catch(e) {}
+
+  if (cached) {
+    // Use cached data
+    weather = cached.weather_data ? JSON.parse(cached.weather_data) : null;
+    places = cached.places_data ? JSON.parse(cached.places_data) : null;
+  } else {
+    // Fetch fresh from APIs and cache
+    const [weatherRes, placesRes] = await Promise.all([
+      coords && key ? fetch(`https://weather.googleapis.com/v1/currentConditions:lookup?key=${key}&location.latitude=${coords[0]}&location.longitude=${coords[1]}&unitsSystem=IMPERIAL`) : Promise.resolve(null),
+      placeId && key ? fetch(`https://places.googleapis.com/v1/places/${placeId}?fields=rating,userRatingCount&key=${key}`) : Promise.resolve(null),
+    ]);
+    try { if (weatherRes) weather = await weatherRes.json(); } catch(e) {}
+    try { if (placesRes) places = await placesRes.json(); } catch(e) {}
+    // Cache the results
+    await setCached(casino.name, {
+      place_id: placeId,
+      weather_data: weather ? JSON.stringify(weather) : null,
+      places_data: places ? JSON.stringify(places) : null,
+    });
+  }
 
   // Parse weather
   let weatherHtml = '<div style="color:var(--muted)">Weather unavailable</div>';
@@ -397,8 +444,43 @@ export default async function handler(req, res) {
       <div class="nearby-loc">${c.location}</div>
     </a>`).join('');
 
-  const pageTitle = `${casino.name} Casino Floor Conditions — Real-Time Reports | CasinoConditions`;
-  const pageDesc = `Live floor reports for ${casino.name} in ${casino.location}. See current table game conditions, poker room wait times, and slot activity from real players. ${casino.desc}`;
+  const cityName = casino.location.split(',')[0].trim();
+  const stateName = casino.location.split(',')[1]?.trim() || '';
+  const hasPoker = casino.desc.toLowerCase().includes('poker');
+  const pageTitle = `${casino.name} Floor Conditions Right Now | ${cityName} Casino Updates`;
+  const pageDesc = `Is ${casino.name} busy right now? See real-time floor reports from players — poker room wait times, table game availability, slot conditions & crowd levels at ${casino.name} in ${casino.location}. Updated live.`;
+
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": pageTitle,
+    "description": pageDesc,
+    "url": `https://casinoconditions.com/${slug}`,
+    "about": {
+      "@type": "Casino",
+      "name": casino.name,
+      "address": { "@type": "PostalAddress", "addressLocality": cityName, "addressRegion": stateName, "addressCountry": "US" },
+      "description": casino.desc,
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://casinoconditions.com" },
+        { "@type": "ListItem", "position": 2, "name": "Browse Casinos", "item": "https://casinoconditions.com/browse" },
+        { "@type": "ListItem", "position": 3, "name": casino.name, "item": `https://casinoconditions.com/${slug}` }
+      ]
+    }
+  });
+
+  const faqSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": `Is ${casino.name} busy right now?`, "acceptedAnswer": { "@type": "Answer", "text": `Check the live floor reports on CasinoConditions for current crowd levels, table game availability, and poker room wait times at ${casino.name}.` }},
+      { "@type": "Question", "name": `What is the best time to visit ${casino.name}?`, "acceptedAnswer": { "@type": "Answer", "text": `${casino.name} tends to be busiest on Friday and Saturday nights. Check the live CC Score on CasinoConditions for current conditions.` }},
+      { "@type": "Question", "name": `Does ${casino.name} have a poker room?`, "acceptedAnswer": { "@type": "Answer", "text": `${casino.desc.toLowerCase().includes('poker') ? `Yes, ${casino.name} has a poker room. See live poker room conditions on CasinoConditions.` : `Check CasinoConditions for the latest reports on poker availability at ${casino.name}.`}` }},
+    ]
+  });
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -415,6 +497,8 @@ export default async function handler(req, res) {
 <meta name="twitter:title" content="${pageTitle}">
 <meta name="twitter:description" content="${pageDesc}">
 <link rel="canonical" href="https://casinoconditions.com/${slug}">
+<script type="application/ld+json">${jsonLd}</script>
+<script type="application/ld+json">${faqSchema}</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RYX8RTNPQG"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-RYX8RTNPQG');</script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -498,13 +582,29 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 .live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:20px;font-family:'DM Mono',monospace}
 .live-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;flex-shrink:0}
-@media(max-width:768px){.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}footer{flex-direction:column;gap:12px;text-align:center;padding:20px}}
+@media(max-width:768px){.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.mobile-cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}footer{flex-direction:column;gap:12px;text-align:center;padding:20px}}
+@media(min-width:769px){.mobile-cards{display:none}}
 footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);background:var(--surface);margin-top:20px}
 .footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
 .footer-links{display:flex;gap:20px}
 .footer-link{font-size:12px;color:var(--muted);text-decoration:none}
 .footer-link:hover{color:var(--text)}
 .footer-copy{font-size:12px;color:var(--muted)}
+.seo-section{background:var(--surface);border-top:1px solid var(--border);margin-top:40px;padding:48px 24px}
+.seo-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px}
+.seo-block h2{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--text)}
+.seo-block p{font-size:14px;color:var(--muted);line-height:1.7}
+.seo-block p a{color:var(--accent);text-decoration:none}
+.seo-block p a:hover{text-decoration:underline}
+.faq-list{display:flex;flex-direction:column;gap:14px}
+.faq-item{border-left:2px solid var(--accent-light);padding-left:12px}
+.faq-q{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.faq-a{font-size:13px;color:var(--muted);line-height:1.6}
+.tips-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.tips-list li{font-size:13px;color:var(--muted);line-height:1.6;padding-left:16px;position:relative}
+.tips-list li::before{content:'→';position:absolute;left:0;color:var(--accent);font-weight:600}
+.last-reported{font-size:12px;color:var(--muted);margin-top:8px;font-family:'DM Mono',monospace}
+@media(max-width:768px){.seo-inner{grid-template-columns:1fr}.seo-section{padding:32px 16px}}
 </style>
 </head>
 <body>
@@ -516,6 +616,8 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   <div class="nav-links">
     <a class="nav-link" href="/">Home</a>
     <a class="nav-link" href="/browse">Browse Casinos</a>
+    <a class="nav-link" href="/poker-rooms">Poker Rooms</a>
+    <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
   </div>
   <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
   <button class="btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
@@ -539,7 +641,30 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
       <div style="text-align:right">
         <div class="status-badge" style="color:${statusColor}">● ${statusText}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:6px">${recentCount} update${recentCount !== 1 ? 's' : ''} today</div>
+        ${posts.length > 0 ? `<div class="last-reported">Last report: ${timeAgo(posts[0].created_at)}</div>` : ''}
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE ONLY: key cards shown below hero -->
+<div class="mobile-cards">
+  <div class="card" id="ccScoreCardMobile">
+    <div class="card-title">🏆 CC Score</div>
+    <div style="text-align:center;padding:8px 0 12px">
+      <div class="cc-score-big" id="scoreNumMobile">—</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">out of 100</div>
+    </div>
+    <div id="scoreFactorsMobile"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="card">
+      <div class="card-title">🌤 Weather</div>
+      <div id="weatherContentMobile">${weatherHtml}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">⭐ Google</div>
+      <div id="googleContentMobile">${googleHtml}</div>
     </div>
   </div>
 </div>
@@ -608,6 +733,76 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 
     <!-- NEARBY -->
     ${nearbyHtml ? `<div class="card"><div class="card-title">📍 Nearby in ${casino.state}</div>${nearbyHtml}</div>` : ''}
+  </div>
+</div>
+
+<!-- SEO CONTENT SECTION -->
+<div class="seo-section">
+  <div class="seo-inner">
+
+    <!-- ABOUT THIS CASINO -->
+    <div class="seo-block">
+      <h2>About ${casino.name}</h2>
+      <p>${casino.desc}</p>
+      <p style="margin-top:10px">Located in ${casino.location}, ${casino.name} is one of the most visited casinos in ${stateName}. Whether you're planning a poker session, hitting the table games, or just checking out the slot floor, CasinoConditions shows you real-time reports from players already on the floor — so you know what to expect before you make the drive.</p>
+      ${casino.desc.toLowerCase().includes('poker') ? `<p style="margin-top:10px">The poker room at ${casino.name} is tracked separately — check the <strong>🃏 Poker Room</strong> tab in the feed above for the latest wait times, game types running, and seat availability.</p>` : ''}
+    </div>
+
+    <!-- FAQ -->
+    <div class="seo-block" itemscope itemtype="https://schema.org/FAQPage">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <div class="faq-q" itemprop="name">Is ${casino.name} busy right now?</div>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <div itemprop="text">Check the live floor reports above — real players at ${casino.name} post updates on crowd levels, table availability, and poker room wait times. The CC Score at the top gives you an instant read: 70+ means it's active, under 40 means it's quiet.</div>
+          </div>
+        </div>
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <div class="faq-q" itemprop="name">What is the best time to visit ${casino.name}?</div>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <div itemprop="text">${casino.name} tends to be busiest Friday and Saturday nights and slowest Tuesday and Wednesday mornings. Bad weather tends to drive traffic up. Check the live CC Score above for current conditions before you head out.</div>
+          </div>
+        </div>
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <div class="faq-q" itemprop="name">Does ${casino.name} have a poker room?</div>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <div itemprop="text">${casino.desc.toLowerCase().includes('poker') ? `Yes — ${casino.name} has a poker room. Filter the feed above by "Poker Room" to see the latest wait times, what games are running, and current seat availability from players on the floor.` : `Check the live reports above filtered to "Poker Room" for the latest information on poker availability at ${casino.name}.`}</div>
+          </div>
+        </div>
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <div class="faq-q" itemprop="name">How crowded are the table games at ${casino.name}?</div>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <div itemprop="text">Filter the feed above by "Table Games" to see current reports on blackjack, craps, roulette, and baccarat availability at ${casino.name}. Players report table minimums, how many tables are open, and crowd levels in real time.</div>
+          </div>
+        </div>
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <div class="faq-q" itemprop="name">How do I post a floor report for ${casino.name}?</div>
+          <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <div itemprop="text">Use the "Share a floor update" box at the top of this page. Posting is completely anonymous — no account needed. Select a category, write your update, and hit Post. Your report goes live instantly and helps other players plan their visit.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPS + NEARBY -->
+    <div>
+      <div class="seo-block">
+        <h2>Tips for Visiting ${casino.name}</h2>
+        <ul class="tips-list">
+          <li>Check the CC Score before you leave — it updates based on recent player reports</li>
+          <li>Filter posts by category to find exactly what you need (poker, tables, slots)</li>
+          <li>Bad weather in ${cityName}? That usually means a busier floor and shorter poker room wait times</li>
+          <li>Weekday mornings are typically the quietest time to visit ${casino.name}</li>
+          <li>Post your own update when you leave — it takes 30 seconds and helps the community</li>
+        </ul>
+      </div>
+      ${nearbyCasinos.length > 0 ? `<div class="seo-block" style="margin-top:24px">
+        <h2>Other Casinos in ${stateName}</h2>
+        <p>Also check live conditions at these nearby casinos: ${nearbyCasinos.map(c => `<a href="/${c.slug}">${c.name}</a>`).join(', ')}.</p>
+      </div>` : ''}
+    </div>
+
   </div>
 </div>
 
@@ -714,15 +909,22 @@ async function loadScore() {
   try {
     const r = await fetch(\`/api/score?casino=\${encodeURIComponent(CASINO_NAME)}\`);
     const s = await r.json();
-    document.getElementById('scoreNum').textContent = s.total;
-    document.getElementById('scoreNum').style.color = s.total >= 70 ? '#1a6b3c' : s.total >= 40 ? '#b07d2a' : '#888';
-    document.getElementById('scoreFactors').innerHTML = [
+    const scoreColor = s.total >= 70 ? '#1a6b3c' : s.total >= 40 ? '#b07d2a' : '#888';
+    const factorsHtml = [
       ['Activity', s.factors.activity],
       ['Community', s.factors.engagement],
       ['Google', s.factors.google],
       ['Weather', s.factors.weather],
       ['Timing', s.factors.timing],
     ].map(([label, val]) => \`<div class="score-row"><span class="score-label">\${label}</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:\${val}%"></div></div><span class="score-val">\${val}</span></div>\`).join('');
+    // Update desktop sidebar
+    document.getElementById('scoreNum').textContent = s.total;
+    document.getElementById('scoreNum').style.color = scoreColor;
+    document.getElementById('scoreFactors').innerHTML = factorsHtml;
+    // Update mobile cards
+    document.getElementById('scoreNumMobile').textContent = s.total;
+    document.getElementById('scoreNumMobile').style.color = scoreColor;
+    document.getElementById('scoreFactorsMobile').innerHTML = factorsHtml;
   } catch(e) {}
 }
 

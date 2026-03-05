@@ -920,11 +920,14 @@ export default async function handler(req, res) {
     await sbFetch('/posts?is_seeded=eq.true', { method: 'DELETE' });
   }
 
-  for (const casino of CASINOS) {
-    const { weatherMain, temp } = await getWeather(casino.lat, casino.lon);
-    const count = await seedCasino(casino, weatherMain, temp);
-    if (count > 0) { total.seeded += count; total.casinos++; }
-    await new Promise(r => setTimeout(r, 100));
+  // Process in parallel batches of 10 — skip weather for speed
+  const batchSize = 10;
+  for (let i = 0; i < CASINOS.length; i += batchSize) {
+    const batch = CASINOS.slice(i, i + batchSize);
+    await Promise.all(batch.map(async casino => {
+      const count = await seedCasino(casino, null, 60);
+      if (count > 0) { total.seeded += count; total.casinos++; }
+    }));
   }
 
   res.status(200).json({ success: true, mode: force ? 'force' : 'normal', ...total, timestamp: new Date().toISOString() });
