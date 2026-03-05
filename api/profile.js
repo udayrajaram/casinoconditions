@@ -49,17 +49,18 @@ export default async function handler(req, res) {
         profile = emailProfiles?.[0] || null;
         // Update cookie_id to current device cookie if different
         if (profile && profile.cookie_id !== cookie_id) {
-          // Delete any empty placeholder with this cookie first
-          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cookie_id)}&points=eq.0&email=is.null`, {
+          // Delete ANY existing profile with this cookie (empty or not, as long as it's not the real one)
+          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cookie_id)}&id=neq.${profile.id}`, {
             method: 'DELETE',
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
           });
-          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?id=eq.${profile.id}`, {
+          // Now safe to update real profile's cookie_id
+          const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?id=eq.${profile.id}`, {
             method: 'PATCH',
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ cookie_id, updated_at: new Date().toISOString() })
           });
-          profile.cookie_id = cookie_id;
+          if (patchRes.ok) profile.cookie_id = cookie_id;
         }
       }
 
