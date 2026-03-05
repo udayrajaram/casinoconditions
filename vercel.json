@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/scarlet-pearl-casino-resort", "destination": "/scarlet-pearl-casino", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/browse", "destination": "/api/browse" },
