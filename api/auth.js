@@ -24,9 +24,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           email,
           create_user: true,
-          options: {
-            emailRedirectTo: `https://casinoconditions.com/api/auth-callback`
-          }
+          redirect_to: `https://casinoconditions.com/api/auth-callback`
         })
       });
       const responseText = await r.text();
