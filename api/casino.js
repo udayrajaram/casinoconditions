@@ -717,7 +717,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   const e = localStorage.getItem('cc_email') || '';
   if (localStorage.getItem('cc_signed_in') && (u || e)) {
     const b = document.getElementById('casinoSignInBtn');
-    if (b) b.textContent = '\u{1F464} ' + (u || e.split('@')[0]);
+    if (b) b.textContent = '👤 ' + (u || e.split('@')[0]);
   }
 })();
 </script>
@@ -1663,7 +1663,7 @@ async function loadBestTime() {
       if (username) localStorage.setItem('cc_username', username);
       // Update nav button immediately with correct name
       const btn = document.getElementById('casinoSignInBtn');
-      if (btn) btn.textContent = '\u{1F464} ' + (username || email.split('@')[0]);
+      if (btn) btn.textContent = '👤 ' + (username || email.split('@')[0]);
     }
   } catch(e) { console.error('token detection error:', e); }
 })();
