@@ -293,7 +293,7 @@ body.dark .search-dropdown{background:#1e1e1b;border-color:var(--accent)}
 .casino-meta-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .casino-meta-item strong{color:var(--text)}
 .rank-bar-wrap{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}.rank-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#4caf70);border-radius:3px;transition:width .6s ease}
-.mobile-profile-bar{display:none;background:#fff;border-bottom:1px solid var(--border);padding:10px 16px;align-items:center;justify-content:space-between;gap:12px}
+.mobile-profile-bar{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:60px;z-index:99}
 @media(max-width:768px){.mobile-profile-bar.visible{display:flex}}
 .rank-bar-wrap{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
 .rank-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#4caf70);border-radius:3px;transition:width .6s ease}
@@ -374,6 +374,9 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location='/bookmarks'">
+      <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
+    </span>
     <button class="btn-outline" id="signInBtn" onclick="showSignInModal()">Sign in</button>
     <script>
     (function(){
@@ -1800,6 +1803,15 @@ document.getElementById('signInModal').addEventListener('click', function(e) {
         document.getElementById('mpbEmoji').textContent = rank.emoji;
         document.getElementById('mpbRankName').textContent = rank.emoji + ' ' + rank.name;
         document.getElementById('mpbPoints').textContent = pts.toLocaleString();
+        // Update desktop nav badge
+        const badge = document.getElementById('navProfileBadge');
+        const signIn = document.getElementById('signInBtn');
+        if(badge && p.username){
+          document.getElementById('navRankEmoji').textContent = rank.emoji;
+          document.getElementById('navUsername').textContent = p.username;
+          badge.style.display = 'flex';
+          if(signIn) signIn.style.display = 'none';
+        }
         document.getElementById('mpbBar').style.width = next ? Math.round(((pts - rank.min) / (next.min - rank.min)) * 100) + '%' : '100%';
         document.getElementById('mpbNext').textContent = next ? (next.min - pts) + ' to ' + next.name : '👑 Max rank';
         const streak = profile.streak_days || 0;
