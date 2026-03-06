@@ -13,6 +13,7 @@
     { "source": "/browse", "destination": "/api/browse" },
     { "source": "/bookmarks", "destination": "/api/bookmarks" },
     { "source": "/api/best-time", "destination": "/api/best-time" },
+    { "source": "/api/submit-post", "destination": "/api/submit-post" },
     { "source": "/about", "destination": "/api/about" },
     { "source": "/terms", "destination": "/api/terms" },
     { "source": "/privacy", "destination": "/api/privacy" },
