@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Disallow API endpoints
+Disallow: /api/
+Disallow: /api/seed
+Disallow: /api/auth
+Disallow: /api/profile
+Disallow: /api/submit-post
+
+# Sitemap
+Sitemap: https://casinoconditions.com/sitemap.xml
