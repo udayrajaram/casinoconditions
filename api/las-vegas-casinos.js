@@ -90,14 +90,40 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 </head>
 <body>
 <nav>
-  <a href="/" class="logo"><div class="logo-dot"></div>Casino<span style="color:var(--accent)">Conditions</span></a>
+  <a class="logo" href="/">
+    <div class="logo-dot"></div>
+    <div class="logo-text">Casino<span>Conditions</span></div>
+  </a>
   <div class="nav-links">
-    <a href="/" class="nav-link">Home</a>
-    <a href="/browse" class="nav-link">Browse Casinos</a>
-    <a href="/las-vegas-casinos" class="nav-link" style="color:var(--accent)">Las Vegas</a>
-    <button class="dark-toggle" onclick="toggleDark()" id="darkToggle">🌙</button>
+    <a class="nav-link" href="/">Home</a>
+    <a class="nav-link" href="/browse">Browse Casinos</a>
+    <a class="nav-link" href="/poker-rooms">Poker Rooms</a>
+    <a class="nav-link" href="/las-vegas-casinos" style="color:var(--accent);font-weight:600">Las Vegas</a>
+    <a class="nav-link" href="/bookmarks">⭐ Saved</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location=\'/bookmarks\'">
+      <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
+    </span>
+    <button class="btn-outline" id="signInBtn" onclick="typeof showSignInModal===\'function\' ? showSignInModal() : (window.location=\'/\')" style="font-size:13px;padding:7px 14px">Sign in</button>
+    <button class="btn nav-post-btn" onclick="window.location=\'/\'">+ Post Update</button>
   </div>
 </nav>
+<div class="mobile-profile-bar" id="mobileProfileBar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>
+      <div style="font-size:12px;color:var(--muted)"><span id="mpbPoints">0</span> pts · <span id="mpbStreak"></span></div>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="mpbNextLabel"></div>
+    <div class="rank-bar-wrap" style="width:120px"><div class="rank-bar-fill" id="mpbBar" style="width:0%"></div></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px" id="mpbMaxLabel"></div>
+  </div>
+</div>
 <div class="hero">
   <div class="live-badge"><div class="live-dot"></div> LIVE FLOOR REPORTS</div>
   <h1>Las Vegas Casino Conditions Right Now</h1>
@@ -119,6 +145,47 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 <script>
 function toggleDark(){const d=document.body.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light');document.getElementById('darkToggle').textContent=d?'☀️':'🌙';}
 if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');document.getElementById('darkToggle').textContent='☀️';}
+</script>
+<script>
+function getNavCookieId(){let id=document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('cc_uid='));if(id)return id.split('=')[1];id='cc_'+Math.random().toString(36).slice(2)+Date.now().toString(36);document.cookie='cc_uid='+id+';max-age=31536000;path=/;SameSite=Lax';return id;}
+const NAV_RANKS=[{name:'Rail Bird',min:0,emoji:'\u{1F3B0}'},{name:'Fish',min:50,emoji:'\u{1F41F}'},{name:'Regular',min:150,emoji:'\u2660\uFE0F'},{name:'Floor Regular',min:400,emoji:'\u{1F3B2}'},{name:'High Roller',min:800,emoji:'\u{1F4B0}'},{name:'Whale',min:1500,emoji:'\u{1F451}'}];
+function getNavRank(pts){let r=NAV_RANKS[0];for(const rk of NAV_RANKS){if(pts>=rk.min)r=rk;}return r;}
+async function loadNavProfile(){
+  try{
+    const cid=getNavCookieId();
+    const em=localStorage.getItem('cc_email')||'';
+    let url='/api/profile?cookie_id='+encodeURIComponent(cid);
+    if(em)url+='&email='+encodeURIComponent(em);
+    const resp=await fetch(url);
+    const p=await resp.json();
+    if(!p||(!p.points&&!p.email))return;
+    const pts=p.points||0;
+    const rank=getNavRank(pts);
+    const next=NAV_RANKS.find(r=>r.min>pts);
+    const bar=document.getElementById('mobileProfileBar');
+    if(bar){
+      bar.classList.add('visible');
+      const el=function(id){return document.getElementById(id);};
+      if(el('mpbRankEmoji'))el('mpbRankEmoji').textContent=rank.emoji;
+      if(el('mpbRankName'))el('mpbRankName').textContent=rank.name;
+      if(el('mpbPoints'))el('mpbPoints').textContent=pts.toLocaleString();
+      if(el('mpbBar'))el('mpbBar').style.width=next?Math.round(((pts-rank.min)/(next.min-rank.min))*100)+'%':'100%';
+      if(el('mpbNextLabel'))el('mpbNextLabel').textContent=next?(next.min-pts)+' pts to '+next.emoji+' '+next.name:'Max rank reached';
+      if(el('mpbMaxLabel'))el('mpbMaxLabel').textContent=next?next.emoji+' '+next.name:'👑';
+    }
+    const badge=document.getElementById('navProfileBadge');
+    const signInBtn=document.getElementById('signInBtn');
+    if(badge&&p.username){
+      const e1=document.getElementById('navRankEmoji');
+      const e2=document.getElementById('navUsername');
+      if(e1)e1.textContent=rank.emoji;
+      if(e2)e2.textContent=p.username;
+      badge.style.display='flex';
+      if(signInBtn)signInBtn.style.display='none';
+    }
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded',loadNavProfile);
 </script>
 </body>
 </html>`;

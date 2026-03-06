@@ -1,4 +1,18 @@
-const SUPABASE_URL = process.env.SUPABASE_URL;
+const
+<div class="mobile-profile-bar" id="mobileProfileBar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>
+      <div style="font-size:12px;color:var(--muted)"><span id="mpbPoints">0</span> pts · <span id="mpbStreak"></span></div>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="mpbNextLabel"></div>
+    <div class="rank-bar-wrap" style="width:120px"><div class="rank-bar-fill" id="mpbBar" style="width:0%"></div></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px" id="mpbMaxLabel"></div>
+  </div>
+</div> SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 const RANKS = [

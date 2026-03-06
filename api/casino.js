@@ -311,6 +311,97 @@ const CASINOS = [
   { name: 'Rivers Casino & Resort Schenectady', location: 'Schenectady, NY', state: 'NY', miles: 170, slug: 'rivers-casino-schenectady', desc: 'Capital Region casino on the Mohawk River with 1,150+ slots, table games, and a poker room.' },
   { name: 'del Lago Resort & Casino', location: 'Waterloo, NY', state: 'NY', miles: 280, slug: 'del-lago-resort', desc: 'Finger Lakes casino resort with 2,000+ slots, table games, a poker room, and hotel.' },
   { name: 'Tioga Downs Casino Resort', location: 'Nichols, NY', state: 'NY', miles: 230, slug: 'tioga-downs', desc: 'Southern Tier NY casino with 1,100+ slots, table games, live harness racing, and a hotel.' },
+  { name: 'JACK Cleveland Casino', location: 'Cleveland, OH', state: 'OH', miles: 450, slug: 'jack-cleveland-casino', desc: 'Downtown Cleveland casino with 100,000 sq ft of gaming, table games, and a poker room.' },
+  { name: 'Hollywood Casino Columbus', location: 'Columbus, OH', state: 'OH', miles: 500, slug: 'hollywood-casino-columbus', desc: 'Columbus largest casino with 2,200+ slots, 100+ table games, and a poker room near downtown.' },
+  { name: 'Hollywood Casino Toledo', location: 'Toledo, OH', state: 'OH', miles: 550, slug: 'hollywood-casino-toledo', desc: 'Northwest Ohio casino with 2,000+ slots, table games, a poker room, and live entertainment.' },
+  { name: 'Hard Rock Rocksino Northfield Park', location: 'Northfield, OH', state: 'OH', miles: 450, slug: 'hard-rock-rocksino-northfield', desc: 'Hard Rock-branded Ohio racino with 2,300+ VLTs, live entertainment, and dining near Cleveland.' },
+  { name: 'MGM Northfield Park', location: 'Northfield, OH', state: 'OH', miles: 450, slug: 'mgm-northfield-park', desc: 'MGM-operated Ohio casino with 2,500+ slots, table games, and a poker room southeast of Cleveland.' },
+  { name: 'Hard Rock Hotel Casino Cincinnati', location: 'Cincinnati, OH', state: 'OH', miles: 600, slug: 'hard-rock-cincinnati', desc: 'Hard Rock Cincinnati casino with 2,000+ slots, 85+ table games, a poker room, and luxury hotel.' },
+  { name: 'Mountaineer Casino Racetrack Resort', location: 'New Cumberland, WV', state: 'WV', miles: 350, slug: 'mountaineer-casino', desc: 'Historic WV casino resort on the Ohio River with 1,500+ slots, table games, poker, and horse racing.' },
+  { name: 'Hollywood Casino at Charles Town Races', location: 'Charles Town, WV', state: 'WV', miles: 380, slug: 'hollywood-casino-charles-town', desc: 'Northern WV casino with 3,500+ slots, table games, poker, and live horse racing.' },
+  { name: 'Mardi Gras Casino Resort', location: 'Cross Lanes, WV', state: 'WV', miles: 500, slug: 'mardi-gras-casino-wv', desc: 'West Virginia casino near Charleston with 900+ slots, table games, and dog racing.' },
+  { name: 'Wheeling Island Hotel Casino Racetrack', location: 'Wheeling, WV', state: 'WV', miles: 380, slug: 'wheeling-island-casino', desc: 'Northern WV island casino with 1,400+ slots, table games, and greyhound racing.' },
+  { name: 'Harrahs Cherokee Casino Resort', location: 'Cherokee, NC', state: 'NC', miles: 800, slug: 'harrahs-cherokee', desc: 'The Southeast\'s largest casino resort with 150,000 sq ft of gaming, a world-class poker room, and luxury hotel in the Smoky Mountains.' },
+  { name: 'Harrahs Cherokee Valley River Casino', location: 'Murphy, NC', state: 'NC', miles: 850, slug: 'harrahs-cherokee-valley-river', desc: 'Western NC casino with 1,000+ slots, table games, and a hotel near the Georgia border.' },
+  { name: 'Rivers Casino Portsmouth', location: 'Portsmouth, VA', state: 'VA', miles: 500, slug: 'rivers-casino-portsmouth', desc: 'Virginia\'s first casino with 1,300+ slots, 75+ table games, and a poker room in the Hampton Roads area.' },
+  { name: 'Hard Rock Hotel Casino Bristol', location: 'Bristol, VA', state: 'VA', miles: 700, slug: 'hard-rock-bristol', desc: 'Southwest Virginia casino in a historic train station with 1,400+ slots, table games, and entertainment.' },
+  { name: 'Ameristar Casino Council Bluffs', location: 'Council Bluffs, IA', state: 'IA', miles: 1300, slug: 'ameristar-council-bluffs', desc: 'Major Iowa casino across from Omaha with 38,000 sq ft of gaming, 1,600+ slots, and a hotel.' },
+  { name: 'Horseshoe Council Bluffs', location: 'Council Bluffs, IA', state: 'IA', miles: 1300, slug: 'horseshoe-council-bluffs', desc: 'Caesars-owned Iowa casino with 1,100+ slots, table games, a poker room, and hotel.' },
+  { name: 'Prairie Meadows Casino', location: 'Altoona, IA', state: 'IA', miles: 1200, slug: 'prairie-meadows-casino', desc: 'Central Iowa casino and racetrack with 1,600+ slots, table games, poker, and live horse racing near Des Moines.' },
+  { name: 'Isle Casino Hotel Bettendorf', location: 'Bettendorf, IA', state: 'IA', miles: 950, slug: 'isle-casino-bettendorf', desc: 'Quad Cities Iowa casino with 1,100+ slots, table games, a poker room, and hotel on the Mississippi River.' },
+  { name: 'Wild Rose Casino Resort', location: 'Emmetsburg, IA', state: 'IA', miles: 1200, slug: 'wild-rose-emmetsburg', desc: 'Northwest Iowa casino resort with 700+ slots, table games, and a hotel.' },
+  { name: 'Sandia Resort Casino', location: 'Albuquerque, NM', state: 'NM', miles: 1900, slug: 'sandia-resort-casino', desc: 'Albuquerque top casino resort with 2,100+ slots, table games, poker, golf, and a luxury hotel at the base of the Sandia Mountains.' },
+  { name: 'Route 66 Casino Hotel', location: 'Albuquerque, NM', state: 'NM', miles: 1900, slug: 'route-66-casino', desc: 'West Albuquerque tribal casino with 1,500+ slots, table games, bingo, and a hotel on Historic Route 66.' },
+  { name: 'Inn of the Mountain Gods Resort Casino', location: 'Mescalero, NM', state: 'NM', miles: 2000, slug: 'inn-of-the-mountain-gods', desc: 'Stunning lakeside resort casino in the Sacramento Mountains with 1,000+ slots, table games, and a golf course.' },
+  { name: 'Buffalo Thunder Resort Casino', location: 'Santa Fe, NM', state: 'NM', miles: 1950, slug: 'buffalo-thunder-casino', desc: 'Upscale Pojoaque Pueblo casino resort near Santa Fe with 1,000+ slots, table games, and a luxury hotel.' },
+  { name: 'Fire Rock Navajo Casino', location: 'Church Rock, NM', state: 'NM', miles: 2000, slug: 'fire-rock-navajo-casino', desc: 'Navajo Nation casino near Gallup with 500+ slots and table games in northwest New Mexico.' },
+  { name: 'Deadwood Mountain Grand', location: 'Deadwood, SD', state: 'SD', miles: 1600, slug: 'deadwood-mountain-grand', desc: 'One of Deadwood\'s largest casinos with 400+ slots, table games, and a hotel in the historic Black Hills.' },
+  { name: 'Cadillac Jacks Gaming Resort', location: 'Deadwood, SD', state: 'SD', miles: 1600, slug: 'cadillac-jacks-deadwood', desc: 'Popular Deadwood casino resort with 300+ slots, table games, and a hotel in the Black Hills.' },
+  { name: 'Dakota Sioux Casino Hotel', location: 'Watertown, SD', state: 'SD', miles: 1400, slug: 'dakota-sioux-casino', desc: 'Northeast South Dakota tribal casino with 300+ slots, table games, and a hotel.' },
+  { name: 'Grand River Casino Resort', location: 'Mobridge, SD', state: 'SD', miles: 1500, slug: 'grand-river-casino', desc: 'Standing Rock Sioux casino on the Missouri River with 300+ slots, table games, and a resort.' },
+  { name: 'Sky Dancer Hotel Casino', location: 'Belcourt, ND', state: 'ND', miles: 1500, slug: 'sky-dancer-casino', desc: 'Turtle Mountain Band casino in north-central North Dakota with slots, table games, and a hotel.' },
+  { name: 'Spirit Lake Casino Resort', location: 'St. Michael, ND', state: 'ND', miles: 1400, slug: 'spirit-lake-casino', desc: 'Eastern North Dakota tribal casino with 900+ slots, table games, bingo, and a hotel.' },
+  { name: '4 Bears Casino Lodge', location: 'New Town, ND', state: 'ND', miles: 1600, slug: '4-bears-casino', desc: 'MHA Nation casino on Lake Sakakawea with slots, table games, and a lodge in western North Dakota.' },
+  { name: 'KwaTaqNuk Resort Casino', location: 'Polson, MT', state: 'MT', miles: 2000, slug: 'kwataqnuk-casino', desc: 'Confederated Salish and Kootenai Tribes casino on Flathead Lake with slots and table games in northwest Montana.' },
+  { name: 'Charging Horse Casino', location: 'Lame Deer, MT', state: 'MT', miles: 1800, slug: 'charging-horse-casino', desc: 'Northern Cheyenne tribal casino in southeastern Montana with slots and gaming.' },
+  { name: 'Coeur dAlene Casino', location: 'Worley, ID', state: 'ID', miles: 2200, slug: 'coeur-dalene-casino', desc: 'Idaho premier tribal casino resort with 1,600+ slots, table games, bingo, golf, and a luxury spa near Coeur dAlene.' },
+  { name: 'Clearwater River Casino Lodge', location: 'Lewiston, ID', state: 'ID', miles: 2200, slug: 'clearwater-river-casino', desc: 'Nez Perce tribal casino in Lewiston with 700+ slots, table games, and a lodge.' },
+  { name: 'Shoshone-Bannock Casino Hotel', location: 'Fort Hall, ID', state: 'ID', miles: 2100, slug: 'shoshone-bannock-casino', desc: 'Eastern Idaho tribal casino with 700+ slots, table games, and a hotel near Pocatello.' },
+  { name: 'Wind Creek Casino Hotel Wetumpka', location: 'Wetumpka, AL', state: 'AL', miles: 900, slug: 'wind-creek-wetumpka', desc: 'Alabama largest casino with 3,000+ electronic bingo machines, table games, and a hotel near Montgomery.' },
+  { name: 'Wind Creek Casino Hotel Atmore', location: 'Atmore, AL', state: 'AL', miles: 950, slug: 'wind-creek-atmore', desc: 'Poarch Band tribal casino with 2,200+ machines, table games, and a hotel in southern Alabama.' },
+  { name: 'Wind Creek Casino Hotel Montgomery', location: 'Montgomery, AL', state: 'AL', miles: 900, slug: 'wind-creek-montgomery', desc: 'Central Alabama tribal casino with 1,700+ machines, table games, and a hotel in downtown Montgomery.' },
+  { name: 'WarHorse Casino Lincoln', location: 'Lincoln, NE', state: 'NE', miles: 1200, slug: 'warhorse-casino-lincoln', desc: 'Nebraska newest casino at Lincoln historic racetrack with 1,500+ slots and table games.' },
+  { name: 'WarHorse Casino Omaha', location: 'Omaha, NE', state: 'NE', miles: 1300, slug: 'warhorse-casino-omaha', desc: 'New Omaha casino with 1,000+ slots and table games.' },
+  { name: 'Atlantis Casino Resort Spa', location: 'Reno, NV', state: 'NV', miles: 2700, slug: 'atlantis-casino-reno', desc: 'Upscale Reno casino resort with 61,000 sq ft of gaming, excellent dining, a spa, and luxury hotel.' },
+  { name: 'Circus Circus Reno', location: 'Reno, NV', state: 'NV', miles: 2700, slug: 'circus-circus-reno', desc: 'Classic Reno casino with 60,000+ sq ft of gaming, affordable rooms, and family entertainment.' },
+  { name: 'Eldorado Resort Casino Reno', location: 'Reno, NV', state: 'NV', miles: 2700, slug: 'eldorado-reno', desc: 'Downtown Reno casino resort with 78,000 sq ft of gaming, 1,800+ slots, table games, and a poker room.' },
+  { name: 'Harrahs Reno', location: 'Reno, NV', state: 'NV', miles: 2700, slug: 'harrahs-reno', desc: 'Classic downtown Reno casino with 50,000+ sq ft of gaming, table games, and a hotel on Virginia Street.' },
+  { name: 'Nugget Casino Resort Sparks', location: 'Sparks, NV', state: 'NV', miles: 2700, slug: 'nugget-casino-sparks', desc: 'Sparks casino resort with 70,000 sq ft of gaming, 1,400+ slots, table games, and a hotel near Reno.' },
+  { name: 'Caesars Palace Lake Tahoe', location: 'Stateline, NV', state: 'NV', miles: 2650, slug: 'caesars-lake-tahoe', desc: 'Lake Tahoe casino resort with 45,000 sq ft of gaming, table games, poker, and ski resort access.' },
+  { name: 'Eureka Casino Resort Mesquite', location: 'Mesquite, NV', state: 'NV', miles: 2600, slug: 'eureka-casino-mesquite', desc: 'Mesquite casino resort with 38,000 sq ft of gaming, golf, and a hotel near the Utah border.' },
+  { name: 'Virgin Hotels Las Vegas', location: 'Las Vegas, NV', state: 'NV', miles: 2800, slug: 'virgin-hotels-las-vegas', desc: 'Off-Strip Las Vegas casino hotel with 60,000 sq ft of gaming, table games, and stylish amenities.' },
+  { name: 'Durango Casino Resort Las Vegas', location: 'Las Vegas, NV', state: 'NV', miles: 2800, slug: 'durango-casino-las-vegas', desc: 'Station Casinos newest Las Vegas property with 83,000 sq ft of gaming, table games, and a luxury hotel in the southwest valley.' },
+  { name: 'Fontainebleau Las Vegas', location: 'Las Vegas, NV', state: 'NV', miles: 2800, slug: 'fontainebleau-las-vegas', desc: 'Las Vegas newest mega-resort with 150,000 sq ft of gaming, a massive poker room, luxury hotel, and world-class nightlife on the north Strip.' },
+  { name: 'Resorts World Las Vegas', location: 'Las Vegas, NV', state: 'NV', miles: 2800, slug: 'resorts-world-las-vegas', desc: 'Las Vegas first new Strip megaresort in over a decade with 117,000 sq ft of gaming, three hotel brands, and the largest sportsbook on the Strip.' },
+  { name: 'Circa Resort Casino Downtown', location: 'Las Vegas, NV', state: 'NV', miles: 2800, slug: 'circa-resort-las-vegas', desc: 'Downtown Las Vegas adults-only resort with 45,000 sq ft of gaming, a massive sportsbook, and the world largest pool amphitheater.' },
+  { name: 'Pechanga Resort Casino', location: 'Temecula, CA', state: 'CA', miles: 2750, slug: 'pechanga-resort-casino', desc: 'One of the largest casinos in the US with 200,000 sq ft of gaming, 5,000+ slots, a world-class poker room, and a luxury resort.' },
+  { name: 'Agua Caliente Casino Cathedral City', location: 'Cathedral City, CA', state: 'CA', miles: 2750, slug: 'agua-caliente-casino', desc: 'Palm Springs area casino with 1,000+ slots, table games, poker, and a luxury hotel near the desert.' },
+  { name: 'Fantasy Springs Resort Casino', location: 'Indio, CA', state: 'CA', miles: 2750, slug: 'fantasy-springs-casino', desc: 'Cahuilla casino resort near Palm Springs with 2,000+ slots, table games, poker, bowling, and a hotel.' },
+  { name: 'Morongo Casino Resort Spa', location: 'Cabazon, CA', state: 'CA', miles: 2700, slug: 'morongo-casino', desc: 'Southern California tribal casino resort with 2,500+ slots, table games, poker, and a luxury hotel off I-10.' },
+  { name: 'Viejas Casino Resort', location: 'Alpine, CA', state: 'CA', miles: 2750, slug: 'viejas-casino', desc: 'East San Diego County tribal casino with 2,000+ slots, table games, poker, an outlet mall, and a hotel.' },
+  { name: 'Harrahs Resort Southern California', location: 'Valley Center, CA', state: 'CA', miles: 2750, slug: 'harrahs-southern-california', desc: 'North San Diego County casino resort with 1,700+ slots, table games, poker, and a luxury hotel.' },
+  { name: 'Chumash Casino Resort', location: 'Santa Ynez, CA', state: 'CA', miles: 2800, slug: 'chumash-casino', desc: 'Santa Barbara area tribal casino resort with 2,000+ slots, table games, poker, and a hotel in the wine country.' },
+  { name: 'Cache Creek Casino Resort', location: 'Brooks, CA', state: 'CA', miles: 2700, slug: 'cache-creek-casino', desc: 'Northern California tribal casino resort with 2,000+ slots, table games, poker, golf, and a hotel between Sacramento and the Bay Area.' },
+  { name: 'Jackson Rancheria Casino Resort', location: 'Jackson, CA', state: 'CA', miles: 2700, slug: 'jackson-rancheria-casino', desc: 'Gold Country tribal casino resort with 2,300+ slots, table games, and a hotel in the Sierra Nevada foothills.' },
+  { name: 'Thunder Valley Casino Resort', location: 'Lincoln, CA', state: 'CA', miles: 2700, slug: 'thunder-valley-casino', desc: 'Sacramento area tribal casino resort with 3,000+ slots, 130+ table games, poker, and a luxury hotel.' },
+  { name: 'Talking Stick Resort', location: 'Scottsdale, AZ', state: 'AZ', miles: 2400, slug: 'talking-stick-resort', desc: 'Scottsdale premier casino resort with 50,000 sq ft of gaming, table games, poker, and a luxury hotel.' },
+  { name: 'Casino Arizona', location: 'Scottsdale, AZ', state: 'AZ', miles: 2400, slug: 'casino-arizona', desc: 'Arizona most popular casino with 50,000 sq ft of gaming, 900+ slots, live poker, and keno in Scottsdale.' },
+  { name: 'Wild Horse Pass Hotel Casino', location: 'Chandler, AZ', state: 'AZ', miles: 2400, slug: 'wild-horse-pass-casino', desc: 'Gila River tribal casino resort near Phoenix with 1,100+ slots, table games, a poker room, and a luxury hotel.' },
+  { name: 'Fort McDowell Casino', location: 'Fountain Hills, AZ', state: 'AZ', miles: 2400, slug: 'fort-mcdowell-casino', desc: 'Yavapai Nation casino northeast of Scottsdale with 900+ slots, table games, poker, and bingo.' },
+  { name: 'Downstream Casino Resort', location: 'Quapaw, OK', state: 'OK', miles: 1400, slug: 'downstream-casino', desc: 'Quapaw Nation casino at the corner of three states with 2,000+ slots, table games, poker, and a hotel.' },
+  { name: 'Hard Rock Hotel Casino Tulsa', location: 'Catoosa, OK', state: 'OK', miles: 1400, slug: 'hard-rock-tulsa', desc: 'Oklahoma largest casino with 3,000+ slots, 100+ table games, a 24-hour poker room, and a music venue near Tulsa.' },
+  { name: 'Choctaw Casino Durant', location: 'Durant, OK', state: 'OK', miles: 1500, slug: 'choctaw-casino-durant', desc: 'Oklahoma top destination casino resort with 5,000+ machines, 100+ table games, and a luxury hotel near the Texas border.' },
+  { name: 'WinStar World Casino Resort', location: 'Thackerville, OK', state: 'OK', miles: 1500, slug: 'winstar-world-casino', desc: 'The world largest casino with 600,000+ sq ft of gaming, 11 gaming plazas, a golf course, and multiple hotels just north of the Texas border.' },
+  { name: 'Tulalip Resort Casino', location: 'Tulalip, WA', state: 'WA', miles: 2800, slug: 'tulalip-resort-casino', desc: 'Washington most popular casino resort with 3,000+ slots, 75+ table games, a poker room, and luxury hotel north of Seattle.' },
+  { name: 'Muckleshoot Casino Resort', location: 'Auburn, WA', state: 'WA', miles: 2800, slug: 'muckleshoot-casino', desc: 'South Seattle area tribal casino with 3,500+ slots, 80+ table games, poker, and a hotel.' },
+  { name: 'Emerald Queen Casino', location: 'Tacoma, WA', state: 'WA', miles: 2800, slug: 'emerald-queen-casino', desc: 'Tacoma tribal casino with 2,000+ slots, table games, poker, and entertainment.' },
+  { name: 'Lucky Eagle Casino Hotel', location: 'Rochester, WA', state: 'WA', miles: 2800, slug: 'lucky-eagle-casino', desc: 'Chehalis tribal casino south of Olympia with 1,500+ slots, table games, and a hotel.' },
+  { name: 'Ameristar Casino Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'ameristar-black-hawk', desc: 'Colorado largest casino with 55,000 sq ft of gaming, 1,200+ slots, table games, a poker room, and a hotel.' },
+  { name: 'Isle Casino Hotel Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'isle-casino-black-hawk', desc: 'Colorado mountain casino with 900+ slots, table games, poker, and a hotel in Black Hawk.' },
+  { name: 'Monarch Casino Resort Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'monarch-casino-black-hawk', desc: 'Black Hawk casino resort with 1,000+ slots, table games, poker, and an upscale hotel.' },
+  { name: 'Saratoga Casino Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'saratoga-casino-black-hawk', desc: 'Colorado mountain casino with slots, table games, and dining in historic Black Hawk.' },
+  { name: 'Horseshoe Hammond', location: 'Hammond, IN', state: 'IN', miles: 700, slug: 'horseshoe-hammond', desc: 'Chicago closest casino with 100,000 sq ft of gaming, 2,600+ slots, 130+ table games, and a world-class poker room.' },
+  { name: 'Ameristar Casino East Chicago', location: 'East Chicago, IN', state: 'IN', miles: 700, slug: 'ameristar-east-chicago', desc: 'Northwest Indiana casino with 53,000 sq ft of gaming, 1,600+ slots, table games, and a hotel near Chicago.' },
+  { name: 'Four Winds South Bend', location: 'South Bend, IN', state: 'IN', miles: 650, slug: 'four-winds-south-bend', desc: 'Pokagon Band casino in South Bend with 3,000+ slots, table games, a poker room, and a hotel.' },
+  { name: 'Rivers Casino Des Plaines', location: 'Des Plaines, IL', state: 'IL', miles: 750, slug: 'rivers-casino-des-plaines', desc: 'Chicago premier casino with 1,000+ slots, 75+ table games, and a poker room near O\'Hare Airport.' },
+  { name: 'Grand Victoria Casino Elgin', location: 'Elgin, IL', state: 'IL', miles: 750, slug: 'grand-victoria-casino', desc: 'Fox River casino west of Chicago with 900+ slots, table games, and riverboat dining.' },
+  { name: 'Harrahs Joliet', location: 'Joliet, IL', state: 'IL', miles: 750, slug: 'harrahs-joliet', desc: 'Southwest Chicago suburb casino with 900+ slots, table games, poker, and a hotel on the Des Plaines River.' },
+  { name: 'Spirit Mountain Casino', location: 'Grand Ronde, OR', state: 'OR', miles: 2900, slug: 'spirit-mountain-casino-oregon', desc: 'Grand Ronde tribal casino southwest of Portland with 2,000+ slots, table games, bingo, and a hotel.' },
+  { name: 'Ilani Casino Resort', location: 'Ridgefield, WA', state: 'WA', miles: 2900, slug: 'ilani-casino-resort', desc: 'Cowlitz tribal casino just north of Portland with 100,000 sq ft of gaming, table games, poker, and a hotel.' },
+  { name: 'Soaring Eagle Casino Resort', location: 'Mount Pleasant, MI', state: 'MI', miles: 600, slug: 'soaring-eagle-casino', desc: 'Central Michigan tribal casino resort with 4,800+ slots, table games, poker, bingo, and a hotel.' },
+  { name: 'Four Winds New Buffalo', location: 'New Buffalo, MI', state: 'MI', miles: 650, slug: 'four-winds-new-buffalo', desc: 'Southwest Michigan casino with 3,000+ slots, table games, poker, and a hotel near Indiana border.' },
+  { name: 'FireKeepers Casino Hotel', location: 'Battle Creek, MI', state: 'MI', miles: 650, slug: 'firekeepers-casino', desc: 'Nottawaseppi Huron Band casino in Battle Creek with 3,000+ slots, table games, a poker room, and hotel.' },
+  { name: 'Oxford Casino Hotel', location: 'Oxford, ME', state: 'ME', miles: 350, slug: 'oxford-casino', desc: 'Maine only full-service casino with 850+ slots, table games, poker, and a hotel in Oxford County.' },
 ];
 
 function timeAgo(dateStr) {
@@ -619,7 +710,9 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 .live-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:20px;font-family:'DM Mono',monospace}
 .live-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite;flex-shrink:0}
-@media(max-width:768px){.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.mobile-cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}.nav-post-btn{display:none}footer{flex-direction:column;gap:12px;text-align:center;padding:20px}#casinoSignInBtn{display:inline-flex !important;font-size:12px;padding:6px 12px}}
+.mobile-profile-bar{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:60px;z-index:99}
+body.dark .mobile-profile-bar{background:#1a1a18}
+@media(max-width:768px){.mobile-profile-bar.visible{display:flex}.main-wrap{grid-template-columns:1fr}.sidebar{display:none}.mobile-cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}.casino-hero{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}.nav-post-btn{display:none}footer{flex-direction:column;gap:12px;text-align:center;padding:20px}#casinoSignInBtn{display:inline-flex !important;font-size:12px;padding:6px 12px}}
 @media(min-width:769px){.mobile-cards{display:none}}
 footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);background:var(--surface);margin-top:20px}
 .footer-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
@@ -707,10 +800,27 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   </div>
   <div style="display:flex;align-items:center;gap:10px">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location=\'/bookmarks\'">
+      <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
+    </span>
     <button class="btn-outline" id="casinoSignInBtn" onclick="showCasinoSignIn()" style="font-size:13px;padding:7px 14px">Sign in</button>
-    <button class="btn nav-post-btn" onclick="document.getElementById('composeCard').scrollIntoView({behavior:'smooth'})">+ Post Update</button>
+    <button class="btn nav-post-btn" onclick="document.getElementById(\'composeCard\').scrollIntoView({behavior:\'smooth\'})">+ Post Update</button>
   </div>
 </nav>
+<div class="mobile-profile-bar" id="mobileProfileBar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>
+      <div style="font-size:12px;color:var(--muted)"><span id="mpbPoints">0</span> pts · <span id="mpbStreak"></span></div>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="mpbNextLabel"></div>
+    <div class="rank-bar-wrap" style="width:120px"><div class="rank-bar-fill" id="mpbBar" style="width:0%"></div></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px" id="mpbMaxLabel"></div>
+  </div>
+</div>
 <script>
 (function(){
   const u = localStorage.getItem('cc_username') || '';
@@ -1069,6 +1179,30 @@ async function loadProfile() {
 
 function renderProfile() {
   if (!userProfile) return;
+  // Update nav badge
+  const pts = userProfile.points || 0;
+  const RNKS = [{name:'Rail Bird',min:0,emoji:'🎰'},{name:'Fish',min:50,emoji:'🐟'},{name:'Regular',min:150,emoji:'♠️'},{name:'Floor Regular',min:400,emoji:'🎲'},{name:'High Roller',min:800,emoji:'💰'},{name:'Whale',min:1500,emoji:'👑'}];
+  let curRank = RNKS[0]; for(const r of RNKS){if(pts>=r.min)curRank=r;}
+  const nextRank = RNKS.find(r=>r.min>pts);
+  const badge = document.getElementById('navProfileBadge');
+  const signInBtn = document.getElementById('casinoSignInBtn');
+  if(badge && userProfile.username){
+    const e1=document.getElementById('navRankEmoji'); const e2=document.getElementById('navUsername');
+    if(e1)e1.textContent=curRank.emoji; if(e2)e2.textContent=userProfile.username;
+    badge.style.display='flex'; if(signInBtn)signInBtn.style.display='none';
+  }
+  // Update mobile profile bar
+  const mbar=document.getElementById('mobileProfileBar');
+  if(mbar&&pts>0){
+    mbar.classList.add('visible');
+    const el=id=>document.getElementById(id);
+    if(el('mpbRankEmoji'))el('mpbRankEmoji').textContent=curRank.emoji;
+    if(el('mpbRankName'))el('mpbRankName').textContent=curRank.name;
+    if(el('mpbPoints'))el('mpbPoints').textContent=pts.toLocaleString();
+    if(el('mpbBar'))el('mpbBar').style.width=nextRank?Math.round(((pts-curRank.min)/(nextRank.min-curRank.min))*100)+'%':'100%';
+    if(el('mpbNextLabel'))el('mpbNextLabel').textContent=nextRank?(nextRank.min-pts)+' pts to '+nextRank.emoji+' '+nextRank.name:'Max rank reached';
+    if(el('mpbMaxLabel'))el('mpbMaxLabel').textContent=nextRank?nextRank.emoji+' '+nextRank.name:'👑';
+  }
   const pts = userProfile.points || 0;
   const rank = getRank(pts);
   const next = getNextRank(pts);
