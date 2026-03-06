@@ -1353,6 +1353,18 @@ function getCasinoLocalHour() {
 }
 
 function checkTimeConflict(body) {
+  const hour = getCasinoLocalHour();
+  const lower = body.toLowerCase();
+  const isDay = hour >= 7 && hour < 17;
+  const isNight = hour >= 20 || hour < 4;
+  const dayWords = ['tonight', 'last night', 'this evening', 'evening crowd'];
+  const nightWords = ['this morning', 'afternoon', 'today at lunch'];
+  if (isDay && dayWords.some(function(w){ return lower.includes(w); })) {
+    return 'Heads up: it looks like daytime at this casino. Double-check your timing!';
+  }
+  if (isNight && nightWords.some(function(w){ return lower.includes(w); })) {
+    return 'Heads up: it looks like nighttime at this casino. Double-check your timing!';
+  }
   return null;
 }
 

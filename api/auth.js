@@ -76,7 +76,7 @@ export default async function handler(req, res) {
         // then update the real profile's cookie_id to the current browser cookie
         if (cid && emailProfile.cookie_id !== cid) {
           // Delete the empty profile that was auto-created for this cookie (if any)
-          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cid)}&points=eq.0&email=is.null`, {
+          await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?cookie_id=eq.${encodeURIComponent(cid)}&id=neq.${emailProfile.id}`, {
             method: 'DELETE',
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
           });
