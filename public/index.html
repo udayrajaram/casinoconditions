@@ -1799,7 +1799,7 @@ document.getElementById('signInModal').addEventListener('click', function(e) {
         bar.classList.add('visible');
         document.getElementById('mpbEmoji').textContent = rank.emoji;
         document.getElementById('mpbRankName').textContent = rank.emoji + ' ' + rank.name;
-        document.getElementById('mpbPoints').textContent = pts.toLocaleString() + ' pts';
+        document.getElementById('mpbPoints').textContent = pts.toLocaleString();
         document.getElementById('mpbBar').style.width = next ? Math.round(((pts - rank.min) / (next.min - rank.min)) * 100) + '%' : '100%';
         document.getElementById('mpbNext').textContent = next ? (next.min - pts) + ' to ' + next.name : '👑 Max rank';
         const streak = profile.streak_days || 0;
