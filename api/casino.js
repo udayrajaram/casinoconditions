@@ -1363,7 +1363,7 @@ async function submitPost() {
   // Time conflict check
   const timeWarning = checkTimeConflict(body);
   if (timeWarning) {
-    const proceed = confirm(timeWarning + '\n\nPost anyway?');
+    const proceed = confirm(timeWarning + ' Post anyway?');
     if (!proceed) return;
   }
 
