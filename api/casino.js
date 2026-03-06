@@ -1181,6 +1181,7 @@ function renderProfile() {
   if (!userProfile) return;
   // Update nav badge
   const pts = userProfile.points || 0;
+  // Update nav badge
   const RNKS = [{name:'Rail Bird',min:0,emoji:'🎰'},{name:'Fish',min:50,emoji:'🐟'},{name:'Regular',min:150,emoji:'♠️'},{name:'Floor Regular',min:400,emoji:'🎲'},{name:'High Roller',min:800,emoji:'💰'},{name:'Whale',min:1500,emoji:'👑'}];
   let curRank = RNKS[0]; for(const r of RNKS){if(pts>=r.min)curRank=r;}
   const nextRank = RNKS.find(r=>r.min>pts);
@@ -1203,7 +1204,6 @@ function renderProfile() {
     if(el('mpbNextLabel'))el('mpbNextLabel').textContent=nextRank?(nextRank.min-pts)+' pts to '+nextRank.emoji+' '+nextRank.name:'Max rank reached';
     if(el('mpbMaxLabel'))el('mpbMaxLabel').textContent=nextRank?nextRank.emoji+' '+nextRank.name:'👑';
   }
-  const pts = userProfile.points || 0;
   const rank = getRank(pts);
   const next = getNextRank(pts);
   document.getElementById('profileRankEmoji').textContent = rank.emoji;
@@ -1645,12 +1645,7 @@ async function loadLeaderboard() {
 
 // ── CASINO SIGN IN (mobile) ────────────────────────────────
 function showCasinoSignIn() {
-  // On desktop just scroll to profile card
-  if (window.innerWidth > 768) {
-    document.getElementById('profileCard')?.scrollIntoView({behavior:'smooth'});
-    return;
-  }
-  // On mobile — show modal with current state
+  // If already signed in, show toast
   if (userProfile?.email) {
     // Already signed in — show toast with rank
     const rank = userProfile.rank || 'Rail Bird';
