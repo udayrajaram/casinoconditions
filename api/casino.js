@@ -823,6 +823,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
           <input id="authorName" class="compose-select" placeholder="Your name" style="display:none;width:120px">
         </div>
         <button class="btn" id="postBtn" onclick="submitPost()">Post Update</button>
+        <div id="postStatus" style="display:none;font-size:12px;color:#c0392b;margin-top:6px;text-align:center"></div>
       </div>
       <!-- POINTS EARNED for logged-in users -->
       <div class="points-hint" id="pointsHint">✨ Earn <strong>10 pts</strong> for reporting · <strong>8 pts</strong> for asking</div>
@@ -1383,36 +1384,43 @@ async function submitPost() {
   btn.disabled = true; btn.textContent = 'Posting...';
   const author = isAnon ? 'Anonymous' : (document.getElementById('authorName').value.trim() || 'Anonymous');
   try {
-    const r = await fetch(\`\${SUPABASE_URL}/rest/v1/posts\`, {
+    const r = await fetch('/api/submit-post', {
       method: 'POST',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         body,
         casino: CASINO_NAME,
         category: document.getElementById('composeCategory').value,
         author,
         is_anonymous: isAnon,
-        helpful_count: 0,
-        is_seeded: false,
+        cookie_id: getCookieId(),
         post_type: currentPostType,
       })
     });
-    const [newPost] = await r.json();
-    allPosts.unshift(newPost);
+    const data = await r.json();
+    if (!r.ok) {
+      btn.disabled = false;
+      btn.textContent = currentPostType === 'ask' ? 'Ask Question' : 'Post Update';
+      const status = document.getElementById('postStatus');
+      if (status) { status.textContent = data.error || 'Failed to post.'; status.style.display = 'block'; setTimeout(() => status.style.display = 'none', 4000); }
+      else alert(data.error || 'Failed to post.');
+      return;
+    }
+    const newPost = data.post;
+    if (newPost) allPosts.unshift(newPost);
     renderFeed(allPosts);
     document.getElementById('composeBody').value = '';
 
     // Award points + show scratch ticket
     const action = currentPostType === 'ask' ? 'post_ask' : 'post_report';
     const pointsData = await addPoints(action);
-    // Scratch roll for reports only
     if (currentPostType === 'report') {
       const scratchData = await addPoints('scratch');
       showScratchTicket({ ...pointsData, points_earned: scratchData?.points_earned || 10 });
     } else {
       showScratchTicket(pointsData);
     }
-  } catch(e) {}
+  } catch(e) { console.error('submit error:', e); }
   btn.disabled = false;
   btn.textContent = currentPostType === 'ask' ? 'Ask Question' : 'Post Update';
 }
