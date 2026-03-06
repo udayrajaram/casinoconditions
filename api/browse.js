@@ -150,7 +150,7 @@ export default async function handler(req, res) {
             <div class="dir-card-desc">${c.desc}</div>
             <div class="dir-card-footer">
               <span class="dir-card-dist">${c.miles} miles</span>
-              <div style="display:flex;align-items:center;gap:10px">
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
                 <button class="dir-card-star" id="star-${c.slug}" onclick="toggleStar(event, '${c.slug}')" title="Save casino">☆</button>
                 <span class="dir-card-posts">View updates →</span>
               </div>
@@ -178,7 +178,7 @@ export default async function handler(req, res) {
 body.dark{--bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;--muted:#6b6860;--accent:#4caf70;--accent-light:#1a2e1f;--accent-dim:#3d9960}
 body.dark nav{background:rgba(15,15,13,0.95)}
 body.dark .dir-card{background:#161614}
-body{transition:background .2s,color .2s}
+html{overflow-x:hidden}body{overflow-x:hidden;transition:background .2s,color .2s}
 .dark-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;transition:all .15s}
 .dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
@@ -212,7 +212,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
 .dir-card-star:hover{transform:scale(1.2)}
 .dir-card-star.saved{filter:drop-shadow(0 0 3px rgba(255,200,0,.6))}
 .dir-card{position:relative}
-@media(max-width:768px){.dir-grid{grid-template-columns:1fr}.page-header{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}}
+@media(max-width:768px){#signInBtn{font-size:12px;padding:5px 10px}.nav-post-btn{display:none}.dir-grid{grid-template-columns:1fr}.page-header{padding:24px 20px}nav{padding:0 16px}.nav-links{display:none}}
 
 .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
 .btn:hover{background:var(--accent-dim)}
@@ -233,7 +233,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
     <a class="nav-link" href="/bookmarks">⭐ Saved</a>
   </div>
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location=\'/bookmarks\'">
       <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
@@ -243,7 +243,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1
   </div>
 </nav>
 <div class="mobile-profile-bar" id="mobileProfileBar">
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
     <div>
       <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>

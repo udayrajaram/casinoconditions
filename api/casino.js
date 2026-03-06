@@ -531,7 +531,7 @@ export default async function handler(req, res) {
     const rating = places.rating.toFixed(1);
     const reviews = places.userRatingCount?.toLocaleString() || '0';
     const stars = '★'.repeat(Math.round(places.rating)) + '☆'.repeat(5 - Math.round(places.rating));
-    googleHtml = `<div style="display:flex;align-items:center;gap:10px">
+    googleHtml = `<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
       <div style="font-size:32px;font-weight:700;font-family:'DM Mono',monospace">${rating}</div>
       <div><div style="color:#f39c12;font-size:15px">${stars}</div><div style="font-size:12px;color:var(--muted);margin-top:3px">${reviews} reviews</div></div>
     </div>`;
@@ -620,7 +620,7 @@ body.dark{--bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;--muted
 body.dark nav{background:rgba(15,15,13,0.95)}
 body.dark .compose-input,body.dark select{background:#1e1e1b;color:var(--text)}
 body.dark .post-card,body.dark .card{background:#161614}
-body{transition:background .2s,color .2s}
+html{overflow-x:hidden}body{overflow-x:hidden;transition:background .2s,color .2s}
 .dark-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;transition:all .15s}
 .dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
 .btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
@@ -798,7 +798,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
     <a class="nav-link" href="/bookmarks">⭐ Saved</a>
   </div>
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location=\'/bookmarks\'">
       <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
@@ -808,7 +808,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   </div>
 </nav>
 <div class="mobile-profile-bar" id="mobileProfileBar">
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
     <div>
       <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>

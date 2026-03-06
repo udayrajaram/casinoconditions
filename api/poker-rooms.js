@@ -56,7 +56,7 @@ export default function handler(req, res) {
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f7f7f5;--surface:#fff;--border:#e8e8e4;--text:#1a1a18;--muted:#888880;--accent:#1a6b3c;--accent-light:#edf5f0;--radius:12px}
 body.dark{--bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;--muted:#6b6860;--accent:#4caf70;--accent-light:#1a2e1f}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+html{overflow-x:hidden}body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
 nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;text-decoration:none;color:var(--text)}
 .logo-dot{width:8px;height:8px;background:var(--accent);border-radius:50%}
@@ -95,7 +95,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 </head>
 <body>
 <nav>
-  <a class="logo" href="/">
+  <a class="logo" href="/" style="flex-shrink:0">
     <div class="logo-dot"></div>
     <div class="logo-text">Casino<span>Conditions</span></div>
   </a>
@@ -106,7 +106,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
     <a class="nav-link" href="/bookmarks">⭐ Saved</a>
   </div>
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location=\'/bookmarks\'">
       <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
@@ -116,7 +116,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   </div>
 </nav>
 <div class="mobile-profile-bar" id="mobileProfileBar">
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
     <div>
       <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>

@@ -15,7 +15,7 @@ export default function handler(req, res) {
 :root{--bg:#f7f7f5;--surface:#fff;--border:#e8e8e4;--text:#1a1a18;--muted:#888880;--accent:#1a6b3c;--accent-light:#edf5f0;--accent-dim:#2d8a52;--radius:12px}
 body.dark{--bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;--muted:#6b6860;--accent:#4caf70;--accent-light:#1a2e1f;--accent-dim:#3d9960}
 body.dark nav{background:rgba(15,15,13,0.95)}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;transition:background .2s,color .2s}
+html{overflow-x:hidden}body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;transition:background .2s,color .2s}
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
 .logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%}
@@ -43,7 +43,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
 .footer-link{font-size:12px;color:var(--muted);text-decoration:none}
 .footer-link:hover{color:var(--text)}
 .footer-copy{font-size:12px;color:var(--muted)}
-@media(max-width:768px){.feature-grid{grid-template-columns:1fr}nav{padding:0 16px}.nav-links{display:none}footer{flex-direction:column;gap:12px;text-align:center}}
+@media(max-width:768px){#signInBtn{font-size:12px;padding:5px 10px}.nav-post-btn{display:none}.feature-grid{grid-template-columns:1fr}nav{padding:0 16px}.nav-links{display:none}footer{flex-direction:column;gap:12px;text-align:center}}
 
 .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
 .btn:hover{background:var(--accent-dim)}
@@ -53,7 +53,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
 </head>
 <body>
 <nav>
-  <a class="logo" href="/">
+  <a class="logo" href="/" style="flex-shrink:0">
     <div class="logo-dot"></div>
     <div class="logo-text">Casino<span>Conditions</span></div>
   </a>
@@ -64,7 +64,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
     <a class="nav-link" href="/bookmarks">⭐ Saved</a>
   </div>
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location=\'/bookmarks\'">
       <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
@@ -73,7 +73,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
   </div>
 </nav>
 <div class="mobile-profile-bar" id="mobileProfileBar">
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
     <div>
       <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>

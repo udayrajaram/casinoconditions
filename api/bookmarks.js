@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 :root{--bg:#f7f7f5;--surface:#fff;--border:#e8e8e4;--text:#1a1a18;--muted:#888880;--accent:#1a6b3c;--accent-light:#edf5f0;--radius:12px}
 body.dark{--bg:#0f0f0d;--surface:#161614;--border:#2a2a26;--text:#f0ede8;--muted:#6b6860;--accent:#4caf70;--accent-light:#1a2e1f}
 body.dark nav,body.dark .card{background:var(--surface)}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+html{overflow-x:hidden}body{overflow-x:hidden;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 body.dark nav{background:rgba(15,15,13,0.95)}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
@@ -55,7 +55,7 @@ body.dark .page-header{background:var(--surface)}
 .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-wrap{text-align:center;padding:60px 24px}
-@media(max-width:768px){nav{padding:0 16px}.nav-links{display:none}.page-header{padding:24px 20px}.card{flex-wrap:wrap}.card-right{width:100%;display:flex;justify-content:space-between;align-items:center}}
+@media(max-width:768px){#signInBtn{font-size:12px;padding:5px 10px}.nav-post-btn{display:none}nav{padding:0 16px}.nav-links{display:none}.page-header{padding:24px 20px}.card{flex-wrap:wrap}.card-right{width:100%;display:flex;justify-content:space-between;align-items:center}}
 </style>
 </head>
 <body>
@@ -71,7 +71,7 @@ body.dark .page-header{background:var(--surface)}
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
     <a class="nav-link" href="/bookmarks" style="color:var(--accent);font-weight:600">⭐ Saved</a>
   </div>
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location=\'/bookmarks\'">
       <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
@@ -81,7 +81,7 @@ body.dark .page-header{background:var(--surface)}
   </div>
 </nav>
 <div class="mobile-profile-bar" id="mobileProfileBar">
-  <div style="display:flex;align-items:center;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
     <span style="font-size:28px" id="mpbRankEmoji">🎰</span>
     <div>
       <div style="font-size:14px;font-weight:700;color:var(--text)" id="mpbRankName">Rail Bird</div>
