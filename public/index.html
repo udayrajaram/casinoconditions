@@ -53,7 +53,7 @@ body.dark select{background:#1e1e1b;color:var(--text)}
 body{transition:background .2s,color .2s}
 .dark-toggle{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;transition:all .15s;color:var(--text)}
 .dark-toggle:hover{border-color:var(--muted);background:var(--accent-light)}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+html{overflow-x:hidden}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;overflow-x:hidden}
 
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:8px}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
@@ -321,8 +321,10 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
   .post-casino-tag{max-width:120px}
   .post-meta{min-width:0;flex:1}
   .post-author{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px}
-  #signInBtn{display:inline-flex !important;font-size:12px;padding:6px 12px}
+  #signInBtn{font-size:12px;padding:5px 10px;white-space:nowrap}
   .nav-post-btn{display:none}
+  .logo-text{font-size:15px}
+  nav > div:last-child{gap:6px}
   nav{padding:0 16px}
 }
 </style>
@@ -361,7 +363,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
 </div>
 
 <nav>
-  <a class="logo" href="#">
+  <a class="logo" href="#" style="flex-shrink:0">
     <div class="logo-dot"></div>
     <div class="logo-text">Casino<span>Conditions</span></div>
   </a>
@@ -372,7 +374,7 @@ footer{padding:28px 40px;display:flex;align-items:center;justify-content:space-b
     <a class="nav-link" href="/las-vegas-casinos">Las Vegas</a>
     <a class="nav-link" href="/bookmarks" id="bookmarksLink">⭐ Saved</a>
   </div>
-  <div style="display:flex;gap:10px;align-items:center">
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <span id="navProfileBadge" style="display:none;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer" onclick="window.location='/bookmarks'">
       <span id="navRankEmoji"></span><span id="navUsername" style="font-weight:600"></span>
