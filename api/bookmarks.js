@@ -156,6 +156,9 @@ async function getRecentActivity(casinoName) {
       const top = Object.entries(tally).sort((a,b) => b[1]-a[1])[0][0];
       status = top;
       dotClass = top === 'Busy' ? 'dot-busy' : top === 'Moderate' ? 'dot-moderate' : 'dot-quiet';
+    } else if (postCount > 0) {
+      status = postCount + ' post' + (postCount > 1 ? 's' : '') + ' today';
+      dotClass = 'dot-moderate';
     }
 
     let lastReport = '';
@@ -214,7 +217,7 @@ async function render() {
     if (!card) return;
     const statusEl = card.querySelector('.card-status');
     statusEl.innerHTML = \`<div class="dot \${activity.dotClass}"></div><span>\${activity.status}</span>\`;
-    const updatesText = activity.total > 0 ? activity.total + ' reactions today' : activity.postCount > 0 ? activity.postCount + ' posts today' : 'No activity today';
+    const updatesText = activity.total > 0 ? activity.total + ' reactions today' : activity.postCount > 0 ? activity.postCount + ' floor update' + (activity.postCount > 1 ? 's' : '') + ' today' : 'No activity today';
     document.getElementById('updates-' + slug).textContent = updatesText;
     if (activity.lastReport) document.getElementById('last-' + slug).textContent = 'Last report: ' + activity.lastReport;
     // Set emoji based on status
