@@ -1,26 +1,15 @@
-#!/usr/bin/env node
 // ═══════════════════════════════════════════════════════════════
-//  CasinoConditions — Seed Script
-//  Run:  SUPABASE_URL=xxx SUPABASE_KEY=xxx node seed.js
-//  Flags:
-//    --force          Delete all seeded posts first, then re-seed
-//    --casino=slug    Only seed one specific casino
-//    --dry-run        Print what would be posted, write nothing
+//  CasinoConditions — Seed API
+//  Browser: /api/seed.js
+//  Options (query params):
+//    ?force=true      Delete all seeded posts first, then re-seed
+//    ?casino=slug     Only seed one specific casino
+//    ?secret=xxx      Required secret to prevent abuse
 // ═══════════════════════════════════════════════════════════════
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
-
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('❌  Missing env vars. Usage:');
-  console.error('    SUPABASE_URL=https://xxx.supabase.co SUPABASE_KEY=eyJxxx node seed.js');
-  process.exit(1);
-}
-
-const args     = process.argv.slice(2);
-const FORCE    = args.includes('--force');
-const DRY_RUN  = args.includes('--dry-run');
-const ONLY_SLUG = (args.find(a => a.startsWith('--casino=')) || '').replace('--casino=', '');
+const SEED_SECRET  = process.env.SEED_SECRET || 'casino2024';
 
 // ─────────────────────────────────────────────
 //  ALL CASINOS  (193 total, pulled from casino.js)
@@ -679,12 +668,6 @@ async function seedCasino(casino) {
     };
   });
 
-  if (DRY_RUN) {
-    console.log(`  🔍 ${casino.name} — would post ${rows.length}:`);
-    rows.forEach(r => console.log(`     [${r.category}] ${r.body}`));
-    return rows.length;
-  }
-
   await sbFetch('/posts', {
     method: 'POST',
     body: JSON.stringify(rows),
@@ -723,49 +706,61 @@ async function seedLeaderboard() {
 }
 
 // ─────────────────────────────────────────────
-//  MAIN
+//  API HANDLER
 // ─────────────────────────────────────────────
-async function main() {
-  console.log('🎰 CasinoConditions Seed Script');
-  console.log(`   Casinos : ${CASINOS.length}`);
-  console.log(`   Force   : ${FORCE}`);
-  console.log(`   Dry run : ${DRY_RUN}`);
-  console.log(`   Filter  : ${ONLY_SLUG || 'all'}`);
-  console.log('');
+export default async function handler(req, res) {
+  const secret    = req.query.secret || '';
+  const force     = req.query.force === 'true';
+  const onlySlug  = req.query.casino || '';
 
-  if (FORCE && !DRY_RUN) {
-    console.log('🗑  Deleting all seeded posts...');
-    await sbFetch('/posts?is_seeded=eq.true', { method: 'DELETE' });
-    console.log('   Done.\n');
+  // Simple secret check to prevent random people triggering seeds
+  if (secret !== SEED_SECRET) {
+    return res.status(401).json({ error: 'Invalid secret. Pass ?secret=your_secret' });
   }
 
-  await seedLeaderboard();
-
-  const toSeed = ONLY_SLUG ? CASINOS.filter(c => c.slug === ONLY_SLUG) : CASINOS;
-
-  if (ONLY_SLUG && toSeed.length === 0) {
-    console.error(`\n❌ No casino found with slug: ${ONLY_SLUG}`);
-    process.exit(1);
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    return res.status(500).json({ error: 'Missing SUPABASE_URL or SUPABASE_KEY env vars' });
   }
 
-  console.log(`\n🃏 Seeding ${toSeed.length} casino(s)...\n`);
+  const started = Date.now();
 
-  let totalPosts = 0;
-  let casinoCount = 0;
-  const BATCH = 8;
+  try {
+    if (force) {
+      await sbFetch('/posts?is_seeded=eq.true', { method: 'DELETE' });
+    }
 
-  for (let i = 0; i < toSeed.length; i += BATCH) {
-    const batch = toSeed.slice(i, i + BATCH);
-    const counts = await Promise.all(batch.map(c => seedCasino(c)));
-    totalPosts  += counts.reduce((a, b) => a + b, 0);
-    casinoCount += counts.filter(c => c > 0).length;
+    await seedLeaderboard();
+
+    const toSeed = onlySlug ? CASINOS.filter(c => c.slug === onlySlug) : CASINOS;
+
+    if (onlySlug && toSeed.length === 0) {
+      return res.status(404).json({ error: `No casino found with slug: ${onlySlug}` });
+    }
+
+    let totalPosts = 0;
+    let casinoCount = 0;
+    const BATCH = 8;
+
+    for (let i = 0; i < toSeed.length; i += BATCH) {
+      const batch = toSeed.slice(i, i + BATCH);
+      const counts = await Promise.all(batch.map(c => seedCasino(c)));
+      totalPosts  += counts.reduce((a, b) => a + b, 0);
+      casinoCount += counts.filter(c => c > 0).length;
+    }
+
+    const elapsed = ((Date.now() - started) / 1000).toFixed(1);
+
+    return res.status(200).json({
+      success: true,
+      mode: force ? 'force' : 'normal',
+      casinos_total: toSeed.length,
+      casinos_seeded: casinoCount,
+      posts_added: totalPosts,
+      elapsed_seconds: elapsed,
+      timestamp: new Date().toISOString(),
+    });
+
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
-
-  console.log(`\n✨ Done! ${totalPosts} posts seeded across ${casinoCount} casinos.`);
-  if (DRY_RUN) console.log('   (Dry run — nothing written to database)');
 }
-
-main().catch(err => {
-  console.error('\n❌ Fatal error:', err.message);
-  process.exit(1);
-});
