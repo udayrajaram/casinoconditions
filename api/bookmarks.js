@@ -57,6 +57,8 @@ body.dark .page-header{background:var(--surface)}
 .loading-wrap{text-align:center;padding:60px 24px}
 @media(max-width:768px){#signInBtn{font-size:12px;padding:5px 10px}.nav-post-btn{display:none}nav{padding:0 16px}.nav-links{display:none}.page-header{padding:24px 20px}.card{flex-wrap:wrap}.card-right{width:100%;display:flex;justify-content:space-between;align-items:center}}
 </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RYX8RTNPQG"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-RYX8RTNPQG');</script>
 </head>
 <body>
 <nav>
