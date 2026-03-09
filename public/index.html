@@ -965,10 +965,11 @@ async function loadPosts() {
 
   // Fetch real counts separately — Supabase count query bypasses row limit
   const { count: totalCount } = await db.from('posts').select('*', { count: 'exact', head: true });
-  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+  const now = new Date();
+  const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   const { count: todayCount } = await db.from('posts').select('*', { count: 'exact', head: true }).gte('created_at', todayStart.toISOString());
   const { data: casinoList } = await db.from('posts').select('casino');
-  const uniqueCasinos = 206; // total casinos covered
+  const uniqueCasinos = 193; // total casinos covered
   updateStats(totalCount || data.length, todayCount || 0, uniqueCasinos || new Set(data.map(p => p.casino)).size);
 }
 
