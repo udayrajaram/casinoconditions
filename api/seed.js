@@ -648,7 +648,7 @@ async function seedCasino(casino) {
       is_seeded: true,
       username:  user.username,
       cookie_id: user.cookie_id,
-      created_at: new Date(now - rand(5, 360 - i * 40) * 60000).toISOString(),
+      created_at: new Date(now - rand(5, 110 - i * 10) * 60000).toISOString(),
     };
   });
 
