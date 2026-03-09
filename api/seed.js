@@ -579,36 +579,33 @@ async function sbFetch(path, opts = {}) {
 // ─────────────────────────────────────────────
 //  SEED ONE CASINO
 // ─────────────────────────────────────────────
-async function seedCasino(casino) {
+async function seedCasino(casino, force = false) {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Skip if real posts exist
-  const realPosts = await sbFetch(
-    `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.false&select=id`,
-    { returnData: true }
-  );
-  if (realPosts?.length > 0) {
-    console.log(`  ⏭  ${casino.name} — ${realPosts.length} real posts, skipping`);
-    return 0;
-  }
-
-  // Delete stale seeds
-  await sbFetch(
-    `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&created_at=lt.${sevenDaysAgo}`,
-    { method: 'DELETE' }
-  );
-
-  // Count existing seeds
-  const existing = await sbFetch(
-    `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`,
-    { returnData: true }
-  );
-  const existingBodies = new Set((existing || []).map(p => p.body));
   const target = rand(4, 7);
+  let existingBodies = new Set();
 
-  if (existingBodies.size >= target) {
-    console.log(`  ✓  ${casino.name} — already seeded (${existingBodies.size} posts)`);
-    return 0;
+  if (!force) {
+    // Skip if real posts exist
+    const realPosts = await sbFetch(
+      `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.false&select=id`,
+      { returnData: true }
+    );
+    if (realPosts?.length > 0) return 0;
+
+    // Delete stale seeds older than 7 days
+    await sbFetch(
+      `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&created_at=lt.${sevenDaysAgo}`,
+      { method: 'DELETE' }
+    );
+
+    // Skip if already has enough seeds
+    const existing = await sbFetch(
+      `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`,
+      { returnData: true }
+    );
+    existingBodies = new Set((existing || []).map(p => p.body));
+    if (existingBodies.size >= target) return 0;
   }
 
   const weather = await getWeather(casino);
@@ -759,6 +756,7 @@ export default async function handler(req, res) {
   const secret    = req.query.secret || '';
   const force     = req.query.force === 'true';
   const onlySlug  = req.query.casino || '';
+  const onlyState = (req.query.state || '').toUpperCase();
 
   // Simple secret check to prevent random people triggering seeds
   if (secret !== SEED_SECRET) {
@@ -778,10 +776,10 @@ export default async function handler(req, res) {
 
     await seedLeaderboard();
 
-    const toSeed = onlySlug ? CASINOS.filter(c => c.slug === onlySlug) : CASINOS;
+    const toSeed = onlySlug ? CASINOS.filter(c => c.slug === onlySlug) : onlyState ? CASINOS.filter(c => c.state === onlyState) : CASINOS;
 
-    if (onlySlug && toSeed.length === 0) {
-      return res.status(404).json({ error: `No casino found with slug: ${onlySlug}` });
+    if ((onlySlug || onlyState) && toSeed.length === 0) {
+      return res.status(404).json({ error: `No casinos found for: ${onlySlug || onlyState}` });
     }
 
     let totalPosts = 0;
@@ -790,7 +788,7 @@ export default async function handler(req, res) {
 
     for (let i = 0; i < toSeed.length; i += BATCH) {
       const batch = toSeed.slice(i, i + BATCH);
-      const counts = await Promise.all(batch.map(c => seedCasino(c)));
+      const counts = await Promise.all(batch.map(c => seedCasino(c, force)));
       totalPosts  += counts.reduce((a, b) => a + b, 0);
       casinoCount += counts.filter(c => c > 0).length;
     }
