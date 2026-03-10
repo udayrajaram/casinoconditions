@@ -8,7 +8,8 @@
 // ═══════════════════════════════════════════════════════════════
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
+// Use service role key for seed (needed for DELETE). Falls back to anon key.
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
 const SEED_SECRET  = process.env.SEED_SECRET || 'casino2024';
 
 // ─────────────────────────────────────────────
