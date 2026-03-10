@@ -634,7 +634,13 @@ async function seedCasino(casino, force = false) {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   const target = rand(4, 7);
-  let existingBodies = new Set();
+
+  // Always load existing seeds to avoid duplicates — never delete, just accumulate
+  const existing = await sbFetch(
+    `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`,
+    { returnData: true }
+  );
+  let existingBodies = new Set((existing || []).map(p => p.body));
 
   if (!force) {
     // Skip if real posts exist
@@ -645,11 +651,6 @@ async function seedCasino(casino, force = false) {
     if (realPosts?.length > 0) return 0;
 
     // Skip if already has enough seeds
-    const existing = await sbFetch(
-      `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`,
-      { returnData: true }
-    );
-    existingBodies = new Set((existing || []).map(p => p.body));
     if (existingBodies.size >= target) return 0;
   }
 
