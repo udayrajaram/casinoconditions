@@ -253,6 +253,42 @@ const CASINO_COORDS = {
   'Dover Downs Hotel Casino': [39.1582, -75.5244],
   'Delaware Park Casino': [39.6527, -75.5965],
   'Harrington Raceway Casino': [38.9237, -75.5774],
+  'Kickapoo Lucky Eagle Casino Hotel': [28.7132, -100.4954],
+  'Naskila Gaming': [30.8388, -94.938],
+  'Speaking Rock Entertainment Center': [31.652, -106.2871],
+  'Ysleta del Sur Pueblo Casino': [31.6501, -106.2856],
+  'Running Aces Casino Hotel': [45.2847, -93.1533],
+  'Prairie\'s Edge Casino Resort': [44.8097, -95.5358],
+  'Fond-du-Luth Casino': [46.7867, -92.1005],
+  'Palace Casino Resort': [47.3797, -94.6044],
+  'Rivers Casino Des Plaines': [41.9075, -87.882],
+  'Hollywood Casino Aurora': [41.7619, -88.3159],
+  'Par-A-Dice Hotel Casino': [40.6947, -89.5409],
+  'Casino Queen': [38.6318, -90.1491],
+  'Hollywood Casino Joliet': [41.525, -88.0817],
+  'Horseshoe Hammond': [41.631, -87.5007],
+  'Blue Chip Casino Hotel Spa': [41.7108, -86.895],
+  'Four Winds South Bend': [41.6764, -86.252],
+  'Belterra Casino Resort': [38.8124, -84.9563],
+  'Mohegan Sun Casino': [41.4901, -72.0957],
+  'Foxwoods Resort Casino Main': [41.4898, -71.959],
+  'Boot Hill Casino Resort': [37.7528, -100.0171],
+  'Kansas Star Casino': [37.4756, -97.2176],
+  'Hollywood Casino at Kansas Speedway': [39.1147, -94.831],
+  'Hard Rock Hotel Casino Sioux City': [42.4974, -96.3956],
+  'WarHorse Casino Grand Island': [40.925, -98.342],
+  'Ilani Casino Resort': [45.8249, -122.7412],
+  'Chinook Winds Casino Resort': [44.976, -124.0171],
+  'Seven Feathers Casino Resort': [42.9238, -123.2735],
+  'Wildhorse Resort Casino': [45.5708, -118.7827],
+  'Catawba Two Kings Casino': [35.249, -81.3412],
+  'Harrahs Cherokee Valley River': [35.0654, -84.0196],
+  'Rivers Casino Portsmouth VA': [36.8354, -76.3683],
+  'Hard Rock Hotel Casino Bristol VA': [36.5951, -82.1887],
+  'Hollywood Casino Hotel Raceway Bangor': [44.8012, -68.7789],
+  'Passamaquoddy Tribe Casino': [45.204, -67.5623],
+  'Glacier Peaks Casino': [48.556, -113.0097],
+  'Little Big Horn Casino': [45.568, -107.4287],
 };
 
 const CASINO_PLACE_IDS = {}; // Always look up dynamically via Places text search
@@ -492,33 +528,16 @@ const CASINOS = [
   { name: 'Pechanga Resort Casino', location: 'Temecula, CA', state: 'CA', miles: 2750, slug: 'pechanga-resort-casino', desc: 'One of the largest casinos in the US with 200,000 sq ft of gaming, 5,000+ slots, a world-class poker room, and a luxury resort.' },
   { name: 'Agua Caliente Casino Cathedral City', location: 'Cathedral City, CA', state: 'CA', miles: 2750, slug: 'agua-caliente-casino', desc: 'Palm Springs area casino with 1,000+ slots, table games, poker, and a luxury hotel near the desert.' },
   { name: 'Fantasy Springs Resort Casino', location: 'Indio, CA', state: 'CA', miles: 2750, slug: 'fantasy-springs-casino', desc: 'Cahuilla casino resort near Palm Springs with 2,000+ slots, table games, poker, bowling, and a hotel.' },
-  { name: 'Morongo Casino Resort Spa', location: 'Cabazon, CA', state: 'CA', miles: 2700, slug: 'morongo-casino', desc: 'Southern California tribal casino resort with 2,500+ slots, table games, poker, and a luxury hotel off I-10.' },
   { name: 'Viejas Casino Resort', location: 'Alpine, CA', state: 'CA', miles: 2750, slug: 'viejas-casino', desc: 'East San Diego County tribal casino with 2,000+ slots, table games, poker, an outlet mall, and a hotel.' },
   { name: 'Harrahs Resort Southern California', location: 'Valley Center, CA', state: 'CA', miles: 2750, slug: 'harrahs-southern-california', desc: 'North San Diego County casino resort with 1,700+ slots, table games, poker, and a luxury hotel.' },
   { name: 'Chumash Casino Resort', location: 'Santa Ynez, CA', state: 'CA', miles: 2800, slug: 'chumash-casino', desc: 'Santa Barbara area tribal casino resort with 2,000+ slots, table games, poker, and a hotel in the wine country.' },
-  { name: 'Cache Creek Casino Resort', location: 'Brooks, CA', state: 'CA', miles: 2700, slug: 'cache-creek-casino', desc: 'Northern California tribal casino resort with 2,000+ slots, table games, poker, golf, and a hotel between Sacramento and the Bay Area.' },
   { name: 'Jackson Rancheria Casino Resort', location: 'Jackson, CA', state: 'CA', miles: 2700, slug: 'jackson-rancheria-casino', desc: 'Gold Country tribal casino resort with 2,300+ slots, table games, and a hotel in the Sierra Nevada foothills.' },
-  { name: 'Thunder Valley Casino Resort', location: 'Lincoln, CA', state: 'CA', miles: 2700, slug: 'thunder-valley-casino', desc: 'Sacramento area tribal casino resort with 3,000+ slots, 130+ table games, poker, and a luxury hotel.' },
-  { name: 'Talking Stick Resort', location: 'Scottsdale, AZ', state: 'AZ', miles: 2400, slug: 'talking-stick-resort', desc: 'Scottsdale premier casino resort with 50,000 sq ft of gaming, table games, poker, and a luxury hotel.' },
-  { name: 'Casino Arizona', location: 'Scottsdale, AZ', state: 'AZ', miles: 2400, slug: 'casino-arizona', desc: 'Arizona most popular casino with 50,000 sq ft of gaming, 900+ slots, live poker, and keno in Scottsdale.' },
   { name: 'Wild Horse Pass Hotel Casino', location: 'Chandler, AZ', state: 'AZ', miles: 2400, slug: 'wild-horse-pass-casino', desc: 'Gila River tribal casino resort near Phoenix with 1,100+ slots, table games, a poker room, and a luxury hotel.' },
-  { name: 'Fort McDowell Casino', location: 'Fountain Hills, AZ', state: 'AZ', miles: 2400, slug: 'fort-mcdowell-casino', desc: 'Yavapai Nation casino northeast of Scottsdale with 900+ slots, table games, poker, and bingo.' },
   { name: 'Downstream Casino Resort', location: 'Quapaw, OK', state: 'OK', miles: 1400, slug: 'downstream-casino', desc: 'Quapaw Nation casino at the corner of three states with 2,000+ slots, table games, poker, and a hotel.' },
-  { name: 'Hard Rock Hotel Casino Tulsa', location: 'Catoosa, OK', state: 'OK', miles: 1400, slug: 'hard-rock-tulsa', desc: 'Oklahoma largest casino with 3,000+ slots, 100+ table games, a 24-hour poker room, and a music venue near Tulsa.' },
-  { name: 'Choctaw Casino Durant', location: 'Durant, OK', state: 'OK', miles: 1500, slug: 'choctaw-casino-durant', desc: 'Oklahoma top destination casino resort with 5,000+ machines, 100+ table games, and a luxury hotel near the Texas border.' },
-  { name: 'WinStar World Casino Resort', location: 'Thackerville, OK', state: 'OK', miles: 1500, slug: 'winstar-world-casino', desc: 'The world largest casino with 600,000+ sq ft of gaming, 11 gaming plazas, a golf course, and multiple hotels just north of the Texas border.' },
-  { name: 'Tulalip Resort Casino', location: 'Tulalip, WA', state: 'WA', miles: 2800, slug: 'tulalip-resort-casino', desc: 'Washington most popular casino resort with 3,000+ slots, 75+ table games, a poker room, and luxury hotel north of Seattle.' },
-  { name: 'Muckleshoot Casino Resort', location: 'Auburn, WA', state: 'WA', miles: 2800, slug: 'muckleshoot-casino', desc: 'South Seattle area tribal casino with 3,500+ slots, 80+ table games, poker, and a hotel.' },
   { name: 'Emerald Queen Casino', location: 'Tacoma, WA', state: 'WA', miles: 2800, slug: 'emerald-queen-casino', desc: 'Tacoma tribal casino with 2,000+ slots, table games, poker, and entertainment.' },
   { name: 'Lucky Eagle Casino Hotel', location: 'Rochester, WA', state: 'WA', miles: 2800, slug: 'lucky-eagle-casino', desc: 'Chehalis tribal casino south of Olympia with 1,500+ slots, table games, and a hotel.' },
-  { name: 'Ameristar Casino Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'ameristar-black-hawk', desc: 'Colorado largest casino with 55,000 sq ft of gaming, 1,200+ slots, table games, a poker room, and a hotel.' },
-  { name: 'Isle Casino Hotel Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'isle-casino-black-hawk', desc: 'Colorado mountain casino with 900+ slots, table games, poker, and a hotel in Black Hawk.' },
-  { name: 'Monarch Casino Resort Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'monarch-casino-black-hawk', desc: 'Black Hawk casino resort with 1,000+ slots, table games, poker, and an upscale hotel.' },
   { name: 'Saratoga Casino Black Hawk', location: 'Black Hawk, CO', state: 'CO', miles: 1700, slug: 'saratoga-casino-black-hawk', desc: 'Colorado mountain casino with slots, table games, and dining in historic Black Hawk.' },
-  { name: 'Horseshoe Hammond', location: 'Hammond, IN', state: 'IN', miles: 700, slug: 'horseshoe-hammond', desc: 'Chicago closest casino with 100,000 sq ft of gaming, 2,600+ slots, 130+ table games, and a world-class poker room.' },
   { name: 'Ameristar Casino East Chicago', location: 'East Chicago, IN', state: 'IN', miles: 700, slug: 'ameristar-east-chicago', desc: 'Northwest Indiana casino with 53,000 sq ft of gaming, 1,600+ slots, table games, and a hotel near Chicago.' },
-  { name: 'Four Winds South Bend', location: 'South Bend, IN', state: 'IN', miles: 650, slug: 'four-winds-south-bend', desc: 'Pokagon Band casino in South Bend with 3,000+ slots, table games, a poker room, and a hotel.' },
-  { name: 'Rivers Casino Des Plaines', location: 'Des Plaines, IL', state: 'IL', miles: 750, slug: 'rivers-casino-des-plaines', desc: 'Chicago premier casino with 1,000+ slots, 75+ table games, and a poker room near O\'Hare Airport.' },
   { name: 'Grand Victoria Casino Elgin', location: 'Elgin, IL', state: 'IL', miles: 750, slug: 'grand-victoria-casino', desc: 'Fox River casino west of Chicago with 900+ slots, table games, and riverboat dining.' },
   { name: 'Harrahs Joliet', location: 'Joliet, IL', state: 'IL', miles: 750, slug: 'harrahs-joliet', desc: 'Southwest Chicago suburb casino with 900+ slots, table games, poker, and a hotel on the Des Plaines River.' },
   { name: 'Spirit Mountain Casino', location: 'Grand Ronde, OR', state: 'OR', miles: 2900, slug: 'spirit-mountain-casino-oregon', desc: 'Grand Ronde tribal casino southwest of Portland with 2,000+ slots, table games, bingo, and a hotel.' },
@@ -528,17 +547,12 @@ const CASINOS = [
   { name: 'FireKeepers Casino Hotel', location: 'Battle Creek, MI', state: 'MI', miles: 650, slug: 'firekeepers-casino', desc: 'Nottawaseppi Huron Band casino in Battle Creek with 3,000+ slots, table games, a poker room, and hotel.' },
   { name: 'Oxford Casino Hotel', location: 'Oxford, ME', state: 'ME', miles: 350, slug: 'oxford-casino', desc: 'Maine only full-service casino with 850+ slots, table games, poker, and a hotel in Oxford County.' },
   // ── Florida ──────────────────────────────────────────────────────
-  { name: 'Seminole Hard Rock Hotel Casino Hollywood', location: 'Hollywood, FL', state: 'FL', miles: 1280, slug: 'seminole-hard-rock-hollywood', desc: 'The flagship Seminole Hard Rock in Hollywood features 3,100+ slots, 195 table games, a 43-table poker room, and the iconic guitar-shaped hotel tower.' },
-  { name: 'Seminole Hard Rock Hotel Casino Tampa', location: 'Tampa, FL', state: 'FL', miles: 1090, slug: 'seminole-hard-rock-tampa', desc: 'Seminole Hard Rock Tampa offers 5,000+ slots, 179 table games, a 42-table poker room, and multiple dining and entertainment venues.' },
   { name: 'Seminole Casino Coconut Creek', location: 'Coconut Creek, FL', state: 'FL', miles: 1270, slug: 'seminole-casino-coconut-creek', desc: 'Seminole Casino Coconut Creek features 2,400+ slots, 70+ table games, and a 26-table poker room near Fort Lauderdale.' },
-  { name: 'Magic City Casino', location: 'Miami, FL', state: 'FL', miles: 1330, slug: 'magic-city-casino', desc: 'Magic City Casino in Miami features 1,000+ slot machines, poker, and live jai-alai and horse racing simulcast.' },
   { name: 'Miccosukee Resort Gaming', location: 'Miami, FL', state: 'FL', miles: 1340, slug: 'miccosukee-resort-gaming', desc: 'Miccosukee Resort Gaming offers 1,900+ slots and a poker room on the edge of the Florida Everglades near Miami.' },
-  { name: 'Isle Casino Racing Pompano Park', location: 'Pompano Beach, FL', state: 'FL', miles: 1265, slug: 'isle-casino-pompano', desc: 'Isle Casino Racing Pompano Park features 1,500+ slots, poker, and live harness racing in Pompano Beach.' },
   { name: 'Seminole Casino Brighton', location: 'Okeechobee, FL', state: 'FL', miles: 1180, slug: 'seminole-casino-brighton', desc: 'Seminole Casino Brighton is a smaller tribal casino featuring slots and bingo in rural Okeechobee County.' },
   { name: 'Seminole Casino Hotel Immokalee', location: 'Immokalee, FL', state: 'FL', miles: 1210, slug: 'seminole-casino-immokalee', desc: 'Seminole Casino Hotel Immokalee offers 1,300+ slots and table games in southwest Florida near Naples.' },
 
   // ── Minnesota ─────────────────────────────────────────────────────
-  { name: 'Mystic Lake Casino Hotel', location: 'Prior Lake, MN', state: 'MN', miles: 1220, slug: 'mystic-lake-casino', desc: 'Mystic Lake Casino Hotel is the largest casino in the Upper Midwest with 4,000+ slot machines, blackjack, bingo, and a 14-table poker room.' },
   { name: 'Grand Casino Hinckley', location: 'Hinckley, MN', state: 'MN', miles: 1300, slug: 'grand-casino-hinckley', desc: 'Grand Casino Hinckley features 2,100+ slot machines, table games, and bingo about 90 minutes north of Minneapolis.' },
   { name: 'Grand Casino Mille Lacs', location: 'Onamia, MN', state: 'MN', miles: 1310, slug: 'grand-casino-mille-lacs', desc: 'Grand Casino Mille Lacs offers 1,600+ slots, table games, and bingo on the shores of Lake Mille Lacs.' },
   { name: 'Treasure Island Resort Casino', location: 'Red Wing, MN', state: 'MN', miles: 1240, slug: 'treasure-island-resort-mn', desc: 'Treasure Island Resort Casino features 2,700+ slots, table games, bingo, and a poker room along the Mississippi River near Red Wing.' },
@@ -556,25 +570,16 @@ const CASINOS = [
   { name: 'Northwoods Casino', location: 'Carter, WI', state: 'WI', miles: 1050, slug: 'northwoods-casino', desc: 'Northwoods Casino is a Forest County Potawatomi tribal casino featuring slots and table games in northern Wisconsin.' },
 
   // ── Louisiana ─────────────────────────────────────────────────────
-  { name: 'Harrahs New Orleans', location: 'New Orleans, LA', state: 'LA', miles: 1200, slug: 'harrahs-new-orleans', desc: 'Harrahs New Orleans is the only land-based casino in New Orleans featuring 1,500+ slots, 100+ table games, and a poker room in the heart of the city.' },
-  { name: "L'Auberge Casino Resort Lake Charles", location: 'Lake Charles, LA', state: 'LA', miles: 1430, slug: 'lauberge-lake-charles', desc: "L'Auberge Casino Resort Lake Charles offers 1,600+ slots, 60+ table games, poker, and a full resort on the Calcasieu River." },
   { name: 'Golden Nugget Lake Charles', location: 'Lake Charles, LA', state: 'LA', miles: 1435, slug: 'golden-nugget-lake-charles', desc: 'Golden Nugget Lake Charles features 1,700+ slots, 70+ table games, a poker room, and a full resort along the lake.' },
   { name: 'Horseshoe Bossier City', location: 'Bossier City, LA', state: 'LA', miles: 1470, slug: 'horseshoe-bossier-city', desc: 'Horseshoe Bossier City offers 1,500+ slots and 50+ table games on a riverboat casino in the Shreveport-Bossier area.' },
   { name: 'Margaritaville Resort Casino Bossier City', location: 'Bossier City, LA', state: 'LA', miles: 1465, slug: 'margaritaville-bossier-city', desc: 'Margaritaville Resort Casino Bossier City features 1,400+ slots, table games, and a full resort in Bossier City.' },
   { name: 'Boomtown Casino New Orleans', location: 'Harvey, LA', state: 'LA', miles: 1205, slug: 'boomtown-casino-new-orleans', desc: 'Boomtown Casino New Orleans offers 1,500+ slots and 50+ table games just across the river from downtown New Orleans.' },
-  { name: 'Coushatta Casino Resort', location: 'Kinder, LA', state: 'LA', miles: 1390, slug: 'coushatta-casino-resort', desc: 'Coushatta Casino Resort is one of the largest tribal casinos in the South with 2,500+ slots, table games, bingo, and a full resort.' },
 
   // ── Mississippi ───────────────────────────────────────────────────
-  { name: 'Beau Rivage Resort Casino', location: 'Biloxi, MS', state: 'MS', miles: 1220, slug: 'beau-rivage-biloxi', desc: 'Beau Rivage Resort Casino in Biloxi features 1,740 slots, 75+ table games, a 28-table poker room, and a AAA Four Diamond resort.' },
-  { name: 'Hard Rock Hotel Casino Biloxi', location: 'Biloxi, MS', state: 'MS', miles: 1220, slug: 'hard-rock-biloxi', desc: 'Hard Rock Hotel Casino Biloxi offers 900+ slots, 50+ table games, poker, and music-themed entertainment on the Gulf Coast.' },
-  { name: 'IP Casino Resort Spa Biloxi', location: 'Biloxi, MS', state: 'MS', miles: 1222, slug: 'ip-casino-biloxi', desc: 'IP Casino Resort Spa in Biloxi features 1,000+ slots, 50+ table games, a poker room, and a full spa resort.' },
-  { name: 'Scarlet Pearl Casino Resort', location: 'DiBerville, MS', state: 'MS', miles: 1225, slug: 'scarlet-pearl-casino', desc: 'Scarlet Pearl Casino Resort offers 900+ slots, table games, and a resort near Biloxi on the Mississippi Gulf Coast.' },
   { name: 'Harrahs Gulf Coast', location: 'Biloxi, MS', state: 'MS', miles: 1221, slug: 'harrahs-gulf-coast', desc: 'Harrahs Gulf Coast features 1,000+ slots, table games, and a hotel on the Biloxi waterfront.' },
-  { name: 'Hollywood Casino Tunica', location: 'Tunica, MS', state: 'MS', miles: 1050, slug: 'hollywood-casino-tunica', desc: 'Hollywood Casino Tunica features 800+ slots and table games in the Mississippi Delta casino corridor south of Memphis.' },
   { name: 'Gold Strike Casino Resort Tunica', location: 'Tunica, MS', state: 'MS', miles: 1048, slug: 'gold-strike-tunica', desc: 'Gold Strike Casino Resort in Tunica offers 1,100+ slots, 50+ table games, and a 32-story hotel in the heart of Tunica casino country.' },
 
   // ── Missouri ──────────────────────────────────────────────────────
-  { name: 'Hollywood Casino St Louis', location: 'Maryland Heights, MO', state: 'MO', miles: 950, slug: 'hollywood-casino-st-louis', desc: 'Hollywood Casino St Louis features 2,000+ slots, 80+ table games, and a poker room on the Missouri River near St. Louis.' },
   { name: 'Ameristar Casino Resort St Charles', location: 'St Charles, MO', state: 'MO', miles: 955, slug: 'ameristar-casino-st-charles', desc: 'Ameristar Casino Resort St Charles offers 3,000+ slots, 130+ table games, a poker room, and a full resort on the Missouri River.' },
   { name: 'Harrahs North Kansas City', location: 'North Kansas City, MO', state: 'MO', miles: 1220, slug: 'harrahs-north-kansas-city', desc: 'Harrahs North Kansas City features 2,000+ slots, 60+ table games, and a poker room on the Missouri River north of Kansas City.' },
   { name: 'Argosy Casino Hotel Spa', location: 'Riverside, MO', state: 'MO', miles: 1225, slug: 'argosy-casino-riverside', desc: 'Argosy Casino Hotel Spa in Riverside offers 1,600+ slots, 40+ table games, and a spa resort along the Missouri River.' },
@@ -582,16 +587,70 @@ const CASINOS = [
   { name: 'Isle of Capri Casino Hotel Boonville', location: 'Boonville, MO', state: 'MO', miles: 1050, slug: 'isle-of-capri-boonville', desc: 'Isle of Capri Casino Hotel Boonville offers 900+ slots and table games on the Missouri River in central Missouri.' },
 
   // ── Maryland ──────────────────────────────────────────────────────
-  { name: 'MGM National Harbor', location: 'Oxon Hill, MD', state: 'MD', miles: 340, slug: 'mgm-national-harbor', desc: 'MGM National Harbor features 3,300+ slots, 140+ table games, a poker room, and a luxury resort on the Potomac River near Washington DC.' },
-  { name: 'Live Casino Hotel Maryland', location: 'Hanover, MD', state: 'MD', miles: 375, slug: 'live-casino-maryland', desc: 'Live Casino Hotel Maryland offers 4,000+ slots, 200+ table games, a 52-table poker room, and a full resort near BWI Airport.' },
   { name: 'Horseshoe Casino Baltimore', location: 'Baltimore, MD', state: 'MD', miles: 360, slug: 'horseshoe-casino-baltimore', desc: 'Horseshoe Casino Baltimore features 2,200+ slots, 150+ table games, and a poker room in the heart of Baltimore.' },
-  { name: 'Hollywood Casino Perryville', location: 'Perryville, MD', state: 'MD', miles: 390, slug: 'hollywood-casino-perryville', desc: 'Hollywood Casino Perryville offers 1,000+ slots and table games at the head of the Chesapeake Bay.' },
   { name: 'Rocky Gap Casino Resort', location: 'Flintstone, MD', state: 'MD', miles: 450, slug: 'rocky-gap-casino-resort', desc: 'Rocky Gap Casino Resort features 650+ slots and table games in a scenic mountain resort setting in western Maryland.' },
 
   // ── Delaware ──────────────────────────────────────────────────────
   { name: 'Dover Downs Hotel Casino', location: 'Dover, DE', state: 'DE', miles: 280, slug: 'dover-downs-casino', desc: 'Dover Downs Hotel Casino features 2,200+ slots, table games, and a poker room near the Dover International Speedway.' },
   { name: 'Delaware Park Casino', location: 'Wilmington, DE', state: 'DE', miles: 310, slug: 'delaware-park-casino', desc: 'Delaware Park Casino offers 2,500+ slots and table games with live thoroughbred horse racing near Wilmington.' },
   { name: 'Harrington Raceway Casino', location: 'Harrington, DE', state: 'DE', miles: 290, slug: 'harrington-raceway-casino', desc: 'Harrington Raceway Casino features 2,000+ slots and table games with live harness racing in central Delaware.' },
+  // ── Texas ─────────────────────────────────────────────────────────
+  { name: 'Kickapoo Lucky Eagle Casino Hotel', location: 'Eagle Pass, TX', state: 'TX', miles: 1850, slug: 'kickapoo-lucky-eagle-casino', desc: 'Kickapoo Lucky Eagle Casino Hotel is the largest casino in Texas, featuring 3,000+ slots, bingo, and a full hotel in Eagle Pass near the Mexico border.' },
+  { name: 'Naskila Gaming', location: 'Livingston, TX', state: 'TX', miles: 1600, slug: 'naskila-gaming', desc: 'Naskila Gaming is a tribal casino near Livingston, TX featuring Class II electronic gaming machines operated by the Alabama-Coushatta Tribe.' },
+  { name: 'Speaking Rock Entertainment Center', location: 'El Paso, TX', state: 'TX', miles: 1900, slug: 'speaking-rock-el-paso', desc: 'Speaking Rock Entertainment Center is a Tigua tribal gaming facility in El Paso featuring bingo and electronic gaming.' },
+  { name: 'Ysleta del Sur Pueblo Casino', location: 'El Paso, TX', state: 'TX', miles: 1900, slug: 'ysleta-del-sur-casino', desc: 'Ysleta del Sur Pueblo operates tribal gaming in El Paso with bingo and electronic games near the Texas-New Mexico border.' },
+
+  // ── Minnesota expand ───────────────────────────────────────────────
+  { name: 'Running Aces Casino Hotel', location: 'Columbus, MN', state: 'MN', miles: 1195, slug: 'running-aces-casino', desc: 'Running Aces Casino Hotel features 900+ slots, table games, and live harness racing north of Minneapolis-St. Paul.' },
+  { name: "Prairie's Edge Casino Resort", location: 'Granite Falls, MN', state: 'MN', miles: 1340, slug: 'prairies-edge-casino', desc: "Prairie's Edge Casino Resort offers 700+ slots, table games, and bingo on the Upper Sioux Community in southwestern Minnesota." },
+  { name: 'Fond-du-Luth Casino', location: 'Duluth, MN', state: 'MN', miles: 1380, slug: 'fond-du-luth-casino', desc: 'Fond-du-Luth Casino is a downtown Duluth tribal casino featuring 400+ slots and table games operated by the Fond du Lac Band.' },
+  { name: 'Palace Casino Resort', location: 'Cass Lake, MN', state: 'MN', miles: 1450, slug: 'palace-casino-resort-mn', desc: 'Palace Casino Resort features 700+ slots and table games on the Leech Lake Indian Reservation in northern Minnesota.' },
+
+  // ── Illinois expand ────────────────────────────────────────────────
+  { name: 'Rivers Casino Des Plaines', location: 'Des Plaines, IL', state: 'IL', miles: 845, slug: 'rivers-casino-des-plaines-il', desc: "Rivers Casino Des Plaines is one of the busiest casinos in the US featuring 1,100+ slots, 75+ table games, and a poker room near O'Hare Airport." },
+  { name: 'Par-A-Dice Hotel Casino', location: 'East Peoria, IL', state: 'IL', miles: 970, slug: 'par-a-dice-casino', desc: 'Par-A-Dice Hotel Casino in East Peoria features 1,000+ slots, 30+ table games, and a hotel on the Illinois River.' },
+  { name: 'Casino Queen', location: 'East St Louis, IL', state: 'IL', miles: 955, slug: 'casino-queen-east-st-louis', desc: 'Casino Queen in East St. Louis features 1,000+ slots and 30+ table games directly across from the St. Louis Gateway Arch.' },
+  { name: 'Hollywood Casino Joliet', location: 'Joliet, IL', state: 'IL', miles: 880, slug: 'hollywood-casino-joliet', desc: 'Hollywood Casino Joliet offers 1,100+ slots and 50+ table games on the Des Plaines River in Joliet, Illinois.' },
+
+  // ── Indiana expand ─────────────────────────────────────────────────
+  { name: 'Horseshoe Hammond', location: 'Hammond, IN', state: 'IN', miles: 850, slug: 'horseshoe-hammond-in', desc: 'Horseshoe Hammond is the busiest casino in the Chicago area with 2,900+ slots, 130+ table games, and a 23-table poker room on Lake Michigan.' },
+  { name: 'Blue Chip Casino Hotel Spa', location: 'Michigan City, IN', state: 'IN', miles: 835, slug: 'blue-chip-casino-michigan-city', desc: 'Blue Chip Casino Hotel Spa in Michigan City features 1,600+ slots, 50+ table games, and a full resort near Lake Michigan.' },
+  { name: 'Four Winds South Bend', location: 'South Bend, IN', state: 'IN', miles: 840, slug: 'four-winds-south-bend-in', desc: "Four Winds South Bend offers 3,000+ slots, 90+ table games, and a poker room in South Bend near Notre Dame." },
+  { name: 'Belterra Casino Resort', location: 'Florence, IN', state: 'IN', miles: 900, slug: 'belterra-casino-resort', desc: 'Belterra Casino Resort on the Ohio River in Florence, Indiana features 1,500+ slots, 50+ table games, and a full resort.' },
+
+  // ── Connecticut expand ─────────────────────────────────────────────
+  { name: 'Mohegan Sun Casino', location: 'Uncasville, CT', state: 'CT', miles: 130, slug: 'mohegan-sun-casino', desc: 'Mohegan Sun features 5,000+ slot machines, 300+ table games, a 40-table poker room, and world-class entertainment in Uncasville, CT.' },
+  { name: 'Foxwoods Resort Casino Main', location: 'Mashantucket, CT', state: 'CT', miles: 140, slug: 'foxwoods-resort-casino', desc: 'Foxwoods Resort Casino is the second-largest casino complex in the US with 340,000 sq ft of gaming, 3,000+ slots, and poker.' },
+
+  // ── Kansas expand ──────────────────────────────────────────────────
+  { name: 'Boot Hill Casino Resort', location: 'Dodge City, KS', state: 'KS', miles: 1380, slug: 'boot-hill-casino', desc: 'Boot Hill Casino Resort in Dodge City features 600+ slots, table games, and a resort in the heart of Kansas cattle country.' },
+  { name: 'Kansas Star Casino', location: 'Mulvane, KS', state: 'KS', miles: 1270, slug: 'kansas-star-casino', desc: 'Kansas Star Casino in Mulvane offers 1,700+ slots, 40+ table games, and a poker room near Wichita.' },
+  { name: 'Hollywood Casino at Kansas Speedway', location: 'Kansas City, KS', state: 'KS', miles: 1220, slug: 'hollywood-casino-kansas-speedway', desc: 'Hollywood Casino at Kansas Speedway features 2,000+ slots, 50+ table games, and is located at the NASCAR speedway in Kansas City.' },
+
+  // ── Nebraska expand ────────────────────────────────────────────────
+  { name: 'Hard Rock Hotel Casino Sioux City', location: 'Sioux City, NE', state: 'NE', miles: 1310, slug: 'hard-rock-sioux-city', desc: 'Hard Rock Hotel Casino Sioux City features 1,000+ slots, 30+ table games, and a poker room along the Missouri River.' },
+  { name: 'WarHorse Casino Grand Island', location: 'Grand Island, NE', state: 'NE', miles: 1400, slug: 'warhorse-casino-grand-island', desc: 'WarHorse Casino Grand Island is a newer Nebraska gaming facility featuring slot machines and electronic table games.' },
+
+  // ── Oregon expand ──────────────────────────────────────────────────
+  { name: 'Chinook Winds Casino Resort', location: 'Lincoln City, OR', state: 'OR', miles: 2990, slug: 'chinook-winds-casino', desc: 'Chinook Winds Casino Resort on the Oregon coast features 1,200+ slots, table games, bingo, and ocean views in Lincoln City.' },
+  { name: 'Seven Feathers Casino Resort', location: 'Canyonville, OR', state: 'OR', miles: 3100, slug: 'seven-feathers-casino', desc: 'Seven Feathers Casino Resort in Canyonville offers 1,300+ slots, table games, and a full resort in southern Oregon.' },
+  { name: 'Wildhorse Resort Casino', location: 'Pendleton, OR', state: 'OR', miles: 2870, slug: 'wildhorse-resort-casino', desc: 'Wildhorse Resort Casino near Pendleton features 1,100+ slots, table games, bingo, an RV park, and a golf course.' },
+
+  // ── North Carolina expand ──────────────────────────────────────────
+  { name: 'Catawba Two Kings Casino', location: 'Kings Mountain, NC', state: 'NC', miles: 750, slug: 'catawba-two-kings-casino', desc: 'Catawba Two Kings Casino in Kings Mountain features 1,300+ slots and table games operated by the Catawba Indian Nation near Charlotte.' },
+  { name: 'Harrahs Cherokee Valley River', location: 'Murphy, NC', state: 'NC', miles: 900, slug: 'harrahs-cherokee-valley-river-nc', desc: 'Harrahs Cherokee Valley River Casino in Murphy offers 1,000+ slots, table games, and poker in the Great Smoky Mountains foothills.' },
+
+  // ── Virginia expand ────────────────────────────────────────────────
+  { name: 'Rivers Casino Portsmouth VA', location: 'Portsmouth, VA', state: 'VA', miles: 410, slug: 'rivers-casino-portsmouth-va', desc: 'Rivers Casino Portsmouth features 1,400+ slots, 75+ table games, and a poker room on the Elizabeth River in Portsmouth, Virginia.' },
+  { name: 'Hard Rock Hotel Casino Bristol VA', location: 'Bristol, VA', state: 'VA', miles: 670, slug: 'hard-rock-bristol-va', desc: 'Hard Rock Hotel Casino Bristol features 2,700+ slots, 90+ table games, and a poker room in the twin cities of Bristol on the VA/TN border.' },
+
+  // ── Maine expand ───────────────────────────────────────────────────
+  { name: 'Hollywood Casino Hotel Raceway Bangor', location: 'Bangor, ME', state: 'ME', miles: 310, slug: 'hollywood-casino-bangor', desc: 'Hollywood Casino Hotel and Raceway in Bangor features 950+ slots, table games, and live harness racing in central Maine.' },
+  { name: 'Passamaquoddy Tribe Casino', location: 'Princeton, ME', state: 'ME', miles: 370, slug: 'passamaquoddy-tribe-casino', desc: 'The Passamaquoddy Tribe operates gaming in Princeton, Maine with electronic gaming machines on the Pleasant Point Reservation.' },
+
+  // ── Montana expand ─────────────────────────────────────────────────
+  { name: 'Glacier Peaks Casino', location: 'Browning, MT', state: 'MT', miles: 2150, slug: 'glacier-peaks-casino', desc: 'Glacier Peaks Casino on the Blackfeet Indian Reservation in Browning offers slot machines near Glacier National Park.' },
+  { name: 'Little Big Horn Casino', location: 'Crow Agency, MT', state: 'MT', miles: 1730, slug: 'little-big-horn-casino', desc: 'Little Big Horn Casino on the Crow Reservation features slots and gaming near the Little Bighorn Battlefield in southeastern Montana.' },
 ];
 
 function timeAgo(dateStr) {
