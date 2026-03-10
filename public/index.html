@@ -956,7 +956,8 @@ document.addEventListener('click', function(e) {
 async function loadPosts() {
   // Fetch recent posts for the feed (limit 50 is fine for display)
   const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false }).limit(50);
-  if (error || !data) return;
+  if (error) console.error('Posts load error:', error);
+  if (!data) { updateStats(0, 0, 193); return; }
   allPosts = data;
   applyFilters();
   updateCasinoGrid(data);
