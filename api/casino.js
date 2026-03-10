@@ -619,8 +619,6 @@ const CASINOS = [
   { name: 'Belterra Casino Resort', location: 'Florence, IN', state: 'IN', miles: 900, slug: 'belterra-casino-resort', desc: 'Belterra Casino Resort on the Ohio River in Florence, Indiana features 1,500+ slots, 50+ table games, and a full resort.' },
 
   // ── Connecticut expand ─────────────────────────────────────────────
-  { name: 'Mohegan Sun Casino', location: 'Uncasville, CT', state: 'CT', miles: 130, slug: 'mohegan-sun-casino', desc: 'Mohegan Sun features 5,000+ slot machines, 300+ table games, a 40-table poker room, and world-class entertainment in Uncasville, CT.' },
-  { name: 'Foxwoods Resort Casino Main', location: 'Mashantucket, CT', state: 'CT', miles: 140, slug: 'foxwoods-resort-casino', desc: 'Foxwoods Resort Casino is the second-largest casino complex in the US with 340,000 sq ft of gaming, 3,000+ slots, and poker.' },
 
   // ── Kansas expand ──────────────────────────────────────────────────
   { name: 'Boot Hill Casino Resort', location: 'Dodge City, KS', state: 'KS', miles: 1380, slug: 'boot-hill-casino', desc: 'Boot Hill Casino Resort in Dodge City features 600+ slots, table games, and a resort in the heart of Kansas cattle country.' },

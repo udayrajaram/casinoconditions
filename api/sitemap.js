@@ -1,4 +1,4 @@
-// AUTO-GENERATED from casino.js CASINOS array — 206 casino pages
+// AUTO-GENERATED from casino.js CASINOS array — 254 casino pages
 // Static pages
 const STATIC_PAGES = [
   { loc: '/', priority: '1.0', changefreq: 'hourly' },
@@ -41,13 +41,21 @@ const CASINO_SLUGS = [
   'shoshone-bannock-casino', 'wind-creek-wetumpka', 'wind-creek-atmore', 'wind-creek-montgomery', 'warhorse-casino-lincoln', 'warhorse-casino-omaha',
   'atlantis-casino-reno', 'circus-circus-reno', 'eldorado-reno', 'harrahs-reno', 'nugget-casino-sparks', 'caesars-lake-tahoe',
   'eureka-casino-mesquite', 'virgin-hotels-las-vegas', 'durango-casino-las-vegas', 'fontainebleau-las-vegas', 'resorts-world-las-vegas', 'circa-resort-las-vegas',
-  'pechanga-resort-casino', 'agua-caliente-casino', 'fantasy-springs-casino', 'morongo-casino', 'viejas-casino', 'harrahs-southern-california',
-  'chumash-casino', 'cache-creek-casino', 'jackson-rancheria-casino', 'thunder-valley-casino', 'talking-stick-resort', 'casino-arizona',
-  'wild-horse-pass-casino', 'fort-mcdowell-casino', 'downstream-casino', 'hard-rock-tulsa', 'choctaw-casino-durant', 'winstar-world-casino',
-  'tulalip-resort-casino', 'muckleshoot-casino', 'emerald-queen-casino', 'lucky-eagle-casino', 'ameristar-black-hawk', 'isle-casino-black-hawk',
-  'monarch-casino-black-hawk', 'saratoga-casino-black-hawk', 'horseshoe-hammond', 'ameristar-east-chicago', 'four-winds-south-bend', 'rivers-casino-des-plaines',
-  'grand-victoria-casino', 'harrahs-joliet', 'spirit-mountain-casino-oregon', 'ilani-casino-resort', 'soaring-eagle-casino', 'four-winds-new-buffalo',
-  'firekeepers-casino', 'oxford-casino',
+  'pechanga-resort-casino', 'agua-caliente-casino', 'fantasy-springs-casino', 'viejas-casino', 'harrahs-southern-california', 'chumash-casino',
+  'jackson-rancheria-casino', 'wild-horse-pass-casino', 'downstream-casino', 'emerald-queen-casino', 'lucky-eagle-casino', 'saratoga-casino-black-hawk',
+  'ameristar-east-chicago', 'grand-victoria-casino', 'harrahs-joliet', 'spirit-mountain-casino-oregon', 'ilani-casino-resort', 'soaring-eagle-casino',
+  'four-winds-new-buffalo', 'firekeepers-casino', 'oxford-casino', 'seminole-casino-coconut-creek', 'miccosukee-resort-gaming', 'seminole-casino-brighton',
+  'seminole-casino-immokalee', 'grand-casino-hinckley', 'grand-casino-mille-lacs', 'treasure-island-resort-mn', 'black-bear-casino', 'shooting-star-casino',
+  'jackpot-junction-casino', 'potawatomi-hotel-casino', 'ho-chunk-gaming-wisconsin-dells', 'oneida-casino', 'menominee-casino-resort', 'lake-of-the-torches-casino',
+  'ho-chunk-gaming-madison', 'northwoods-casino', 'golden-nugget-lake-charles', 'horseshoe-bossier-city', 'margaritaville-bossier-city', 'boomtown-casino-new-orleans',
+  'harrahs-gulf-coast', 'gold-strike-tunica', 'ameristar-casino-st-charles', 'harrahs-north-kansas-city', 'argosy-casino-riverside', 'lumiere-place-casino',
+  'isle-of-capri-boonville', 'horseshoe-casino-baltimore', 'rocky-gap-casino-resort', 'dover-downs-casino', 'delaware-park-casino', 'harrington-raceway-casino',
+  'kickapoo-lucky-eagle-casino', 'naskila-gaming', 'speaking-rock-el-paso', 'ysleta-del-sur-casino', 'running-aces-casino', 'prairies-edge-casino',
+  'fond-du-luth-casino', 'palace-casino-resort-mn', 'rivers-casino-des-plaines-il', 'par-a-dice-casino', 'casino-queen-east-st-louis', 'hollywood-casino-joliet',
+  'horseshoe-hammond-in', 'blue-chip-casino-michigan-city', 'four-winds-south-bend-in', 'belterra-casino-resort', 'boot-hill-casino', 'kansas-star-casino',
+  'hollywood-casino-kansas-speedway', 'hard-rock-sioux-city', 'warhorse-casino-grand-island', 'chinook-winds-casino', 'seven-feathers-casino', 'wildhorse-resort-casino',
+  'catawba-two-kings-casino', 'harrahs-cherokee-valley-river-nc', 'rivers-casino-portsmouth-va', 'hard-rock-bristol-va', 'hollywood-casino-bangor', 'passamaquoddy-tribe-casino',
+  'glacier-peaks-casino', 'little-big-horn-casino',
 ];
 
 export default function handler(req, res) {
