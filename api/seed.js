@@ -644,12 +644,6 @@ async function seedCasino(casino, force = false) {
     );
     if (realPosts?.length > 0) return 0;
 
-    // Delete stale seeds older than 7 days
-    await sbFetch(
-      `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&created_at=lt.${sevenDaysAgo}`,
-      { method: 'DELETE' }
-    );
-
     // Skip if already has enough seeds
     const existing = await sbFetch(
       `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`,
@@ -854,7 +848,7 @@ export default async function handler(req, res) {
     }
 
     if (force) {
-      await sbFetch('/posts?is_seeded=eq.true', { method: 'DELETE' });
+      // force=true now just means re-seed even if seeds exist — posts are preserved
     }
 
     await seedLeaderboard();
