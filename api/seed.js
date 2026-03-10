@@ -8,8 +8,9 @@
 // ═══════════════════════════════════════════════════════════════
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-// Use service role key for seed (needed for DELETE). Falls back to anon key.
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_KEY;
+// Service key bypasses RLS for DELETE. For INSERT/SELECT, anon key works fine.
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
 const SEED_SECRET  = process.env.SEED_SECRET || 'casino2024';
 
 // ─────────────────────────────────────────────
@@ -564,8 +565,8 @@ async function sbFetch(path, opts = {}) {
   const res = await fetch(url, {
     method: opts.method || 'GET',
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
       'Content-Type': 'application/json',
       ...(opts.headers || {}),
     },
