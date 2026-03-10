@@ -770,8 +770,8 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid secret. Pass ?secret=your_secret' });
   }
 
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    return res.status(500).json({ error: 'Missing SUPABASE_URL or SUPABASE_KEY env vars' });
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    return res.status(500).json({ error: 'Missing SUPABASE_URL or SUPABASE_KEY env vars' }); // info only
   }
 
   const started = Date.now();
@@ -800,7 +800,7 @@ export default async function handler(req, res) {
         insert_ok: testRes.ok,
         insert_response: debugText,
         supabase_url: SUPABASE_URL ? 'set' : 'MISSING',
-        supabase_key: SUPABASE_KEY ? SUPABASE_KEY.slice(0,20) + '...' : 'MISSING',
+        supabase_key: SUPABASE_SERVICE_KEY ? SUPABASE_SERVICE_KEY.slice(0,20) + '...' : 'MISSING',
       });
     }
 
