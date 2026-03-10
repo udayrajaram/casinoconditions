@@ -645,8 +645,8 @@ async function seedCasino(casino, force = false) {
       category:  p.c,
       post_type: p.t || 'update',
       is_seeded: true,
-      username:  user.username,
-      cookie_id: user.cookie_id,
+      author:    user.username,
+      is_anonymous: false,
       created_at: new Date(now - rand(5, 110 - i * 10) * 60000).toISOString(),
     };
   });
@@ -787,8 +787,8 @@ export default async function handler(req, res) {
           category: '📢 General',
           post_type: 'update',
           is_seeded: true,
-          username: 'seedbot',
-          cookie_id: 'debug-cookie-123',
+          author: 'SeedBot',
+          is_anonymous: false,
           created_at: new Date().toISOString(),
         }]),
         headers: { Prefer: 'return=minimal' },
