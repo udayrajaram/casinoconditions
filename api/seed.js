@@ -776,6 +776,33 @@ export default async function handler(req, res) {
   const started = Date.now();
 
   try {
+    // Quick diagnostic: test a single insert and return the raw response
+    if (req.query.debug === 'true') {
+      const testRes = await sbFetch('/posts', {
+        method: 'POST',
+        body: JSON.stringify([{
+          casino: 'Test Casino',
+          body: 'debug test post',
+          category: '📢 General',
+          post_type: 'update',
+          is_seeded: true,
+          username: 'seedbot',
+          cookie_id: 'debug-cookie-123',
+          created_at: new Date().toISOString(),
+        }]),
+        headers: { Prefer: 'return=minimal' },
+      });
+      const debugText = await testRes.text().catch(() => 'could not read body');
+      return res.status(200).json({
+        debug: true,
+        insert_status: testRes.status,
+        insert_ok: testRes.ok,
+        insert_response: debugText,
+        supabase_url: SUPABASE_URL ? 'set' : 'MISSING',
+        supabase_key: SUPABASE_KEY ? SUPABASE_KEY.slice(0,20) + '...' : 'MISSING',
+      });
+    }
+
     if (force) {
       await sbFetch('/posts?is_seeded=eq.true', { method: 'DELETE' });
     }
