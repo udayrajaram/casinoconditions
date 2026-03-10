@@ -957,7 +957,7 @@ async function loadPosts() {
   // Fetch recent posts for the feed (limit 50 is fine for display)
   const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false }).limit(50);
   if (error) console.error('Posts load error:', error);
-  if (!data) { updateStats(0, 0, 193); return; }
+  if (!data) { updateStats(0, 0, 242); return; }
   allPosts = data;
   applyFilters();
   updateCasinoGrid(data);
@@ -977,9 +977,9 @@ async function loadPosts() {
     ]);
     const totalCount = parseInt(totalRes.headers.get('content-range')?.split('/')[1] || data.length);
     const todayCount = parseInt(todayRes.headers.get('content-range')?.split('/')[1] || 0);
-    updateStats(totalCount, todayCount, 193);
+    updateStats(totalCount, todayCount, 242);
   } catch(e) {
-    updateStats(data.length, 0, 193);
+    updateStats(data.length, 0, 242);
   }
 }
 
