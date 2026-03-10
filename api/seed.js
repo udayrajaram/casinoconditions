@@ -650,13 +650,18 @@ async function seedCasino(casino, force = false) {
     };
   });
 
-  await sbFetch('/posts', {
+  const insertRes = await sbFetch('/posts', {
     method: 'POST',
     body: JSON.stringify(rows),
     headers: { Prefer: 'return=minimal' },
   });
 
-  console.log(`  ✅ ${casino.name} — seeded ${rows.length} posts`);
+  if (!insertRes.ok) {
+    const errText = await insertRes.text().catch(() => 'unknown');
+    console.error(`  ❌ ${casino.name} — insert failed ${insertRes.status}: ${errText}`);
+    return 0;
+  }
+
   return rows.length;
 }
 
@@ -785,13 +790,20 @@ export default async function handler(req, res) {
 
     let totalPosts = 0;
     let casinoCount = 0;
+    let errors = [];
     const BATCH = 8;
 
     for (let i = 0; i < toSeed.length; i += BATCH) {
       const batch = toSeed.slice(i, i + BATCH);
-      const counts = await Promise.all(batch.map(c => seedCasino(c, force)));
-      totalPosts  += counts.reduce((a, b) => a + b, 0);
-      casinoCount += counts.filter(c => c > 0).length;
+      const results = await Promise.allSettled(batch.map(c => seedCasino(c, force)));
+      for (const r of results) {
+        if (r.status === 'fulfilled') {
+          totalPosts += r.value;
+          if (r.value > 0) casinoCount++;
+        } else {
+          errors.push(r.reason?.message || 'unknown error');
+        }
+      }
     }
 
     const elapsed = ((Date.now() - started) / 1000).toFixed(1);
@@ -803,6 +815,7 @@ export default async function handler(req, res) {
       casinos_seeded: casinoCount,
       posts_added: totalPosts,
       elapsed_seconds: elapsed,
+      errors: errors.length ? errors.slice(0, 5) : undefined,
       timestamp: new Date().toISOString(),
     });
 
