@@ -667,7 +667,7 @@ function tagClass(cat) {
 }
 
 function renderPost(post) {
-  const initials = post.is_anonymous ? '👤' : post.author.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const initials = post.is_anonymous ? '👤' : (post.author || '?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   const avatarStyle = post.is_anonymous ? 'background:#f0f0ee;color:#888;font-size:14px' : 'background:#edf5f0;color:#1a6b3c';
   return `
   <div class="post-card">
@@ -1670,7 +1670,7 @@ function renderFeed(posts) {
   }
   feed.innerHTML = posts.map(p => {
     const isAsk = p.post_type === 'ask';
-    const initials = p.is_anonymous ? '👤' : p.author.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const initials = p.is_anonymous ? '👤' : (p.author || '?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     const avatarStyle = p.is_anonymous ? 'background:#f0f0ee;color:#888;font-size:14px' : 'background:#edf5f0;color:#1a6b3c';
     const tagCls = p.category.includes('Poker') ? 'tag-poker' : p.category.includes('Table') ? 'tag-tables' : p.category.includes('Slots') ? 'tag-slots' : 'tag-general';
     return \`<div class="post-card \${isAsk ? 'post-ask' : ''}">
