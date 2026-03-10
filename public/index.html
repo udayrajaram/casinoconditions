@@ -726,7 +726,7 @@ function tagClass(cat) {
 }
 
 function avatarHtml(author, isAnon) {
-  if (isAnon) return '<div class="avatar anon">👤</div>';
+  if (isAnon || !author) return '<div class="avatar anon">👤</div>';
   const initials = author.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   const colors = [['#edf5f0','#1a6b3c'],['#f5eef8','#4a235a'],['#eaf0f8','#1a5276'],['#fdf2e9','#784212']];
   const c = colors[author.charCodeAt(0) % colors.length];
