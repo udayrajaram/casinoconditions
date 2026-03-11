@@ -628,12 +628,9 @@ async function seedCasino(casino, force = false) {
 
   const target = rand(4, 7);
 
-  // Always load existing seeds to avoid duplicates — never delete, just accumulate
-  const existing = await sbFetch(
-    `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`,
-    { returnData: true }
-  );
-  let existingBodies = new Set((existing || []).map(p => p.body));
+  // On force mode: skip all DB reads, just generate and insert
+  // On normal mode: check existing to avoid duplication
+  let existingBodies = new Set();
 
   if (!force) {
     // Skip if real posts exist
@@ -643,24 +640,28 @@ async function seedCasino(casino, force = false) {
     );
     if (realPosts?.length > 0) return 0;
 
+    // Load existing seeds to avoid dupes
+    const existing = await sbFetch(
+      `/posts?casino=eq.${encodeURIComponent(casino.name)}&is_seeded=eq.true&select=body`,
+      { returnData: true }
+    );
+    existingBodies = new Set((existing || []).map(p => p.body));
+
     // Skip if already has enough seeds
     if (existingBodies.size >= target) return 0;
   }
 
-  const weather = await getWeather(casino);
-  const pool = buildPool(casino, weather);
-  const weatherPosts = getWeatherPosts(weather);
+  const pool = buildPool(casino, null);
   const weighted = [
-    ...pool.general, ...pool.general,   // 40% general
-    ...pool.slots,                        // 25% slots
-    ...pool.tables,                       // 20% tables
-    ...pool.poker,                        // 15% poker
+    ...pool.general, ...pool.general,
+    ...pool.slots,
+    ...pool.tables,
+    ...pool.poker,
     ...pool.asks.slice(0, 2),
     ...pool.answers.slice(0, 2),
-    ...weatherPosts,                      // weather-aware if available
   ].sort(() => Math.random() - 0.5);
 
-  const needed = target - existingBodies.size;
+  const needed = force ? target : target - existingBodies.size;
   const toPost = [];
   const used = new Set(existingBodies);
 
@@ -860,17 +861,71 @@ export default async function handler(req, res) {
     let totalPosts = 0;
     let casinoCount = 0;
     let errors = [];
-    const BATCH = 8;
 
-    for (let i = 0; i < toSeed.length; i += BATCH) {
-      const batch = toSeed.slice(i, i + BATCH);
-      const results = await Promise.allSettled(batch.map(c => seedCasino(c, force)));
-      for (const r of results) {
-        if (r.status === 'fulfilled') {
-          totalPosts += r.value;
-          if (r.value > 0) casinoCount++;
-        } else {
-          errors.push(r.reason?.message || 'unknown error');
+    if (force) {
+      // Fast path: build ALL rows in memory, one bulk insert per batch of 50 casinos
+      const BULK = 50;
+      for (let i = 0; i < toSeed.length; i += BULK) {
+        const chunk = toSeed.slice(i, i + BULK);
+        const allRows = [];
+        for (const casino of chunk) {
+          const target = rand(4, 7);
+          const pool = buildPool(casino, null);
+          const weighted = [
+            ...pool.general, ...pool.general,
+            ...pool.slots, ...pool.tables, ...pool.poker,
+            ...pool.asks.slice(0, 2), ...pool.answers.slice(0, 2),
+          ].sort(() => Math.random() - 0.5);
+          const now = Date.now();
+          const used = new Set();
+          let count = 0;
+          for (const p of weighted) {
+            if (count >= target) break;
+            if (used.has(p.b)) continue;
+            used.add(p.b);
+            const user = randomUser();
+            allRows.push({
+              casino:        casino.name,
+              body:          p.b,
+              category:      p.c,
+              post_type:     p.t || 'update',
+              is_seeded:     true,
+              author:        user.username,
+              is_anonymous:  false,
+              helpful_count: p.h || 0,
+              created_at:    new Date(now - rand(2, 360) * 60000).toISOString(),
+            });
+            count++;
+          }
+          if (count > 0) casinoCount++;
+        }
+        if (allRows.length > 0) {
+          const res2 = await sbFetch('/posts', {
+            method: 'POST',
+            body: JSON.stringify(allRows),
+            headers: { Prefer: 'return=minimal' },
+          });
+          if (res2.ok) {
+            totalPosts += allRows.length;
+          } else {
+            const t = await res2.text().catch(() => 'unknown');
+            errors.push(`bulk insert failed: ${t.slice(0, 100)}`);
+          }
+        }
+      }
+    } else {
+      // Normal path: per-casino checks
+      const BATCH = 20;
+      for (let i = 0; i < toSeed.length; i += BATCH) {
+        const batch = toSeed.slice(i, i + BATCH);
+        const results = await Promise.allSettled(batch.map(c => seedCasino(c, false)));
+        for (const r of results) {
+          if (r.status === 'fulfilled') {
+            totalPosts += r.value;
+            if (r.value > 0) casinoCount++;
+          } else {
+            errors.push(r.reason?.message || 'unknown error');
+          }
         }
       }
     }
